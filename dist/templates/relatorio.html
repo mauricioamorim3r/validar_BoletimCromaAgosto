@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">RELATÓRIO DE VALIDAÇÃO DE BOLETIM DE ANÁLISES QUÍMICAS</h4>
+                <a href="{{ url_for('index') }}" class="btn btn-light btn-sm">
+                    <i class="bi bi-house-door"></i> Voltar
+                </a>
+            </div>
+            <div class="card-body p-4">
+                <!-- Cabeçalho do relatório -->
+                <div class="border mb-4 p-3 bg-light">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-sm table-borderless">
+                                <tr>
+                                    <th class="w-50">Número do Boletim:</th>
+                                    <td>{{ boletim['numero_boletim'] }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Identificação da Instalação:</th>
+                                    <td>{{ boletim['identificacao_instalacao'] }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Agente Regulado:</th>
+                                    <td>{{ boletim['agente_regulado'] }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Ponto de Medição:</th>
+                                    <td>{{ boletim['ponto_medicao'] }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-sm table-borderless">
+                                <tr>
+                                    <th class="w-50">Data de Coleta:</th>
+                                    <td>{{ boletim['data_coleta'] }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Data de Emissão:</th>
+                                    <td>{{ boletim['data_emissao'] }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Data de Validação:</th>
+                                    <td>{{ boletim['data_validacao'] or '-' }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Status:</th>
+                                    <td>
+                                        <span class="badge bg-{% if boletim['status'] == 'VALIDADO' %}success{% else %}danger{% endif %}">
+                                            {{ boletim['status'] or 'PENDENTE' }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Análise CEP -->
+                <div class="mb-4">
+                    <h5 class="text-primary">ANÁLISE CEP</h5>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Componente</th>
+                                    <th>Percentual Molar (%)</th>
+                                    <th>Status A.G.A #8</th>
+                                    <th>Status CEP</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for comp in componentes %}
+                                <tr>
+                                    <td>{{ comp['nome'] }}</td>
+                                    <td class="text-end">{{ "%.3f"|format(comp['percentual_molar']) }}</td>
+                                    <td class="text-center">
+                                        <span class="badge bg-{% if comp['status_aga'] == 'VALIDADO' %}success{% else %}danger{% endif %}">
+                                            {{ comp['status_aga'] }}
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-{% if comp['status_cep'] == 'VALIDADO' %}success{% else %}danger{% endif %}">
+                                            {{ comp['status_cep'] }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Propriedades do Fluido -->
+                <div class="mb-4">
+                    <h5 class="text-primary">PROPRIEDADES DO FLUIDO</h5>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Propriedade</th>
+                                    <th>Valor</th>
+                                    <th>Status A.G.A #8</th>
+                                    <th>Status CEP</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for prop in propriedades %}
+                                <tr>
+                                    <td>{{ prop['nome'] }}</td>
+                                    <td class="text-end">{{ "%.4f"|format(prop['valor']) }}</td>
+                                    <td class="text-center">
+                                        <span class="badge bg-{% if prop['status_aga'] == 'VALIDADO' %}success{% else %}danger{% endif %}">
+                                            {{ prop['status_aga'] }}
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-{% if prop['status_cep'] == 'VALIDADO' %}success{% else %}danger{% endif %}">
+                                            {{ prop['status_cep'] }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Observações -->
+                {% if boletim['observacoes'] %}
+                <div class="mb-4">
+                    <h5 class="text-primary">OBSERVAÇÕES</h5>
+                    <div class="border p-3 bg-light">
+                        {{ boletim['observacoes'] }}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Área de aprovação -->
+                <div class="mt-5 p-3 border-top">
+                    <h5 class="text-primary">Aprovação do Relatório</h5>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <p><strong>Responsável Técnico:</strong><br>{{ boletim['responsavel_tecnico'] }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Responsável pela Elaboração:</strong><br>{{ boletim['responsavel_elaboracao'] }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Responsável pela Aprovação:</strong><br>{{ boletim['responsavel_aprovacao'] }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

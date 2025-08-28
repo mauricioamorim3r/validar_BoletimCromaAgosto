@@ -1,0 +1,411 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="excel-container">
+    <!-- Cabeçalho BRAVA Energia - Padrão Figma -->
+    <div class="brava-header">
+        <div class="brava-logo">BRAVA</div>
+        <h1>SISTEMA DE ANÁLISES QUÍMICAS</h1>
+        <div class="subtitle">Campo de Atalaia - Controle de Qualidade</div>
+    </div>
+
+    <!-- Sistema de Abas - Padrão Figma -->
+    <div class="figma-tabs">
+        <button class="figma-tab active">VALIDAÇÃO</button>
+        <button class="figma-tab">FULL GAS</button>
+    </div>
+
+    <!-- Informações do Boletim -->
+    <div class="boletim-info-grid">
+        <div class="info-left">
+            <div class="info-row">
+                <div class="info-label">Nº BOLETIM:</div>
+                <div class="info-value">{{ boletim['numero_boletim'] }}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">CFQ ATLANTIS:</div>
+                <div class="info-value">{{ boletim['numero_boletim'] }}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">DATA DA COLETA:</div>
+                <div class="info-value">{{ boletim['data_coleta'] }}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">DATA DA EMISSÃO:</div>
+                <div class="info-value">{{ boletim['data_emissao'] }}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">DATA DE VALIDAÇÃO:</div>
+                <div class="info-value">{{ boletim['data_validacao'] or '-' }}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">PLATAFORMA:</div>
+                <div class="info-value">FPSO ATLANTE</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">CLASSIFICAÇÃO:</div>
+                <div class="info-value">FISCAL</div>
+            </div>
+        </div>
+        <div class="info-right">
+            <div class="info-row">
+                <div class="info-label">Nº DO DOC:</div>
+                <div class="info-value">{{ boletim['id'] }}/2025</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">DATA DE VALIDAÇÃO:</div>
+                <div class="info-value">{{ boletim['data_validacao'] or '-' }}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">SISTEMA DE MEDIÇÃO:</div>
+                <div class="info-value">GÁS COMBUSTÍVEL LP</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">PONTO DE COLETA:</div>
+                <div class="info-value">{{ boletim['ponto_medicao'] }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Seção 1: Objetivo -->
+    <div class="section-header">1) OBJETIVO</div>
+    <div style="padding: 10px; border: 1px solid #dee2e6; background: white;">
+        Validar os resultados analíticos conforme metodologia A.G.A #8 e Controle Estatístico de Processo (CEP).
+    </div>
+
+    <!-- Seção 2: Check List -->
+    <div class="section-header">2) CHECK LIST</div>
+    <table class="checklist-table">
+        <thead>
+            <tr>
+                <th>ITEM</th>
+                <th>DESCRIÇÃO</th>
+                <th>SITUAÇÃO</th>
+                <th>NÃO APLICÁVEL</th>
+                <th>OBSERVAÇÃO</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="checklist-item">1</td>
+                <td>Identificação do boletim de resultados analíticos</td>
+                <td class="checklist-situacao">✓</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="checklist-item">2</td>
+                <td>Identificação da amostra</td>
+                <td class="checklist-situacao">✓</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="checklist-item">3</td>
+                <td>Descrição da data de amostragem</td>
+                <td class="checklist-situacao">✓</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="checklist-item">4</td>
+                <td>Descrição da data de recebimento da amostra pelo laboratório</td>
+                <td class="checklist-situacao">✓</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="checklist-item">5</td>
+                <td>Descrição da data de realização das análises</td>
+                <td class="checklist-situacao">✓</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="checklist-item">6</td>
+                <td>Descrição da data de emissão do BRA</td>
+                <td class="checklist-situacao">✓</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="checklist-item">7</td>
+                <td>Identificação do campo produtor ou da instalação</td>
+                <td class="checklist-situacao">✓</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="checklist-item">8</td>
+                <td>Identificação do agente regulado</td>
+                <td class="checklist-situacao">✓</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="checklist-item">9</td>
+                <td>Identificação do ponto de medição e/ou do poço quando aplicável</td>
+                <td class="checklist-situacao">✓</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="checklist-item">10</td>
+                <td>Resultados das análises e normas ou procedimentos utilizados</td>
+                <td class="checklist-situacao">✓</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="checklist-item">11</td>
+                <td>Descrição das características do processo do ponto de amostragem do fluido (pressão e temperatura)</td>
+                <td class="checklist-situacao">✓</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="checklist-item">12</td>
+                <td>Identificação do responsável pela amostragem</td>
+                <td class="checklist-situacao">✓</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="checklist-item">13</td>
+                <td>Indicação dos incertezas de medição, com descrição do nível de confiança e fator de abrangência</td>
+                <td class="checklist-situacao">✓</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="checklist-item">14</td>
+                <td>Identificação dos responsáveis técnicos pela realização da análise</td>
+                <td class="checklist-situacao">✓</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="checklist-item">15</td>
+                <td>Identificação dos responsáveis pela elaboração e aprovação do boletim</td>
+                <td class="checklist-situacao">✓</td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Seção 3: Análise CEP -->
+    <div class="section-header">3) ANÁLISE CEP</div>
+    
+    <!-- Componentes - Padrão Figma Avançado -->
+    <table class="componentes-excel">
+        <thead>
+            <tr>
+                <th rowspan="2">Item</th>
+                <th rowspan="2">Componente</th>
+                <th rowspan="2">% Molar</th>
+                <th colspan="2">Status</th>
+                <th colspan="2" class="aga8-header">A.G.A 8</th>
+                <th colspan="2" class="cep-header">CEP</th>
+            </tr>
+            <tr>
+                <th>A.G.A 8</th>
+                <th>CEP</th>
+                <th class="aga8-header">Limite Inferior</th>
+                <th class="aga8-header">Limite Superior</th>
+                <th class="cep-header">Limite Inferior</th>
+                <th class="cep-header">Limite Superior</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for comp in componentes %}
+            <tr>
+                <td class="checklist-item">{{ loop.index }}</td>
+                <td class="component-name">{{ comp['nome'] }}</td>
+                <td class="numeric">{{ "%.3f"|format(comp['percentual_molar']) }}%</td>
+                <td>
+                    <span class="status-{{ 'validado' if comp['status_aga'] == 'VALIDADO' else 'invalidado' }}">
+                        {{ comp['status_aga'] }}
+                    </span>
+                </td>
+                <td>
+                    <span class="status-{{ 'validado' if comp['status_cep'] == 'VALIDADO' else 'invalidado' }}">
+                        {{ comp['status_cep'] }}
+                    </span>
+                </td>
+                <td class="numeric aga8-limit">
+                    {% if comp['nome'] == 'Propano' %}0%{% elif comp['nome'] in ['i-Butano', 'n-Butano'] %}0%{% elif comp['nome'] in ['i-Pentano', 'n-Pentano'] %}0%{% elif comp['nome'] == 'Oxigênio' %}0%{% else %}0%{% endif %}
+                </td>
+                <td class="numeric aga8-limit">
+                    {% if comp['nome'] == 'Propano' %}12%{% elif comp['nome'] in ['i-Butano', 'n-Butano'] %}6%{% elif comp['nome'] in ['i-Pentano', 'n-Pentano'] %}4%{% elif comp['nome'] == 'Oxigênio' %}21%{% else %}100%{% endif %}
+                </td>
+                <td class="numeric cep-limit">
+                    {% if comp['nome'] == 'Metano' %}96.35%
+                    {% elif comp['nome'] == 'Etano' %}0.05%
+                    {% elif comp['nome'] == 'Propano' %}-0.51%
+                    {% elif comp['nome'] == 'i-Butano' %}-0.02%
+                    {% elif comp['nome'] == 'n-Butano' %}-0.07%
+                    {% elif comp['nome'] == 'i-Pentano' %}-0.07%
+                    {% elif comp['nome'] == 'n-Pentano' %}-0.15%
+                    {% elif comp['nome'] == 'Hexano' %}-0.06%
+                    {% elif comp['nome'] == 'Heptano' %}-0.10%
+                    {% elif comp['nome'] == 'Octano' %}0.00%
+                    {% elif comp['nome'] == 'Nonano' %}0.00%
+                    {% elif comp['nome'] == 'Decano' %}0.00%
+                    {% elif comp['nome'] == 'Oxigênio' %}-0.04%
+                    {% elif comp['nome'] == 'Nitrogênio' %}-0.29%
+                    {% elif comp['nome'] == 'CO2' %}0.69%{% endif %}
+                </td>
+                <td class="numeric cep-limit">
+                    {% if comp['nome'] == 'Metano' %}99.15%
+                    {% elif comp['nome'] == 'Etano' %}0.16%
+                    {% elif comp['nome'] == 'Propano' %}1.32%
+                    {% elif comp['nome'] == 'i-Butano' %}0.04%
+                    {% elif comp['nome'] == 'n-Butano' %}0.14%
+                    {% elif comp['nome'] == 'i-Pentano' %}0.12%
+                    {% elif comp['nome'] == 'n-Pentano' %}0.25%
+                    {% elif comp['nome'] == 'Hexano' %}0.33%
+                    {% elif comp['nome'] == 'Heptano' %}0.27%
+                    {% elif comp['nome'] == 'Octano' %}0.04%
+                    {% elif comp['nome'] == 'Nonano' %}0.01%
+                    {% elif comp['nome'] == 'Decano' %}0.00%
+                    {% elif comp['nome'] == 'Oxigênio' %}1.41%
+                    {% elif comp['nome'] == 'Nitrogênio' %}1.41%
+                    {% elif comp['nome'] == 'CO2' %}0.89%{% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Propriedades -->
+    <table class="componentes-excel" style="margin-top: 20px;">
+        <thead>
+            <tr>
+                <th rowspan="2">Propriedade</th>
+                <th rowspan="2">Valor</th>
+                <th colspan="2">Status</th>
+                <th colspan="2" class="aga8-header">A.G.A 8</th>
+                <th colspan="2" class="cep-header">CEP</th>
+            </tr>
+            <tr>
+                <th>A.G.A 8</th>
+                <th>CEP</th>
+                <th class="aga8-header">Limite Inferior</th>
+                <th class="aga8-header">Limite Superior</th>
+                <th class="cep-header">Limite Inferior</th>
+                <th class="cep-header">Limite Superior</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for prop in propriedades %}
+            <tr>
+                <td class="component-name">{{ prop['nome'] }}</td>
+                <td class="numeric">{{ "%.4f"|format(prop['valor']) }}</td>
+                <td>
+                    <span class="status-{{ 'validado' if prop['status_aga'] == 'VALIDADO' else 'invalidado' }}">
+                        {{ prop['status_aga'] }}
+                    </span>
+                </td>
+                <td>
+                    <span class="status-{{ 'validado' if prop['status_cep'] == 'VALIDADO' else 'invalidado' }}">
+                        {{ prop['status_cep'] }}
+                    </span>
+                </td>
+                <td class="numeric aga8-limit">---</td>
+                <td class="numeric aga8-limit">---</td>
+                <td class="numeric cep-limit">
+                    {% if prop['nome'] == 'Fator de Compressibilidade' %}0.99771
+                    {% elif prop['nome'] == 'Massa Específica' %}0.6659
+                    {% elif prop['nome'] == 'Massa Molecular' %}15.9888{% endif %}
+                </td>
+                <td class="numeric cep-limit">
+                    {% if prop['nome'] == 'Fator de Compressibilidade' %}0.99824
+                    {% elif prop['nome'] == 'Massa Específica' %}0.7962
+                    {% elif prop['nome'] == 'Massa Molecular' %}17.4312{% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Resultado Final - Padrão Figma -->
+    <div class="resultado-header">RESULTADO DA VALIDAÇÃO</div>
+    
+    <div class="resultado-final">
+        <div class="resultado-item resultado-cep">
+            CEP<br>INVALIDADO
+        </div>
+        <div class="resultado-item resultado-aga8">
+            A.G.A #8<br>VALIDADO
+        </div>
+        <div class="resultado-item resultado-checklist">
+            CHECKLIST<br>VALIDADO
+        </div>
+    </div>
+
+    <!-- Resumo de Validação - Estilo Figma -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 24px;">
+        <div style="background: white; padding: 16px; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <h4 style="margin-bottom: 8px; color: #1e40af; font-weight: 600;">Resumo AGA8</h4>
+            <div style="font-size: 0.875rem;">
+                <div>Validados: {{ componentes|selectattr("status_aga", "equalto", "VALIDADO")|list|count }}/{{ componentes|count }}</div>
+                <div style="margin-top: 8px; padding: 8px; border-radius: 4px; text-align: center; color: white; 
+                     background: {% if componentes|selectattr("status_aga", "equalto", "VALIDADO")|list|count == componentes|count %}#10b981{% else %}#dc2626{% endif %};">
+                    {% if componentes|selectattr("status_aga", "equalto", "VALIDADO")|list|count == componentes|count %}APROVADO{% else %}REPROVADO{% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div style="background: white; padding: 16px; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <h4 style="margin-bottom: 8px; color: #1e40af; font-weight: 600;">Resumo CEP</h4>
+            <div style="font-size: 0.875rem;">
+                <div>Validados: {{ componentes|selectattr("status_cep", "equalto", "VALIDADO")|list|count }}/{{ componentes|count }}</div>
+                <div style="margin-top: 8px; padding: 8px; border-radius: 4px; text-align: center; color: white;
+                     background: {% if componentes|selectattr("status_cep", "equalto", "VALIDADO")|list|count == componentes|count %}#10b981{% else %}#dc2626{% endif %};">
+                    {% if componentes|selectattr("status_cep", "equalto", "VALIDADO")|list|count == componentes|count %}APROVADO{% else %}REPROVADO{% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div style="background: white; padding: 16px; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <h4 style="margin-bottom: 8px; color: #1e40af; font-weight: 600;">Status Geral</h4>
+            <div style="font-size: 0.875rem;">
+                <div>Total: {{ "%.2f"|format((componentes|sum(attribute="percentual_molar")) if componentes else 0) }}%</div>
+                <div style="margin-top: 8px; padding: 8px; border-radius: 4px; text-align: center; color: white;
+                     background: {% set total = (componentes|sum(attribute="percentual_molar")) if componentes else 0 %}{% if total > 99.5 and total < 100.5 %}#10b981{% else %}#f59e0b{% endif %};">
+                    {% set total = (componentes|sum(attribute="percentual_molar")) if componentes else 0 %}{% if total > 99.5 and total < 100.5 %}BALANÇO OK{% else %}VERIFICAR BALANÇO{% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Seção 4: Observações -->
+    <div class="section-header">4) OBSERVAÇÕES E INFORMAÇÕES COMPLEMENTARES</div>
+    <div class="observacoes-excel">
+        {% if boletim['observacoes'] %}
+        {{ boletim['observacoes'] }}
+        {% else %}
+        1) Amostra apresentou altas concentrações de Nitrogênio sendo um indício de contaminação da amostra por ar, o que acabou impactando no percentual de C1.<br>
+        2) O BRA será revalidado e resultado da análise não deverá ser aceito devido as anormalidades computadas do vazão.<br>
+        Uma nova amostra deverá ser coletada no prazo de 3 (três) dias úteis a partir da data de avaliação da amostra.
+        {% endif %}
+    </div>
+
+    <!-- Botões de Ação -->
+    <div style="text-align: center; margin: 20px 0;">
+        <a href="{{ url_for('listar_boletins') }}" class="btn btn-primary" style="margin-right: 10px;">
+            <i class="bi bi-arrow-left"></i> Voltar aos Boletins
+        </a>
+        <form method="POST" action="{{ url_for('revalidar_boletim', boletim_id=boletim.id) }}" style="display: inline; margin-right: 10px;">
+            <button type="submit" class="btn btn-warning" 
+                    onclick="return confirm('Confirma a revalidação do boletim {{ boletim.numero_boletim }}?')">
+                <i class="bi bi-arrow-clockwise"></i> Revalidar Boletim
+            </button>
+        </form>
+        <a href="{{ url_for('relatorio_pdf', boletim_id=boletim.id) }}" class="btn btn-success" target="_blank">
+            <i class="bi bi-file-earmark-pdf"></i> Download PDF
+        </a>
+    </div>
+</div>
+{% endblock %}

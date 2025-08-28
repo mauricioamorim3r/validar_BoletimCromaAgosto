@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h4>Validação de Boletins de Análises Cromatográficas</h4>
+            </div>
+            <div class="card-body">
+                <p class="lead">Sistema para validação de resultados de análises cromatográficas de fluidos gasosos</p>
+                
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="card border-primary">
+                            <div class="card-body">
+                                <h5 class="card-title">Metodologias de Validação</h5>
+                                <ul class="list-unstyled">
+                                    <li>✓ Norma A.G.A #8</li>
+                                    <li>✓ Controle Estatístico de Processo (CEP)</li>
+                                    <li>✓ Checklist de verificação</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card border-success">
+                            <div class="card-body">
+                                <h5 class="card-title">Componentes Analisados</h5>
+                                <ul class="list-unstyled">
+                                    <li>• Metano, Etano, Propano</li>
+                                    <li>• Butanos, Pentanos</li>
+                                    <li>• Hexanos a Decano</li>
+                                    <li>• Oxigênio, Nitrogênio, CO2</li>
+                                    <li>• Propriedades físicas</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-5">
+                    <a href="{{ url_for('cadastrar') }}" class="btn btn-primary btn-lg">
+                        <i class="bi bi-plus-circle"></i> Cadastrar Novo Boletim
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

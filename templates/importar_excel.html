@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+
+{% block title %}Importar Excel{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-file-excel"></i> 
+                        Importar Dados via Excel
+                    </h4>
+                </div>
+                <div class="card-body">
+                    
+                    <!-- Alertas -->
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            {% for message in messages %}
+                                {% if 'error' in message or '❌' in message %}
+                                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                        {{ message }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                {% elif '✅' in message or 'sucesso' in message %}
+                                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                        {{ message }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                {% elif '📋' in message %}
+                                    <div class="alert alert-info alert-dismissible fade show" role="alert">
+                                        {{ message }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                {% else %}
+                                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                        {{ message }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <div class="row">
+                        <!-- Opção 1: Processar Boletins Existentes -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100 border-warning">
+                                <div class="card-header bg-warning text-dark">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-cogs"></i> 
+                                        Processar Boletins Existentes
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <p class="card-text">
+                                        <strong>Detectamos que você tem boletins já cadastrados</strong> que não aparecem na aba "Histórico".
+                                    </p>
+                                    <p>
+                                        Isso acontece porque eles foram inseridos diretamente no banco de dados, sem passar pelo processo completo de validação.
+                                    </p>
+                                    <p class="text-muted">
+                                        <small>
+                                            <i class="fas fa-info-circle"></i>
+                                            Esta opção vai criar os componentes faltantes e permitir a revalidação.
+                                        </small>
+                                    </p>
+                                    
+                                    <div class="d-grid">
+                                        <a href="{{ url_for('processar_boletins_existentes') }}" 
+                                           class="btn btn-warning btn-lg"
+                                           onclick="return confirm('Isso irá processar todos os boletins existentes. Confirma?')">
+                                            <i class="fas fa-play"></i> 
+                                            Processar Boletins Existentes
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Opção 2: Importar Novos Dados -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100 border-success">
+                                <div class="card-header bg-success text-white">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-upload"></i> 
+                                        Importar Novos Dados
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <p class="card-text">
+                                        <strong>Importe dados de boletins</strong> a partir de um arquivo Excel estruturado.
+                                    </p>
+                                    
+                                    <!-- Download Template -->
+                                    <div class="mb-3">
+                                        <a href="{{ url_for('download_template') }}" 
+                                           class="btn btn-outline-success btn-sm">
+                                            <i class="fas fa-download"></i> 
+                                            Baixar Template Excel
+                                        </a>
+                                        <small class="text-muted d-block mt-1">
+                                            Use este template para organizar seus dados
+                                        </small>
+                                    </div>
+
+                                    <!-- Upload Form -->
+                                    <form action="{{ url_for('upload_excel') }}" 
+                                          method="post" 
+                                          enctype="multipart/form-data"
+                                          class="mb-3">
+                                        
+                                        <div class="mb-3">
+                                            <label for="arquivo" class="form-label">
+                                                <strong>Selecione o arquivo Excel:</strong>
+                                            </label>
+                                            <input type="file" 
+                                                   class="form-control" 
+                                                   id="arquivo" 
+                                                   name="arquivo"
+                                                   accept=".xlsx,.xls,.csv"
+                                                   required>
+                                            <div class="form-text">
+                                                Formatos aceitos: .xlsx, .xls, .csv (máx. 16MB)
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="d-grid">
+                                            <button type="submit" class="btn btn-success btn-lg">
+                                                <i class="fas fa-cloud-upload-alt"></i> 
+                                                Importar Arquivo
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Instruções -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="card bg-light">
+                                <div class="card-header">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-question-circle"></i> 
+                                        Como funciona a importação?
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h6>📋 <strong>Estrutura do Excel:</strong></h6>
+                                            <ul class="list-unstyled">
+                                                <li>• <strong>Aba "Boletins":</strong> Dados básicos (número, datas, responsáveis)</li>
+                                                <li>• <strong>Aba "Componentes":</strong> Percentuais molares dos 15 componentes</li>
+                                                <li>• <strong>Aba "Instruções":</strong> Guia completo de preenchimento</li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h6>⚙️ <strong>Processamento Automático:</strong></h6>
+                                            <ul class="list-unstyled">
+                                                <li>• Validação A.G.A #8 (limites normativos)</li>
+                                                <li>• Validação CEP (controle estatístico)</li>
+                                                <li>• Criação do histórico de componentes</li>
+                                                <li>• Definição do status final (VALIDADO/INVALIDADO)</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="alert alert-info mt-3">
+                                        <i class="fas fa-lightbulb"></i>
+                                        <strong>Dica:</strong> 
+                                        Se você já tem boletins no sistema, comece processando os existentes. 
+                                        Depois use a importação Excel para adicionar novos dados em lote.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botões de Navegação -->
+                    <div class="row mt-4">
+                        <div class="col-12 text-center">
+                            <a href="{{ url_for('listar_boletins') }}" class="btn btn-outline-primary me-2">
+                                <i class="fas fa-list"></i> 
+                                Voltar aos Boletins
+                            </a>
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-tachometer-alt"></i> 
+                                Dashboard
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script para preview do arquivo selecionado -->
+<script>
+document.getElementById('arquivo').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const fileSize = (file.size / 1024 / 1024).toFixed(2); // MB
+        const fileName = file.name;
+        
+        // Criar preview
+        const preview = document.createElement('div');
+        preview.className = 'alert alert-info mt-2';
+        preview.innerHTML = `
+            <i class="fas fa-file-excel"></i> 
+            <strong>Arquivo selecionado:</strong> ${fileName} (${fileSize} MB)
+        `;
+        
+        // Remover preview anterior se existir
+        const existingPreview = document.querySelector('.file-preview');
+        if (existingPreview) {
+            existingPreview.remove();
+        }
+        
+        preview.classList.add('file-preview');
+        e.target.parentNode.appendChild(preview);
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header primary-header">
+                <h4 class="mb-0">Boletins Cromatográficos</h4>
+            </div>
+            <div class="card-body">
+                <!-- Abas estilo Excel -->
+                <ul class="nav nav-tabs" id="mainTabs" role="tablist">
+                    <li class="nav-item">
+                        <button class="nav-link active" id="relatorios-tab" data-bs-toggle="tab" data-bs-target="#relatorios" type="button" role="tab" aria-controls="relatorios" aria-selected="true">
+                            <i class="bi bi-file-earmark-text"></i> Relatórios
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" id="historico-tab" data-bs-toggle="tab" data-bs-target="#historico" type="button" role="tab" aria-controls="historico" aria-selected="false">
+                            <i class="bi bi-clock-history"></i> Histórico
+                        </button>
+                    </li>
+                </ul>
+                
+                <div class="tab-content" id="mainTabsContent">
+                    <!-- Aba Relatórios -->
+                    <div class="tab-pane fade show active" id="relatorios" role="tabpanel" aria-labelledby="relatorios-tab">
+                        <div class="mt-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="section-title">Relatórios de Validação</h5>
+                                <div class="action-buttons">
+                                    <form method="POST" action="{{ url_for('revalidar_todos_boletins') }}" class="d-inline me-2">
+                                        <button type="submit" class="btn btn-warning" 
+                                                onclick="return confirm('Confirma a revalidação de todos os boletins pendentes?')">
+                                            <i class="bi bi-arrow-clockwise"></i> Revalidar Todos
+                                        </button>
+                                    </form>
+                                    <a href="{{ url_for('cadastrar') }}" class="btn btn-primary">
+                                        <i class="bi bi-plus-circle"></i> Novo Boletim
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover table-striped modern-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Boletim</th>
+                                            <th>Instalação</th>
+                                            <th>Data Coleta</th>
+                                            <th>Data Validação</th>
+                                            <th>Status</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Aqui serão listados os boletins -->
+                                        {% for boletim in boletins %}
+                                        <tr>
+                                            <td>{{ boletim.numero_boletim }}</td>
+                                            <td>{{ boletim.identificacao_instalacao }}</td>
+                                            <td>{{ boletim.data_coleta }}</td>
+                                            <td>{{ boletim.data_validacao or '-' }}</td>
+                                            <td>
+                                                <span class="badge {% if boletim.status == 'VALIDADO' %}badge-success{% else %}badge-danger{% endif %}">
+                                                    {{ boletim.status or 'PENDENTE' }}
+                                                </span>
+                                            </td>
+                                            <td class="table-actions">
+                                                <a href="{{ url_for('relatorio', boletim_id=boletim.id) }}" class="btn btn-sm btn-primary action-btn">
+                                                    <i class="bi bi-eye"></i> Visualizar
+                                                </a>
+                                                <form method="POST" action="{{ url_for('revalidar_boletim', boletim_id=boletim.id) }}" class="d-inline">
+                                                    <button type="submit" class="btn btn-sm btn-success action-btn" 
+                                                            onclick="return confirm('Confirma a revalidação do boletim {{ boletim.numero_boletim }}?')">
+                                                        <i class="bi bi-arrow-clockwise"></i> Revalidar
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Aba Histórico -->
+                    <div class="tab-pane fade" id="historico" role="tabpanel" aria-labelledby="historico-tab">
+                        <div class="mt-4">
+                            <h5 class="section-title">Histórico de Análises por Componente</h5>
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover table-striped modern-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Componente</th>
+                                            <th>Boletim</th>
+                                            <th>Data Coleta</th>
+                                            <th>Valor (%)</th>
+                                            <th>Status A.G.A #8</th>
+                                            <th>Status CEP</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Aqui será listado o histórico -->
+                                        {% for item in historico %}
+                                        <tr>
+                                            <td>{{ item.componente }}</td>
+                                            <td>{{ item.numero_boletim }}</td>
+                                            <td>{{ item.data_coleta }}</td>
+                                            <td>{{ "%.3f"|format(item.valor) }}</td>
+                                            <td>
+                                                <span class="badge {% if item.status_aga == 'VALIDADO' %}badge-success{% else %}badge-danger{% endif %}">
+                                                    {{ item.status_aga }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge {% if item.status_cep == 'VALIDADO' %}badge-success{% else %}badge-danger{% endif %}">
+                                                    {{ item.status_cep }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Adicionar funcionalidade de busca
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const tableRows = document.querySelectorAll('#relatoriosTable tbody tr');
+            
+            tableRows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+    }
+});
+</script>
+{% endblock %}

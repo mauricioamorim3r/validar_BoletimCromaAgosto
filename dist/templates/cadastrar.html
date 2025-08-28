@@ -1,0 +1,339 @@
+{% extends "base.html" %}
+
+{% block title %}Cadastrar Boletim - Validação de Boletins Cromatográficos{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h2 class="mb-4">
+            <i class="bi bi-file-earmark-plus"></i> Cadastrar Novo Boletim Cromatográfico
+        </h2>
+        
+        <form method="post" id="cadastroForm">
+            <!-- Cabeçalho da planilha -->
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div class="border p-3 bg-light">
+                        <h6 class="text-primary">INFORMAÇÕES DO BOLETIM</h6>
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <label for="numero_boletim" class="form-label small">Número do Boletim</label>
+                                <input type="text" class="form-control form-control-sm" id="numero_boletim" name="numero_boletim" required>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="data_coleta" class="form-label small">Data de Coleta</label>
+                                <input type="date" class="form-control form-control-sm" id="data_coleta" name="data_coleta" required>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="data_recebimento" class="form-label small">Data de Recebimento</label>
+                                <input type="date" class="form-control form-control-sm" id="data_recebimento" name="data_recebimento">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="data_analise" class="form-label small">Data de Análise</label>
+                                <input type="date" class="form-control form-control-sm" id="data_analise" name="data_analise">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <label for="data_emissao" class="form-label small">Data de Emissão</label>
+                                <input type="date" class="form-control form-control-sm" id="data_emissao" name="data_emissao" required>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="identificacao_instalacao" class="form-label small">Instalação</label>
+                                <input type="text" class="form-control form-control-sm" id="identificacao_instalacao" name="identificacao_instalacao" required>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="plataforma" class="form-label small">Plataforma</label>
+                                <input type="text" class="form-control form-control-sm" id="plataforma" name="plataforma" value="FPSO ATLANTE" required>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="sistema_medicao" class="form-label small">Sistema de Medição</label>
+                                <input type="text" class="form-control form-control-sm" id="sistema_medicao" name="sistema_medicao" value="GÁS COMBUSTÍVEL LP" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <label for="classificacao" class="form-label small">Classificação</label>
+                                <input type="text" class="form-control form-control-sm" id="classificacao" name="classificacao" value="FISCAL" required>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="ponto_coleta" class="form-label small">Ponto de Coleta</label>
+                                <input type="text" class="form-control form-control-sm" id="ponto_coleta" name="ponto_coleta" value="LP FUEL GAS" required>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="agente_regulado" class="form-label small">Agente Regulado</label>
+                                <input type="text" class="form-control form-control-sm" id="agente_regulado" name="agente_regulado" required>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="ponto_medicao" class="form-label small">Ponto de Medição</label>
+                                <input type="text" class="form-control form-control-sm" id="ponto_medicao" name="ponto_medicao" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="responsavel_amostragem" class="form-label small">Responsável Amostragem</label>
+                                <input type="text" class="form-control form-control-sm" id="responsavel_amostragem" name="responsavel_amostragem" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Condições do Processo -->
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div class="border p-3 bg-light">
+                        <h6 class="text-primary">CONDIÇÕES DO PROCESSO</h6>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="pressao" class="form-label small">Pressão (atm)</label>
+                                <input type="number" step="0.01" class="form-control form-control-sm" id="pressao" name="pressao" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="temperatura" class="form-label small">Temperatura (°C)</label>
+                                <input type="number" step="0.01" class="form-control form-control-sm" id="temperatura" name="temperatura" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Propriedades do Fluido -->
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div class="border p-3" style="background: linear-gradient(135deg, #e3f2fd, #f3e5f5); border-color: #1e40af;">
+                        <h6 class="text-primary">
+                            <i class="bi bi-calculator"></i> PROPRIEDADES DO FLUIDO - CÁLCULO AUTOMÁTICO
+                        </h6>
+                        <div class="alert alert-info mb-0" role="alert" style="border: none; background: rgba(30, 64, 175, 0.1);">
+                            <small>
+                                <strong>ℹ️ As propriedades do fluido serão calculadas automaticamente:</strong><br>
+                                • <strong>Massa Molecular:</strong> Calculada pela composição molar dos componentes<br>
+                                • <strong>Fator de Compressibilidade:</strong> Baseado na metodologia A.G.A #8<br>
+                                • <strong>Massa Específica:</strong> Calculada pelas condições padrão (20°C, 101.325 kPa)<br>
+                                • <strong>Validação CEP:</strong> Aplicada automaticamente com base no histórico
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Componentes Gasosos -->
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div class="border p-3 bg-light">
+                        <h6 class="text-primary">COMPONENTES GASOSOS (%)</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Componente</th>
+                                        <th>Percentual Molar</th>
+                                        <th>Min A.G.A #8</th>
+                                        <th>Max A.G.A #8</th>
+                                        <th>Status A.G.A #8</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><label for="Metano">Metano</label></td>
+                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="Metano" name="Metano" required></td>
+                                        <td>0</td>
+                                        <td>100</td>
+                                        <td class="text-center"><span id="status_Metano" class="badge bg-secondary">-</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><label for="Etano">Etano</label></td>
+                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="Etano" name="Etano" required></td>
+                                        <td>0</td>
+                                        <td>100</td>
+                                        <td class="text-center"><span id="status_Etano" class="badge bg-secondary">-</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><label for="Propano">Propano</label></td>
+                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="Propano" name="Propano" required></td>
+                                        <td>0</td>
+                                        <td>12</td>
+                                        <td class="text-center"><span id="status_Propano" class="badge bg-secondary">-</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><label for="i-Butano">i-Butano</label></td>
+                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="i-Butano" name="i-Butano" required></td>
+                                        <td>0</td>
+                                        <td>6</td>
+                                        <td class="text-center"><span id="status_i-Butano" class="badge bg-secondary">-</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><label for="n-Butano">n-Butano</label></td>
+                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="n-Butano" name="n-Butano" required></td>
+                                        <td>0</td>
+                                        <td>6</td>
+                                        <td class="text-center"><span id="status_n-Butano" class="badge bg-secondary">-</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><label for="i-Pentano">i-Pentano</label></td>
+                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="i-Pentano" name="i-Pentano" required></td>
+                                        <td>0</td>
+                                        <td>4</td>
+                                        <td class="text-center"><span id="status_i-Pentano" class="badge bg-secondary">-</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><label for="n-Pentano">n-Pentano</label></td>
+                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="n-Pentano" name="n-Pentano" required></td>
+                                        <td>0</td>
+                                        <td>4</td>
+                                        <td class="text-center"><span id="status_n-Pentano" class="badge bg-secondary">-</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><label for="Hexano">Hexano</label></td>
+                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="Hexano" name="Hexano" required></td>
+                                        <td>0</td>
+                                        <td>100</td>
+                                        <td class="text-center"><span id="status_Hexano" class="badge bg-secondary">-</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><label for="Heptano">Heptano</label></td>
+                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="Heptano" name="Heptano" required></td>
+                                        <td>0</td>
+                                        <td>100</td>
+                                        <td class="text-center"><span id="status_Heptano" class="badge bg-secondary">-</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><label for="Octano">Octano</label></td>
+                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="Octano" name="Octano" required></td>
+                                        <td>0</td>
+                                        <td>100</td>
+                                        <td class="text-center"><span id="status_Octano" class="badge bg-secondary">-</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><label for="Nonano">Nonano</label></td>
+                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="Nonano" name="Nonano" required></td>
+                                        <td>0</td>
+                                        <td>100</td>
+                                        <td class="text-center"><span id="status_Nonano" class="badge bg-secondary">-</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><label for="Decano">Decano</label></td>
+                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="Decano" name="Decano" required></td>
+                                        <td>0</td>
+                                        <td>100</td>
+                                        <td class="text-center"><span id="status_Decano" class="badge bg-secondary">-</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><label for="Oxigênio">Oxigênio</label></td>
+                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="Oxigênio" name="Oxigênio" required></td>
+                                        <td>0</td>
+                                        <td>21</td>
+                                        <td class="text-center"><span id="status_Oxigênio" class="badge bg-secondary">-</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><label for="Nitrogênio">Nitrogênio</label></td>
+                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="Nitrogênio" name="Nitrogênio" required></td>
+                                        <td>0</td>
+                                        <td>100</td>
+                                        <td class="text-center"><span id="status_Nitrogênio" class="badge bg-secondary">-</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><label for="CO2">CO2</label></td>
+                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="CO2" name="CO2" required></td>
+                                        <td>0</td>
+                                        <td>100</td>
+                                        <td class="text-center"><span id="status_CO2" class="badge bg-secondary">-</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Responsáveis -->
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div class="border p-3 bg-light">
+                        <h6 class="text-primary">RESPONSÁVEIS</h6>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="responsavel_tecnico" class="form-label small">Responsável Técnico</label>
+                                <input type="text" class="form-control form-control-sm" id="responsavel_tecnico" name="responsavel_tecnico" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="responsavel_elaboracao" class="form-label small">Responsável Elaboração</label>
+                                <input type="text" class="form-control form-control-sm" id="responsavel_elaboracao" name="responsavel_elaboracao" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="responsavel_aprovacao" class="form-label small">Responsável Aprovação</label>
+                                <input type="text" class="form-control form-control-sm" id="responsavel_aprovacao" name="responsavel_aprovacao" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Observações -->
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div class="border p-3 bg-light">
+                        <h6 class="text-primary">OBSERVAÇÕES</h6>
+                        <div class="mb-3">
+                            <textarea class="form-control form-control-sm" id="observacoes" name="observacoes" rows="2"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-check-circle"></i> Validar e Cadastrar Boletim
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Validação em tempo real dos componentes gasosos
+    const componentes = ['Metano', 'Etano', 'Propano', 'i-Butano', 'n-Butano', 'i-Pentano', 'n-Pentano', 'Hexano', 'Heptano', 'Octano', 'Nonano', 'Decano', 'Oxigênio', 'Nitrogênio', 'CO2'];
+    
+    const limites = {
+        'Metano': {min: 0, max: 100},
+        'Etano': {min: 0, max: 100},
+        'Propano': {min: 0, max: 12},
+        'i-Butano': {min: 0, max: 6},
+        'n-Butano': {min: 0, max: 6},
+        'i-Pentano': {min: 0, max: 4},
+        'n-Pentano': {min: 0, max: 4},
+        'Hexano': {min: 0, max: 100},
+        'Heptano': {min: 0, max: 100},
+        'Octano': {min: 0, max: 100},
+        'Nonano': {min: 0, max: 100},
+        'Decano': {min: 0, max: 100},
+        'Oxigênio': {min: 0, max: 21},
+        'Nitrogênio': {min: 0, max: 100},
+        'CO2': {min: 0, max: 100}
+    };
+    
+    componentes.forEach(function(componente) {
+        const input = document.getElementById(componente);
+        const status = document.getElementById('status_' + componente);
+        
+        if (input && status) {
+            input.addEventListener('input', function() {
+                const valor = parseFloat(this.value) || 0;
+                const limite = limites[componente];
+                
+                if (valor >= limite.min && valor <= limite.max) {
+                    status.className = 'badge bg-success';
+                    status.textContent = '✓ OK';
+                } else {
+                    status.className = 'badge bg-danger';
+                    status.textContent = '✗ FORA';
+                }
+            });
+        }
+    });
+});
+</script>
+
+{% endblock %}

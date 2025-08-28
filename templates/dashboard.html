@@ -1,0 +1,340 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="excel-container">
+    <!-- Cabeçalho BRAVA Energia - Dashboard -->
+    <div class="brava-header">
+        <div class="brava-logo">BRAVA</div>
+        <h1>DASHBOARD - ANÁLISES CROMATOGRÁFICAS</h1>
+        <div class="subtitle">Instalações de Produção Offshore - Gerência de Acompanhamento da Produção</div>
+    </div>
+
+    <!-- Filtros Avançados -->
+    <div class="filters-container" style="background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 20px; margin: 20px 0;">
+        <div class="section-header" style="margin-bottom: 15px; color: #ffffffff;">FILTROS AVANÇADOS</div>
+        <form method="GET" id="filterForm" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; align-items: end;">
+            <div>
+                <label for="periodo" style="display: block; margin-bottom: 5px; font-weight: 500; color: #333;">Período:</label>
+                <select name="periodo" id="periodo" class="form-control" style="border-radius: 4px;">
+                    <option value="">Todos os períodos</option>
+                    <option value="7">Últimos 7 dias</option>
+                    <option value="30">Últimos 30 dias</option>
+                    <option value="90">Últimos 90 dias</option>
+                    <option value="365">Último ano</option>
+                </select>
+            </div>
+            <div>
+                <label for="status_filter" style="display: block; margin-bottom: 5px; font-weight: 500; color: #333;">Status:</label>
+                <select name="status_filter" id="status_filter" class="form-control" style="border-radius: 4px;">
+                    <option value="">Todos os status</option>
+                    <option value="VALIDADO">Validados</option>
+                    <option value="INVALIDADO">Invalidados</option>
+                    <option value="PENDENTE">Pendentes</option>
+                </select>
+            </div>
+            <div>
+                <label for="componente_filter" style="display: block; margin-bottom: 5px; font-weight: 500; color: #333;">Componente:</label>
+                <select name="componente_filter" id="componente_filter" class="form-control" style="border-radius: 4px;">
+                    <option value="">Todos os componentes</option>
+                    <option value="Metano">Metano</option>
+                    <option value="Etano">Etano</option>
+                    <option value="Propano">Propano</option>
+                    <option value="Nitrogênio">Nitrogênio</option>
+                    <option value="CO2">CO2</option>
+                </select>
+            </div>
+            <div style="display: flex; flex-direction: row;">
+                <button type="submit" class="btn btn-primary" style="height: 38px; display: flex; align-items: center; justify-content: center;">
+                    🔍 Filtrar
+                </button>
+                <button type="button" class="btn btn-secondary" style="height: 38px; margin-left: 10px; display: flex; align-items: center; justify-content: center;" onclick="clearFilters()">
+                    🔄 Limpar
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Cards de Estatísticas -->
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin: 20px 0;">
+        <!-- Card Total Boletins -->
+        <div style="background: linear-gradient(135deg, #204bd6de, #204bd6de); color: white; padding: 20px; border-radius: 8px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <h3 style="margin: 0 0 10px 0; font-size: 2.5rem;">{{ stats.total_boletins }}</h3>
+            <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Total de Boletins</p>
+        </div>
+
+        <!-- Card Taxa Validação -->
+        <div style="background: linear-gradient(135deg, {% if stats.taxa_validacao >= 80 %}#10b981, #34d399{% else %}#f59e0b, #fbbf24{% endif %}); color: {% if stats.taxa_validacao >= 80 %}white{% else %}black{% endif %}; padding: 20px; border-radius: 8px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <h3 style="margin: 0 0 10px 0; font-size: 2.5rem;">{{ "%.1f"|format(stats.taxa_validacao) }}%</h3>
+            <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Taxa de Validação</p>
+        </div>
+
+        <!-- Card A.G.A #8 -->
+        <div style="background: linear-gradient(135deg, #10b981, #34d399); color: white; padding: 20px; border-radius: 8px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <h3 style="margin: 0 0 10px 0; font-size: 2.5rem;">{{ stats.aga8_aprovados }}</h3>
+            <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">A.G.A #8 Aprovados</p>
+        </div>
+
+        <!-- Card CEP -->
+        <div style="background: linear-gradient(135deg, #f59e0b, #fbbf24); color: black; padding: 20px; border-radius: 8px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <h3 style="margin: 0 0 10px 0; font-size: 2.5rem;">{{ stats.cep_aprovados }}</h3>
+            <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">CEP Aprovados</p>
+        </div>
+    </div>
+
+    <!-- Seção: Componentes com Mais Problemas -->
+    <div class="section-header">COMPONENTES COM MAIOR TAXA DE ERRO CEP</div>
+    <div style="background: white; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <table class="componentes-excel">
+            <thead>
+                <tr>
+                    <th>Componente</th>
+                    <th>Total Análises</th>
+                    <th>Invalidados CEP</th>
+                    <th>Taxa de Erro</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for comp in componentes_problemas %}
+                <tr>
+                    <td class="component-name">{{ comp.nome }}</td>
+                    <td class="numeric">{{ comp.total }}</td>
+                    <td class="numeric">{{ comp.invalidados }}</td>
+                    <td class="numeric">{{ "%.2f"|format(comp.taxa_erro) }}%</td>
+                    <td class="text-center">
+                        <span class="status-{% if comp.taxa_erro < 20 %}validado{% else %}invalidado{% endif %}">
+                            {% if comp.taxa_erro < 20 %}CONTROLADO{% else %}ATENÇÃO{% endif %}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Seção: Últimos Boletins -->
+    <div class="section-header">ÚLTIMOS BOLETINS PROCESSADOS</div>
+    <div style="background: white; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <table class="componentes-excel">
+            <thead>
+                <tr>
+                    <th>Boletim</th>
+                    <th>Instalação</th>
+                    <th>Data Coleta</th>
+                    <th>Status Geral</th>
+                    <th>A.G.A #8</th>
+                    <th>CEP</th>
+                    <th>Checklist</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for boletim in boletins_recentes %}
+                <tr>
+                    <td class="component-name">{{ boletim.numero_boletim }}</td>
+                    <td>{{ boletim.identificacao_instalacao }}</td>
+                    <td class="numeric">{{ boletim.data_coleta }}</td>
+                    <td class="text-center">
+                        <span class="status-{{ 'validado' if boletim.status == 'VALIDADO' else 'invalidado' }}">
+                            {{ boletim.status or 'PENDENTE' }}
+                        </span>
+                    </td>
+                    <td class="text-center">
+                        <span class="status-{{ 'validado' if boletim.status_aga8 == 'VALIDADO' else 'invalidado' }}">
+                            {{ boletim.status_aga8 or '-' }}
+                        </span>
+                    </td>
+                    <td class="text-center">
+                        <span class="status-{{ 'validado' if boletim.status_cep == 'VALIDADO' else 'invalidado' }}">
+                            {{ boletim.status_cep or '-' }}
+                        </span>
+                    </td>
+                    <td class="text-center">
+                        <span class="status-{{ 'validado' if boletim.status_checklist == 'VALIDADO' else 'invalidado' }}">
+                            {{ boletim.status_checklist or '-' }}
+                        </span>
+                    </td>
+                    <td class="text-center">
+                        <a href="{{ url_for('relatorio', boletim_id=boletim.id) }}" 
+                           style="background: #0a2472; color: white; padding: 5px 10px; text-decoration: none; border-radius: 4px; font-size: 0.85rem; font-weight: 600; margin-right: 4px;">
+                            Ver Relatório
+                        </a>
+                        <a href="{{ url_for('relatorio_pdf', boletim_id=boletim.id) }}" 
+                           style="background: #065535; color: white; padding: 5px 10px; text-decoration: none; border-radius: 4px; font-size: 0.85rem; font-weight: 600;"
+                           target="_blank">
+                            PDF
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Seção: Gráfico de Tendências CEP -->
+    <div class="section-header">GRÁFICO DE TENDÊNCIAS - COMPONENTES PRINCIPAIS</div>
+    <div style="background: white; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <canvas id="cepTrendsChart" width="800" height="300" style="max-width: 100%;"></canvas>
+        <p style="text-align: center; color: #666; font-size: 0.85rem; margin-top: 10px;">
+            * Gráfico mostra as últimas análises dos 5 componentes principais
+        </p>
+    </div>
+
+    <!-- Resumo de Performance -->
+    <div class="resultado-header">RESUMO DE PERFORMANCE DO SISTEMA</div>
+    <div class="resultado-final">
+        <div class="resultado-item" style="background: linear-gradient(135deg, #10b981, #34d399);">
+            A.G.A #8<br>{{ stats.aga8_aprovados }}/{{ stats.total_boletins }}
+        </div>
+        <div class="resultado-item" style="background: linear-gradient(135deg, #f59e0b, #fbbf24); color: black;">
+            CEP<br>{{ stats.cep_aprovados }}/{{ stats.total_boletins }}
+        </div>
+        <div class="resultado-item" style="background: linear-gradient(135deg, #1e40af, #3b82f6);">
+            CHECKLIST<br>{{ stats.checklist_aprovados }}/{{ stats.total_boletins }}
+        </div>
+    </div>
+</div>
+
+<!-- Script para Gráfico de Tendências -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('cepTrendsChart').getContext('2d');
+    
+    // Dados do histórico passados do template
+    const historicoData = {{ historico_grafico | tojson }};
+    
+    // Processar dados por componente
+    const componentesData = {};
+    const labels = [];
+    
+    historicoData.forEach(item => {
+        if (!componentesData[item.componente]) {
+            componentesData[item.componente] = [];
+        }
+        componentesData[item.componente].push({
+            x: item.data_coleta,
+            y: item.valor,
+            status: item.status_cep
+        });
+        
+        if (!labels.includes(item.data_coleta)) {
+            labels.push(item.data_coleta);
+        }
+    });
+    
+    // Cores para cada componente
+    const cores = {
+        'Metano': '#1e40af',
+        'Etano': '#10b981', 
+        'Propano': '#f59e0b',
+        'Nitrogênio': '#dc2626',
+        'CO2': '#7c3aed'
+    };
+    
+    // Criar datasets
+    const datasets = Object.keys(componentesData).map(componente => {
+        return {
+            label: componente,
+            data: componentesData[componente].map(item => item.y),
+            borderColor: cores[componente] || '#666',
+            backgroundColor: cores[componente] + '20' || '#66620',
+            tension: 0.4,
+            pointBackgroundColor: componentesData[componente].map(item => 
+                item.status === 'VALIDADO' ? '#10b981' : '#dc2626'
+            ),
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2,
+            pointRadius: 5
+        };
+    });
+    
+    const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels.slice(-10), // Últimas 10 datas
+            datasets: datasets
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Tendências CEP - Componentes Principais',
+                    font: { size: 16, weight: 'bold' }
+                },
+                legend: {
+                    position: 'bottom'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Percentual Molar (%)'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Data de Coleta'
+                    }
+                }
+            },
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            }
+        }
+    });
+});
+
+// Função para limpar filtros
+function clearFilters() {
+    document.getElementById('periodo').value = '';
+    document.getElementById('status_filter').value = '';
+    document.getElementById('componente_filter').value = '';
+    document.getElementById('filterForm').submit();
+}
+
+// Preservar valores dos filtros selecionados
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    ['periodo', 'status_filter', 'componente_filter'].forEach(param => {
+        const value = urlParams.get(param);
+        if (value) {
+            const element = document.getElementById(param);
+            if (element) element.value = value;
+        }
+    });
+});
+</script>
+
+<style>
+.btn {
+    padding: 12px 24px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    display: inline-block;
+    transition: all 0.2s;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #1e40af, #3b82f6);
+    color: white;
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #6b7280, #9ca3af);
+    color: white;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+</style>
+{% endblock %}
