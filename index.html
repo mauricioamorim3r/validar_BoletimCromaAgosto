@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Validação de Boletins Cromatográficos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .api-section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+        .endpoint {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #007bff;
+            font-family: monospace;
+        }
+        .method {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .get { background-color: #28a745; color: white; }
+        .post { background-color: #007bff; color: white; }
+        .example {
+            background: #f1f1f1;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 6px;
+            overflow-x: auto;
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status.ok { background-color: #d4edda; color: #155724; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 Sistema de Validação de Boletins Cromatográficos</h1>
+            <p>API para cálculos AGA8 e validação de dados de cromatografia gasosa</p>
+            <div class="status ok">✅ Sistema Operacional</div>
+        </div>
+
+        <div class="api-section">
+            <h2>📡 Endpoints Disponíveis</h2>
+            
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <strong>/</strong> - Health check e informações da API
+            </div>
+
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <strong>/api/health</strong> - Status detalhado do sistema
+            </div>
+
+            <div class="endpoint">
+                <span class="method post">POST</span>
+                <strong>/api/aga8</strong> - Cálculos AGA8 para composições de gás
+            </div>
+
+            <div class="endpoint">
+                <span class="method get">GET</span>
+                <strong>/api/boletins</strong> - Lista boletins cadastrados
+            </div>
+        </div>
+
+        <div class="api-section">
+            <h2>💡 Exemplo de Uso - Cálculo AGA8</h2>
+            <div class="example">
+                <strong>POST /api/aga8</strong><br>
+                Content-Type: application/json<br><br>
+                {<br>
+                &nbsp;&nbsp;"temperatura": 558.0,<br>
+                &nbsp;&nbsp;"pressao": 50.0,<br>
+                &nbsp;&nbsp;"composicao": {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;"Metano": 85.0,<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;"Etano": 7.0,<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;"Propano": 4.0,<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;"n-Butano": 2.0,<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;"Nitrogênio": 2.0<br>
+                &nbsp;&nbsp;}<br>
+                }
+            </div>
+        </div>
+
+        <div class="api-section">
+            <h2>🔧 Como Testar</h2>
+            <ol>
+                <li><strong>Health Check:</strong> <code>GET /api/health</code></li>
+                <li><strong>Teste AGA8:</strong> Use curl ou Postman para enviar POST para <code>/api/aga8</code></li>
+                <li><strong>Lista Boletins:</strong> <code>GET /api/boletins</code></li>
+            </ol>
+        </div>
+
+        <div class="api-section">
+            <h2>⚙️ Tecnologias</h2>
+            <ul>
+                <li>🐍 Python 3.11+ com Flask</li>
+                <li>📊 AGA 8 (GERG-2008) para cálculos termofísicos</li>
+                <li>🗄️ SQLite para persistência</li>
+                <li>☁️ Vercel Serverless Functions</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Teste básico de conectividade
+        fetch('/api/health')
+            .then(response => response.json())
+            .then(data => {
+                console.log('Sistema Status:', data);
+                if (data.status === 'healthy') {
+                    document.querySelector('.status').textContent = '✅ Sistema Online';
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                document.querySelector('.status').textContent = '❌ Sistema Offline';
+                document.querySelector('.status').className = 'status error';
+            });
+    </script>
+</body>
+</html>
