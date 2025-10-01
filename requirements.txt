@@ -1,10 +1,5 @@
-# Dependências essenciais para Vercel Serverless
 Flask==2.3.3
 Werkzeug==2.3.7
 Jinja2==3.1.2
-
-# Dependências científicas leves para serverless
 numpy==1.24.3
-
-# Dependências básicas para APIs
 requests==2.31.0
