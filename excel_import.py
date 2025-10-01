@@ -654,13 +654,13 @@ def criar_template_excel():
         })
         especificacoes.to_excel(writer, sheet_name='Especificações', index=False)
 
-    print(f"✅ Template Excel COMPLETO criado: {template_path}")
+    print(f"OK: Template Excel COMPLETO criado: {template_path}")
     print("📊 Inclui TODOS os campos do banco de dados:")
-    print("   • Aba Boletins: 25 campos completos")
-    print("   • Aba Componentes: 15 componentes + status")
-    print("   • Aba Propriedades: 3 propriedades + status")
-    print("   • Aba Checklist: 15 itens ISO/IEC 17025")
-    print("   • Aba Instruções: Manual completo")
-    print("   • Aba Especificações: Limites e regras")
+    print("   - Aba Boletins: 25 campos completos")
+    print("   - Aba Componentes: 15 componentes + status")
+    print("   - Aba Propriedades: 3 propriedades + status")
+    print("   - Aba Checklist: 15 itens ISO/IEC 17025")
+    print("   - Aba Instruções: Manual completo")
+    print("   - Aba Especificações: Limites e regras")
 
     return template_path

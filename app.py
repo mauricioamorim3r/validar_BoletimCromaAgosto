@@ -29,6 +29,8 @@ from validacao_prazos_anp import (
     gerar_classe_css_prazo,
     gerar_badge_prazo
 )
+from aga8_calibrado import AGA8_GERG2008_Calibrated
+from aga8_gerg2008 import AGA8_GERG2008
 
 # Configure logging
 logging.basicConfig(
@@ -141,6 +143,19 @@ def get_db():
     db = sqlite3.connect('boletins.db')
     db.row_factory = sqlite3.Row
     return db
+
+
+def _obter_componentes_percentuais(db, boletim_id):
+    """Retorna um dicionário nome -> percentual molar para o boletim."""
+    registros = db.execute(
+        'SELECT nome, percentual_molar FROM componentes WHERE boletin_id = ?',
+        (boletim_id,)
+    ).fetchall()
+    return {
+        row['nome']: float(row['percentual_molar'])
+        for row in registros
+        if row['percentual_molar'] is not None
+    }
 
 
 def ensure_column(db, table, column, definition):
@@ -1969,6 +1984,123 @@ def processar_boletins_existentes():
         flash(f'Erro ao processar boletins existentes: {str(e)}', 'error')
 
     return redirect(url_for('listar_boletins'))
+
+@app.route('/validacao_aga8/<int:boletim_id>')
+def validacao_aga8(boletim_id):
+    """Realiza validação AGA 8 para um boletim específico."""
+    try:
+        db = get_db()
+
+        boletim = db.execute(
+            'SELECT * FROM boletins WHERE id = ?', (boletim_id,)
+        ).fetchone()
+        if not boletim:
+            flash('Boletim não encontrado.')
+            return redirect(url_for('dashboard'))
+
+        try:
+            pressure = float(boletim['pressao'])
+            temperature = float(boletim['temperatura'])
+        except (TypeError, ValueError):
+            flash('Pressão e temperatura precisam estar preenchidas para a validação AGA 8.', 'error')
+            return redirect(url_for('relatorio', boletim_id=boletim_id))
+
+        componentes_dict = _obter_componentes_percentuais(db, boletim_id)
+        if not componentes_dict:
+            flash('Componentes cromatográficos não encontrados para este boletim.', 'error')
+            return redirect(url_for('relatorio', boletim_id=boletim_id))
+
+        solver = AGA8_GERG2008()
+        valido, mensagem_validacao, composicao_normalizada = solver.validate_composition(componentes_dict)
+        if not valido:
+            flash(f'Erro na validação AGA 8: {mensagem_validacao}', 'error')
+            return redirect(url_for('relatorio', boletim_id=boletim_id))
+
+        calibrado = AGA8_GERG2008_Calibrated()
+        resultados = calibrado.calculate_all_properties_calibrated(
+            pressure_kpa=pressure,
+            temperature_c=temperature,
+            composition=composicao_normalizada
+        )
+
+        if 'error' in resultados:
+            flash(f"Erro na validação AGA 8: {resultados['error']}", 'error')
+            return redirect(url_for('relatorio', boletim_id=boletim_id))
+
+        data_validacao = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        db.execute(
+            """
+            UPDATE boletins
+               SET status_aga8 = ?, data_validacao = ?
+             WHERE id = ?
+            """,
+            ('VALIDADO', data_validacao, boletim_id)
+        )
+        db.commit()
+
+        mensagem = resultados.get('validation', {}).get('message') or mensagem_validacao
+        flash(f'Validação AGA 8 concluída com sucesso. {mensagem}', 'success')
+        return redirect(url_for('relatorio', boletim_id=boletim_id))
+
+    except Exception as exc:
+        logger.error('Erro na validação AGA 8: %s', exc, exc_info=True)
+        flash(f'Erro na validação AGA 8: {exc}', 'error')
+        return redirect(url_for('relatorio', boletim_id=boletim_id))
+
+
+
+
+@app.route('/api/aga8_properties/<int:boletim_id>')
+def api_aga8_properties(boletim_id):
+    """Retorna propriedades AGA 8 de um boletim em JSON."""
+    try:
+        db = get_db()
+
+        boletim = db.execute(
+            'SELECT * FROM boletins WHERE id = ?', (boletim_id,)
+        ).fetchone()
+        if not boletim:
+            return {'error': 'Boletim não encontrado'}, 404
+
+        try:
+            pressure = float(boletim['pressao'])
+            temperature = float(boletim['temperatura'])
+        except (TypeError, ValueError):
+            return {'error': 'Pressão e temperatura precisam estar preenchidas.'}, 400
+
+        componentes_dict = _obter_componentes_percentuais(db, boletim_id)
+        if not componentes_dict:
+            return {'error': 'Componentes cromatográficos não encontrados'}, 404
+
+        solver = AGA8_GERG2008()
+        valido, mensagem_validacao, composicao_normalizada = solver.validate_composition(componentes_dict)
+        if not valido:
+            return {'error': mensagem_validacao}, 400
+
+        calibrado = AGA8_GERG2008_Calibrated()
+        resultados = calibrado.calculate_all_properties_calibrated(
+            pressure_kpa=pressure,
+            temperature_c=temperature,
+            composition=composicao_normalizada
+        )
+
+        if 'error' in resultados:
+            return resultados, 400
+
+        resultados['input_data'] = {
+            'pressure_kpa': pressure,
+            'temperature_c': temperature,
+            'composition_molar': composicao_normalizada,
+        }
+        validacao = resultados.get('validation', {})
+        validacao.setdefault('message', mensagem_validacao)
+        resultados['validation'] = validacao
+        return resultados
+
+    except Exception as exc:
+        logger.error('Erro na API AGA 8: %s', exc, exc_info=True)
+        return {'error': str(exc)}, 500
+
 
 
 if __name__ == '__main__':
