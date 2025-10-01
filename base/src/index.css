@@ -138,6 +138,7 @@
 
   html, :host {
     -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
     tab-size: 4;
     line-height: 1.5;
     font-family: var(--default-font-family, ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji");
@@ -1908,6 +1909,8 @@
 
   .text-balance {
     text-wrap: balance;
+    word-wrap: break-word;
+    hyphens: auto;
   }
 
   .break-words {

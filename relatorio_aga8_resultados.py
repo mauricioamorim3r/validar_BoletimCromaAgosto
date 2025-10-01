@@ -3,7 +3,7 @@ RELATÓRIO DE VALIDAÇÃO AGA 8 2017 Part 2 - GERG 2008
 =====================================================
 
 DADOS DE ENTRADA (da imagem fornecida):
-- Pressão: 558 kPa absoluta  
+- Pressão: 558 kPa absoluta
 - Temperatura: 55°C (328.15 K)
 - Composição cromatográfica:
   * Methane: 96.5%
