@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, render_template, redirect, url_for
 import sqlite3
 from datetime import datetime
 import os
@@ -51,8 +51,8 @@ init_db()
 
 @app.route('/')
 def index():
-    """Página principal usando template HTML"""
-    return render_template('index.html')
+    """Redireciona diretamente para a aplicação principal"""
+    return redirect(url_for('dashboard'))
 
 
 @app.route('/dashboard')
