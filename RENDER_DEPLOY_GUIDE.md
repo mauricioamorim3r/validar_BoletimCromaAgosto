@@ -20,11 +20,13 @@
 - `/dashboard` - Dashboard (JSON)
 
 ### Recursos:
-- ✅ Flask application
+- ✅ Flask 3.0.0 application
 - ✅ SQLite database
 - ✅ Health monitoring
 - ✅ Error handling
 - ✅ Gunicorn WSGI server
+- ✅ Python 3.11.7 runtime
+- ✅ Minimal dependencies
 
 ### Deploy Steps:
 1. Push para GitHub
