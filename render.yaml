@@ -1,13 +1,14 @@
-name: boletins-cromatograficos
-type: web
-env: python
-python_version: 3.9.18
-build_command: pip install -r requirements.txt
-start_command: gunicorn --bind 0.0.0.0:$PORT app:app
-envs:
-  - key: SECRET_KEY
-    value: boletins_cromatograficos_render_2024
-  - key: FLASK_ENV
-    value: production
-  - key: PORT
-    sync: false
+# Render Blueprint Configuration
+# Use this file for infrastructure as code deployment
+
+services:
+  - type: web
+    name: boletins-cromatograficos
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --bind 0.0.0.0:$PORT app:app
+    envVars:
+      - key: SECRET_KEY
+        value: boletins_cromatograficos_render_2024
+      - key: FLASK_ENV
+        value: production

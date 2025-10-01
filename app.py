@@ -1,6 +1,5 @@
 from flask import Flask, jsonify
 import sqlite3
-import pandas as pd
 from datetime import datetime
 import os
 import logging
@@ -15,6 +14,7 @@ app.secret_key = os.environ.get('SECRET_KEY', 'boletins_cromatograficos')
 # Banco de dados
 DATABASE = 'boletins.db'
 
+
 def get_db_connection():
     try:
         conn = sqlite3.connect(DATABASE)
@@ -23,6 +23,7 @@ def get_db_connection():
     except Exception as e:
         logger.error(f"Erro no banco: {e}")
         return None
+
 
 def init_db():
     try:
@@ -43,8 +44,10 @@ def init_db():
     except Exception as e:
         logger.error(f"Erro init_db: {e}")
 
+
 # Inicializar
 init_db()
+
 
 @app.route('/')
 def index():
@@ -84,6 +87,7 @@ def index():
     """
     return html
 
+
 @app.route('/dashboard')
 def dashboard():
     try:
@@ -101,6 +105,7 @@ def dashboard():
         })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
 
 @app.route('/api/health')
 def health():
@@ -122,6 +127,7 @@ def health():
             'message': str(e)
         }), 500
 
+
 @app.route('/api/status')
 def status():
     return jsonify({
@@ -130,6 +136,7 @@ def status():
         'platform': 'Render',
         'timestamp': datetime.now().isoformat()
     })
+
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
