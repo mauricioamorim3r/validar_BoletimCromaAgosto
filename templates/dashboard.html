@@ -10,8 +10,8 @@
     </div>
 
     <!-- Filtros Avançados -->
-    <div class="filters-container" style="background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 20px; margin: 20px 0;">
-        <div class="section-header" style="margin-bottom: 15px; color: #ffffffff;">FILTROS AVANÇADOS</div>
+    <div class="filters-container" style="background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 8px; padding: 20px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <div class="section-header">FILTROS AVANÇADOS</div>
         <form method="GET" id="filterForm" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; align-items: end;">
             <div>
                 <label for="periodo" style="display: block; margin-bottom: 5px; font-weight: 500; color: #333;">Período:</label>
@@ -39,6 +39,16 @@
                     <option value="Metano">Metano</option>
                     <option value="Etano">Etano</option>
                     <option value="Propano">Propano</option>
+                    <option value="i-Butano">i-Butano</option>
+                    <option value="n-Butano">n-Butano</option>
+                    <option value="i-Pentano">i-Pentano</option>
+                    <option value="n-Pentano">n-Pentano</option>
+                    <option value="Hexano">Hexano</option>
+                    <option value="Heptano">Heptano</option>
+                    <option value="Octano">Octano</option>
+                    <option value="Nonano">Nonano</option>
+                    <option value="Decano">Decano</option>
+                    <option value="Oxigênio">Oxigênio</option>
                     <option value="Nitrogênio">Nitrogênio</option>
                     <option value="CO2">CO2</option>
                 </select>
@@ -58,32 +68,32 @@
     <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin: 20px 0;">
         <!-- Card Total Boletins -->
         <div style="background: linear-gradient(135deg, #204bd6de, #204bd6de); color: white; padding: 20px; border-radius: 8px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-            <h3 style="margin: 0 0 10px 0; font-size: 2.5rem;">{{ stats.total_boletins }}</h3>
+            <h3 style="margin: 0 0 10px 0; font-size: 2.5rem;">{{ stats.total_boletins | number_format(0) }}</h3>
             <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Total de Boletins</p>
         </div>
 
         <!-- Card Taxa Validação -->
-        <div style="background: linear-gradient(135deg, {% if stats.taxa_validacao >= 80 %}#10b981, #34d399{% else %}#f59e0b, #fbbf24{% endif %}); color: {% if stats.taxa_validacao >= 80 %}white{% else %}black{% endif %}; padding: 20px; border-radius: 8px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-            <h3 style="margin: 0 0 10px 0; font-size: 2.5rem;">{{ "%.1f"|format(stats.taxa_validacao) }}%</h3>
+        <div style="background: linear-gradient(135deg, {% if stats.taxa_validacao >= 80 %}#10b981, #34d399{% else %}#f59e0b, #fbbf24{% endif %}); color: {% if stats.taxa_validacao >= 80 %}white{% else %}white{% endif %}; padding: 20px; border-radius: 8px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <h3 style="margin: 0 0 10px 0; font-size: 2.5rem;">{{ stats.taxa_validacao | number_format(1) }}%</h3>
             <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Taxa de Validação</p>
         </div>
 
         <!-- Card A.G.A #8 -->
         <div style="background: linear-gradient(135deg, #10b981, #34d399); color: white; padding: 20px; border-radius: 8px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-            <h3 style="margin: 0 0 10px 0; font-size: 2.5rem;">{{ stats.aga8_aprovados }}</h3>
+            <h3 style="margin: 0 0 10px 0; font-size: 2.5rem;">{{ stats.aga8_aprovados | number_format(0) }}</h3>
             <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">A.G.A #8 Aprovados</p>
         </div>
 
         <!-- Card CEP -->
-        <div style="background: linear-gradient(135deg, #f59e0b, #fbbf24); color: black; padding: 20px; border-radius: 8px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-            <h3 style="margin: 0 0 10px 0; font-size: 2.5rem;">{{ stats.cep_aprovados }}</h3>
+        <div style="background: linear-gradient(135deg, #f59e0b, #fbbf24); color: white; padding: 20px; border-radius: 8px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <h3 style="margin: 0 0 10px 0; font-size: 2.5rem;">{{ stats.cep_aprovados | number_format(0) }}</h3>
             <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">CEP Aprovados</p>
         </div>
     </div>
 
     <!-- Seção: Componentes com Mais Problemas -->
     <div class="section-header">COMPONENTES COM MAIOR TAXA DE ERRO CEP</div>
-    <div style="background: white; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+    <div style="background: white; margin-bottom: 20px;font-size: 0.8rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
         <table class="componentes-excel">
             <thead>
                 <tr>
@@ -98,9 +108,9 @@
                 {% for comp in componentes_problemas %}
                 <tr>
                     <td class="component-name">{{ comp.nome }}</td>
-                    <td class="numeric">{{ comp.total }}</td>
-                    <td class="numeric">{{ comp.invalidados }}</td>
-                    <td class="numeric">{{ "%.2f"|format(comp.taxa_erro) }}%</td>
+                    <td class="numeric">{{ comp.total | number_format(0) }}</td>
+                    <td class="numeric">{{ comp.invalidados | number_format(0) }}</td>
+                    <td class="numeric">{{ comp.taxa_erro | number_format(2) }}%</td>
                     <td class="text-center">
                         <span class="status-{% if comp.taxa_erro < 20 %}validado{% else %}invalidado{% endif %}">
                             {% if comp.taxa_erro < 20 %}CONTROLADO{% else %}ATENÇÃO{% endif %}
@@ -133,7 +143,7 @@
                 <tr>
                     <td class="component-name">{{ boletim.numero_boletim }}</td>
                     <td>{{ boletim.identificacao_instalacao }}</td>
-                    <td class="numeric">{{ boletim.data_coleta }}</td>
+                    <td class="numeric">{{ boletim.data_coleta | date_format }}</td>
                     <td class="text-center">
                         <span class="status-{{ 'validado' if boletim.status == 'VALIDADO' else 'invalidado' }}">
                             {{ boletim.status or 'PENDENTE' }}
@@ -186,7 +196,7 @@
         <div class="resultado-item" style="background: linear-gradient(135deg, #10b981, #34d399);">
             A.G.A #8<br>{{ stats.aga8_aprovados }}/{{ stats.total_boletins }}
         </div>
-        <div class="resultado-item" style="background: linear-gradient(135deg, #f59e0b, #fbbf24); color: black;">
+        <div class="resultado-item" style="background: linear-gradient(135deg, #f59e0b, #fbbf24); color: white;">
             CEP<br>{{ stats.cep_aprovados }}/{{ stats.total_boletins }}
         </div>
         <div class="resultado-item" style="background: linear-gradient(135deg, #1e40af, #3b82f6);">
@@ -265,6 +275,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 legend: {
                     position: 'bottom'
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                    callbacks: {
+                        labelColor: function(context) {
+                            return {
+                                borderColor: context.dataset.borderColor,
+                                backgroundColor: context.dataset.borderColor
+                            };
+                        }
+                    }
                 }
             },
             scales: {
@@ -313,6 +335,72 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <style>
+/* Aplicar fonte Inter em todo o dashboard */
+.excel-container,
+.excel-container * {
+    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif !important;
+}
+
+/* Ajustar o header de filtros para ter a mesma largura visual dos demais */
+.filters-container .section-header {
+    margin: -20px -20px 15px -20px !important;
+    border-radius: 8px 8px 0 0 !important;
+}
+
+/* Aplicar cantos arredondados aos resultado-item */
+.resultado-item {
+    border-radius: 0 !important;
+}
+
+.resultado-item:first-child {
+    border-radius: 8px 0 0 8px !important;
+}
+
+.resultado-item:last-child {
+    border-radius: 0 8px 8px 0 !important;
+}
+
+/* Se houver apenas um item, aplicar border-radius completo */
+.resultado-item:only-child {
+    border-radius: 8px !important;
+}
+
+/* Aplicar cantos arredondados ao container resultado-final */
+.resultado-final {
+    border-radius: 8px !important;
+    overflow: hidden;
+}
+
+/* Fonte específica para tabelas */
+.componentes-excel,
+.componentes-excel th,
+.componentes-excel td {
+    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif !important;
+}
+
+/* Fonte para cabeçalhos */
+.brava-header,
+.brava-header h1,
+.brava-header .subtitle,
+.section-header {
+    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif !important;
+}
+
+/* Fonte para estatísticas */
+.stats-container h3,
+.stats-container p {
+    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif !important;
+}
+
+/* Fonte para filtros */
+.filters-container,
+.filters-container label,
+.filters-container select,
+.filters-container option {
+    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif !important;
+}
+
+/* Fonte para botões */
 .btn {
     padding: 12px 24px;
     border-radius: 6px;
@@ -320,6 +408,7 @@ document.addEventListener('DOMContentLoaded', function() {
     font-weight: 500;
     display: inline-block;
     transition: all 0.2s;
+    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif !important;
 }
 
 .btn-primary {
@@ -335,6 +424,30 @@ document.addEventListener('DOMContentLoaded', function() {
 .btn:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* Melhorar legibilidade das tabelas com fonte Inter */
+.componentes-excel .numeric {
+    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif !important;
+    font-variant-numeric: tabular-nums;
+    font-weight: 500;
+}
+
+/* Ajustar peso das fontes para melhor legibilidade */
+.componentes-excel th {
+    font-weight: 600 !important;
+    letter-spacing: 0.025em;
+}
+
+.componentes-excel td {
+    font-weight: 400 !important;
+    letter-spacing: 0.01em;
+}
+
+/* Fonte para nomes de componentes */
+.componentes-excel .component-name {
+    font-weight: 500 !important;
+    letter-spacing: 0.01em;
 }
 </style>
 {% endblock %}

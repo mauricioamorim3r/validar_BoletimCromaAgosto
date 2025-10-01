@@ -18,7 +18,6 @@ interface ChecklistItem {
 export function ValidationReport() {
   const [formData, setFormData] = useState({
     boletim: '',
-    cfqAtlantis: '',
     numeroDoc: '0012/2024',
     dataColeta: '',
     dataEmissao: '',
@@ -84,14 +83,6 @@ export function ValidationReport() {
             <Input
               value={formData.boletim}
               onChange={(e) => handleFormChange('boletim', e.target.value)}
-              className="bg-gray-200"
-            />
-          </div>
-          <div>
-            <label className="block text-sm mb-1">CFQ ATLANTIS:</label>
-            <Input
-              value={formData.cfqAtlantis}
-              onChange={(e) => handleFormChange('cfqAtlantis', e.target.value)}
               className="bg-gray-200"
             />
           </div>

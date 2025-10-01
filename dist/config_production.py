@@ -20,5 +20,5 @@ CEP_AMOSTRAS_MIN = 8
 CEP_D2_CONSTANT = 1.128
 CEP_SIGMA_LIMIT = 3
 
-print("✅ Sistema configurado para produção")
-print("⚠️  LEMBRE-SE: Altere SECRET_KEY em produção!")
+print("OK: Sistema configurado para produção")
+print("AVISO:  LEMBRE-SE: Altere SECRET_KEY em produção!")

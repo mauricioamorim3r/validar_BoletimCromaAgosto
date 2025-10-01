@@ -1,6 +1,64 @@
 {% extends "base.html" %}
 
 {% block content %}
+<style>
+    /* Aplicando a fonte Inter e melhorias visuais */
+    .card, .table, .btn, .badge, label, th, td, h4, h5 {
+        font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif !important;
+    }
+    
+    .card-header.bg-primary {
+        background: linear-gradient(135deg, #1e40af, #3b82f6) !important;
+        border-radius: 8px 8px 0 0;
+        padding: 15px 20px;
+        font-weight: 600;
+    }
+    
+    .card {
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e2e8f0;
+    }
+    
+    .table {
+        border-radius: 6px;
+        overflow: hidden;
+    }
+    
+    .table th {
+        font-size: 0.9rem;
+        font-weight: 600;
+        background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+        color: #374151;
+        padding: 12px 10px;
+    }
+    
+    .btn {
+        border-radius: 6px;
+        font-weight: 500;
+        padding: 8px 16px;
+    }
+    
+    .btn-light {
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .bg-light {
+        background: linear-gradient(135deg, #f8fafc, #f1f5f9) !important;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+    }
+    
+    .badge.bg-success {
+        background: linear-gradient(135deg, #10b981, #059669) !important;
+    }
+    
+    .badge.bg-danger {
+        background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+    }
+</style>
+
 <div class="row">
     <div class="col-md-12">
         <div class="card">
@@ -28,30 +86,26 @@
                                     <th>Agente Regulado:</th>
                                     <td>{{ boletim['agente_regulado'] }}</td>
                                 </tr>
-                                <tr>
-                                    <th>Ponto de Medição:</th>
-                                    <td>{{ boletim['ponto_medicao'] }}</td>
-                                </tr>
                             </table>
                         </div>
                         <div class="col-md-6">
                             <table class="table table-sm table-borderless">
                                 <tr>
                                     <th class="w-50">Data de Coleta:</th>
-                                    <td>{{ boletim['data_coleta'] }}</td>
+                                    <td>{{ boletim['data_coleta'] | date_format }}</td>
                                 </tr>
                                 <tr>
                                     <th>Data de Emissão:</th>
-                                    <td>{{ boletim['data_emissao'] }}</td>
+                                    <td>{{ boletim['data_emissao'] | date_format }}</td>
                                 </tr>
                                 <tr>
                                     <th>Data de Validação:</th>
-                                    <td>{{ boletim['data_validacao'] or '-' }}</td>
+                                    <td>{{ boletim['data_validacao'] | date_format or '-' }}</td>
                                 </tr>
                                 <tr>
                                     <th>Status:</th>
                                     <td>
-                                        <span class="badge bg-{% if boletim['status'] == 'VALIDADO' %}success{% else %}danger{% endif %}">
+                                        <span class="badge bg-{% if boletim['status'] == 'VALIDADO' %}success{% else %}danger{% endif %}">>
                                             {{ boletim['status'] or 'PENDENTE' }}
                                         </span>
                                     </td>
@@ -78,7 +132,7 @@
                                 {% for comp in componentes %}
                                 <tr>
                                     <td>{{ comp['nome'] }}</td>
-                                    <td class="text-end">{{ "%.3f"|format(comp['percentual_molar']) }}</td>
+                                    <td class="text-end">{{ comp['percentual_molar'] | number_format(3) }}</td>
                                     <td class="text-center">
                                         <span class="badge bg-{% if comp['status_aga'] == 'VALIDADO' %}success{% else %}danger{% endif %}">
                                             {{ comp['status_aga'] }}
@@ -113,7 +167,7 @@
                                 {% for prop in propriedades %}
                                 <tr>
                                     <td>{{ prop['nome'] }}</td>
-                                    <td class="text-end">{{ "%.4f"|format(prop['valor']) }}</td>
+                                    <td class="text-end">{{ prop['valor'] | number_format(4) }}</td>
                                     <td class="text-center">
                                         <span class="badge bg-{% if prop['status_aga'] == 'VALIDADO' %}success{% else %}danger{% endif %}">
                                             {{ prop['status_aga'] }}

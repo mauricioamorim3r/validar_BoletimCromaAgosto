@@ -1,47 +1,173 @@
 /* Estilo geral */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #ffffff;
+    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background-color: #f8fafc;
     margin: 0;
     padding: 0;
+    color: #1e293b;
+    line-height: 1.6;
+    font-size: 14px;
+}
+
+:root {
+    --primary: #1e40af;
+    --primary-light: #3b82f6;
+    --primary-dark: #1e3a8a;
+    --success: #10b981;
+    --success-light: #34d399;
+    --success-dark: #065f46;
+    --warning: #f59e0b;
+    --warning-light: #fbbf24;
+    --warning-dark: #d97706;
+    --danger: #dc2626;
+    --danger-light: #ef4444;
+    --danger-dark: #991b1b;
+    --info: #0ea5e9;
+    --info-light: #38bdf8;
+    --info-dark: #0369a1;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-300: #cbd5e1;
+    --gray-400: #94a3b8;
+    --gray-500: #374151;  /* Cor mais escura para melhor contraste */
+    --gray-600: #475569;
+    --gray-700: #334155;
+    --gray-800: #1e293b;
+    --gray-900: #0f172a;
+    --border-radius: 0.5rem;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Container principal */
+.container {
+    padding: 1rem;
+    max-width: 100%;
+    width: 100%;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+@media (min-width: 576px) {
+    .container {
+        padding: 1.25rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .container {
+        padding: 1.5rem;
+        max-width: 1200px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .container {
+        max-width: 1400px;
+    }
 }
 
 /* Navegação principal consistente */
 .navbar-dark.bg-dark {
     background: linear-gradient(135deg, #1e3a8a, #1e40af) !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
 }
 
 .navbar-brand {
-    font-weight: 500;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    padding: 10px 15px;
+    position: relative;
+    overflow: hidden;
+}
+
+.navbar-brand::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, #fbbf24, #f59e0b);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.3s ease;
+}
+
+.navbar-brand:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
 }
 
 .navbar-dark .navbar-nav .nav-link {
     color: rgba(255, 255, 255, 0.85);
     font-weight: 500;
-    padding: 0.5rem 1rem;
-    transition: all 0.2s;
+    padding: 0.6rem 1.2rem;
+    margin: 0 2px;
+    transition: all 0.3s;
+    position: relative;
+    z-index: 1;
+}
+
+.navbar-dark .navbar-nav .nav-link::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 0;
+    background-color: rgba(255, 255, 255, 0.1);
+    transition: all 0.3s;
+    z-index: -1;
+    border-radius: 4px;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover::before,
+.navbar-dark .navbar-nav .nav-link.active::before {
+    height: 100%;
 }
 
 .navbar-dark .navbar-nav .nav-link:hover,
 .navbar-dark .navbar-nav .nav-link.active {
     color: #ffffff;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
+    transform: translateY(-2px);
+    text-transform: uppercase;
 }
 
 .navbar-dark .navbar-nav .nav-link i {
-    margin-right: 5px;
+    margin-right: 8px;
+    font-size: 1.1em;
 }
 
 /* Cabeçalho BRAVA - Padrão Figma */
 .brava-header {
-    background: linear-gradient(135deg, #1e3a8a, #1e40af);
+    background: linear-gradient(135deg, #1e3a8a, #3b82f6);
     color: white;
-    padding: 16px 0;
+    padding: 18px 0;
     text-align: center;
     margin-bottom: 0;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.15);
     position: relative;
+    overflow: hidden;
+}
+
+/* Efeito de brilho sutil no header da BRAVA */
+.brava-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: all 0.8s;
+}
+
+.brava-header:hover::before {
+    left: 100%;
 }
 
 .brava-header h1 {
@@ -49,12 +175,16 @@ body {
     font-weight: 600;
     margin: 0;
     letter-spacing: 0.5px;
+    position: relative;
+    z-index: 1;
 }
 
 .brava-header .subtitle {
     font-size: 0.875rem;
     opacity: 0.9;
     margin-top: 4px;
+    position: relative;
+    z-index: 1;
 }
 
 .brava-logo {
@@ -69,6 +199,8 @@ body {
     padding: 4px 12px;
     border-radius: 4px;
     font-family: 'Segoe UI', sans-serif;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 2;
 }
 
 /* Sistema de Abas - Agora apenas para conteúdo interno */
@@ -80,8 +212,8 @@ body {
     border: 1px solid transparent;
     border-top-left-radius: 0.25rem;
     border-top-right-radius: 0.25rem;
-    color: #6c757d;
-    font-weight: 500;
+    color: #374151;  /* Cinza mais escuro para melhor contraste (AA: 4.5+) */
+    font-weight: 600; /* Peso maior para melhor legibilidade */
     padding: 0.75rem 1.25rem;
 }
 
@@ -101,10 +233,26 @@ body {
 
 /* Container principal sem margens para replicar Excel */
 .excel-container {
-    max-width: none;
-    margin: 0;
-    padding: 0;
+    max-width: 100%;
+    width: 100%;
+    margin: 0 auto;
+    padding: 1rem;
     background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+    .excel-container {
+        padding: 1.5rem;
+    }
+}
+
+@media (min-width: 1200px) {
+    .excel-container {
+        padding: 2rem;
+    }
 }
 
 /* Seções com cabeçalho azul - Padrão Figma */
@@ -131,6 +279,7 @@ body {
     margin: 20px 0 16px 0;
     border: none;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-radius: 8px;
 }
 
 /* Grid de informações do boletim - replicando layout Excel */
@@ -160,60 +309,413 @@ body {
 
 .info-label {
     font-weight: bold;
-    color: #333;
+    color: #1f2937;  /* Cor mais escura para melhor contraste */
 }
 
 .info-value {
-    color: #666;
+    color: #374151;  /* Cor mais escura para melhor contraste */
     border-bottom: 1px solid #eee;
     padding-bottom: 2px;
 }
 
-/* Cards estilo Excel */
+/* Cards estilo moderno */
 .card {
-    border-radius: 0;
-    border: 1px solid #dee2e6;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    background: #ffffff;
+    overflow: hidden;
+}
+
+.card:hover {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
 }
 
 .card-header {
-    background-color: #f1f3f5;
-    border-bottom: 1px solid #dee2e6;
+    background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+    border-bottom: 1px solid #e2e8f0;
     font-weight: 600;
+    padding: 1rem 1.25rem;
+    font-size: 1.1rem;
+    color: #1e293b;
 }
 
-/* Abas estilo Excel */
+.card-header.primary-header {
+    background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+    color: white;
+    padding: 18px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+    border-bottom: none;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Efeito de brilho sutil no header */
+.card-header.primary-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: all 0.8s;
+}
+
+.card:hover .card-header.primary-header::before {
+    left: 100%;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+/* Abas modernas */
 .nav-tabs {
-    border-bottom: 2px solid #dee2e6;
+    border-bottom: 2px solid #e2e8f0;
+    margin-bottom: 20px;
 }
 
 .nav-tabs .nav-link {
-    color: #495057;
-    border: 1px solid transparent;
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-    font-size: 0.9rem;
-    font-weight: 500;
+    color: #374151;  /* Cinza mais escuro para melhor contraste (AA: 4.5+) */
+    border: none;
+    border-bottom: 3px solid transparent;
+    border-radius: 0;
+    padding: 12px 20px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    margin-right: 4px;
+    position: relative;
+    overflow: hidden;
+}
+
+.nav-tabs .nav-link i {
+    margin-right: 8px;
+}
+
+.nav-tabs .nav-link::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, #3b82f6, #2563eb);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.3s ease;
+    z-index: 1;
 }
 
 .nav-tabs .nav-link:hover {
-    background-color: #f8f9fa;
-    border-color: #dee2e6 #dee2e6 #dee2e6;
+    color: #3b82f6;
+    background-color: rgba(59, 130, 246, 0.05);
+    border-color: transparent;
+}
+
+.nav-tabs .nav-link:hover::before {
+    transform: scaleX(0.5);
+    transform-origin: left;
 }
 
 .nav-tabs .nav-link.active {
-    color: #0d6efd;
-    background-color: #fff;
-    border-color: #dee2e6 #dee2e6 #fff;
+    color: #3b82f6;
+    background-color: transparent;
+    border-bottom-color: #3b82f6;
+    font-weight: 700;
+    text-transform: uppercase;
 }
 
-/* Tabelas estilo Excel */
+.nav-tabs .nav-link.active::before {
+    transform: scaleX(1);
+}
+
+.tab-content {
+    padding: 1.5rem 0;
+}
+
+/* Títulos de seção */
+.section-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #1e293b;
+    padding-bottom: 0.5rem;
+    position: relative;
+    margin-bottom: 0.75rem;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, #3b82f6, #93c5fd);
+    border-radius: 3px;
+}
+
+/* Grupo de botões de ação */
+.action-buttons {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.action-buttons .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.action-buttons .btn i {
+    font-size: 1rem;
+}
 .table {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
+    width: 100%;
+    margin-bottom: 1rem;
+    border-collapse: separate;
+    border-spacing: 0;
 }
 
 .table-bordered {
-    border: 1px solid #dee2e6;
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Container responsivo para tabelas */
+/* Container responsivo da tabela */
+.table-responsive-container {
+    width: 100%;
+    overflow-x: auto;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    background: white;
+}
+
+.table-responsive-container::-webkit-scrollbar {
+    height: 8px;
+}
+
+.table-responsive-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.table-responsive-container::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+.table-responsive-container::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Tabela moderna com layout flexível */
+.modern-table {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: none;
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    min-width: 900px;
+    border: 1px solid #e2e8f0;
+    table-layout: auto;
+    margin-bottom: 0;
+    font-size: 0.9rem;
+}
+
+.modern-table thead th {
+    background: linear-gradient(to bottom, #f8fafc, #f1f5f9);
+    color: #334155;
+    font-weight: 600;
+    padding: 1rem 0.75rem;
+    border-bottom: 2px solid #e2e8f0;
+    text-align: left;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+/* Colunas com larguras flexíveis e responsivas */
+.modern-table th:nth-child(1) { 
+    width: clamp(120px, 15%, 180px); /* Boletim */
+    min-width: 120px;
+}
+.modern-table th:nth-child(2) { 
+    width: clamp(140px, 18%, 200px); /* Instalação */
+    min-width: 140px;
+}
+.modern-table th:nth-child(3) { 
+    width: clamp(100px, 12%, 130px); /* Data Coleta */
+    min-width: 100px;
+}
+.modern-table th:nth-child(4) { 
+    width: clamp(120px, 15%, 150px); /* Data Emissão */
+    min-width: 120px;
+}
+.modern-table th:nth-child(5) { 
+    width: clamp(110px, 13%, 140px); /* Data Validação */
+    min-width: 110px;
+}
+.modern-table th:nth-child(6) { 
+    width: clamp(100px, 10%, 120px); /* Status */
+    min-width: 100px;
+}
+.modern-table th:nth-child(7) { 
+    width: clamp(200px, 17%, 280px); /* Ações */
+    min-width: 200px;
+}
+
+.modern-table tbody tr {
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.modern-table tbody tr:hover {
+    background-color: rgba(59, 130, 246, 0.05) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.modern-table td {
+    padding: 0.875rem 0.75rem;
+    vertical-align: middle;
+    border-right: 1px solid #f1f5f9;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.modern-table td:last-child {
+    border-right: none;
+}
+
+/* Células de texto com overflow inteligente */
+.modern-table td:not(:last-child) {
+    max-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Hover para mostrar texto completo */
+.modern-table td:not(:last-child):hover {
+    overflow: visible;
+    white-space: normal;
+    word-break: break-word;
+    position: relative;
+    z-index: 5;
+}
+
+/* Coluna de ações flexível */
+.table-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    padding: 0.25rem;
+    min-width: 200px;
+    width: 100%;
+}
+
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    min-width: 40px;
+    height: 38px;
+    border: none;
+    cursor: pointer;
+}
+
+.action-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.action-btn i {
+    font-size: 0.9rem;
+    line-height: 1;
+}
+
+/* Responsive para dispositivos móveis */
+@media (max-width: 768px) {
+    .modern-table th:nth-child(1) { width: 16%; }
+    .modern-table th:nth-child(2) { width: 20%; }
+    .modern-table th:nth-child(3) { width: 11%; }
+    .modern-table th:nth-child(4) { width: 11%; }
+    .modern-table th:nth-child(5) { width: 11%; }
+    .modern-table th:nth-child(6) { width: 9%; }
+    .modern-table th:nth-child(7) { width: 22%; }
+    
+    .table-actions {
+        flex-direction: row;
+        gap: 0.2rem;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.3rem;
+        min-width: 160px;
+    }
+    
+    .action-btn {
+        padding: 0.3rem;
+        font-size: 0.75rem;
+        justify-content: center;
+        min-height: 30px;
+        min-width: 30px;
+    }
+    
+    .action-btn i {
+        font-size: 0.8rem;
+    }
+    
+    .modern-table {
+        min-width: 700px;
+    }
+}
+
+/* Para tablets */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .table-actions {
+        gap: 0.2rem;
+        flex-wrap: wrap;
+    }
+    
+    .action-btn {
+        padding: 0.3rem;
+        font-size: 0.75rem;
+        min-width: 30px;
+        height: 30px;
+    }
+    
+    .modern-table {
+        min-width: 750px;
+    }
+}
+
+/* Para telas grandes */
+@media (min-width: 1025px) {
+    .modern-table {
+        min-width: 100%;
+    }
 }
 
 .table-bordered > thead > tr > th,
@@ -222,60 +724,344 @@ body {
 .table-bordered > thead > tr > td,
 .table-bordered > tbody > tr > td,
 .table-bordered > tfoot > tr > td {
-    border: 1px solid #dee2e6;
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    padding: 12px 16px;
+    vertical-align: middle;
 }
 
 .table thead th {
-    background-color: #f1f3f5;
+    background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+    color: #1e293b;
     font-weight: 600;
     text-transform: uppercase;
     font-size: 0.75rem;
     letter-spacing: 0.5px;
+    padding: 14px 16px;
+    vertical-align: middle;
+    position: relative;
 }
 
-/* Inputs estilo Excel */
+.table tbody tr {
+    transition: all 0.2s;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(241, 245, 249, 0.5);
+}
+
+.table tbody tr:not(:last-child) {
+    border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+/* Adicionar uma linha mais clara a cada duas linhas para facilitar leitura */
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(249, 250, 251, 0.7);
+}
+
+/* Estilos específicos para tabelas de relatórios - baseado no componentes-excel */
+.table.table-bordered.table-hover.table-striped.modern-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    margin-top: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.table.table-bordered.table-hover.table-striped.modern-table th {
+    background: linear-gradient(135deg, #1e40af, #2563eb);
+    color: white;
+    padding: 12px 8px;
+    text-align: center;
+    font-weight: 600;
+    border: 1px solid #ddd;
+    font-size: 0.8rem;
+    line-height: 1.2;
+}
+
+.table.table-bordered.table-hover.table-striped.modern-table td {
+    padding: 10px 8px;
+    border: 1px solid #ddd;
+    text-align: center;
+    vertical-align: middle;
+    font-family: 'Courier New', monospace;
+    font-weight: 500;
+}
+
+.table.table-bordered.table-hover.table-striped.modern-table tbody tr:hover {
+    background-color: rgba(59, 130, 246, 0.05) !important;
+}
+
+/* Estilos para badges nas tabelas de relatórios */
+.table.table-bordered.table-hover.table-striped.modern-table .badge-success {
+    display: inline-block;
+    background: linear-gradient(135deg, #065f46, #10b981);
+    color: white;
+    padding: 6px 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.table.table-bordered.table-hover.table-striped.modern-table .badge-danger {
+    display: inline-block;
+    background: linear-gradient(135deg, #991b1b, #dc2626);
+    color: white;
+    padding: 6px 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Inputs modernos */
 .form-control-sm {
-    height: 28px;
-    padding: 0.25rem 0.5rem;
+    height: 36px;
+    padding: 0.4rem 0.75rem;
     font-size: 0.875rem;
-    border-radius: 0;
-    border: 1px solid #ced4da;
+    border-radius: 4px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    background-color: #f8fafc;
+    transition: all 0.3s ease;
 }
 
 .form-control-sm:focus {
-    border-color: #80bdff;
-    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    background-color: #ffffff;
 }
 
 /* Badges */
 .badge {
     font-size: 0.75rem;
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.2rem;
+    padding: 0.35rem 0.65rem;
+    border-radius: 0.375rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    color: white;
+    display: inline-block;
+}
+
+.badge-success {
+    background: linear-gradient(135deg, #059669, #34d399) !important;
+    color: white !important;
+}
+
+.badge-danger {
+    background: linear-gradient(135deg, #dc2626, #f87171) !important;
+    color: white !important;
+}
+
+.badge-warning {
+    background: linear-gradient(135deg, #d97706, #fbbf24) !important;
+    color: white !important;
+}
+
+/* Fix contrast issues for accessibility */
+.badge.bg-secondary {
+    background: linear-gradient(135deg, #374151, #4b5563) !important;
+    color: white !important;
+    font-weight: 700;
+}
+
+.bg-info {
+    background: linear-gradient(135deg, #0369a1, #0ea5e9) !important;
+}
+
+/* Improve placeholder text contrast */
+.form-control::placeholder,
+.form-control-sm::placeholder,
+textarea::placeholder {
+    color: #374151 !important;
+    opacity: 1 !important;
+}
+
+/* Ensure sufficient contrast for all badge variants */
+.badge.bg-success {
+    background: linear-gradient(135deg, #059669, #10b981) !important;
+    color: white !important;
+    font-weight: 700;
+}
+
+.badge.bg-danger {
+    background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
+    color: white !important;
+    font-weight: 700;
+}
+
+.badge.bg-warning {
+    background: linear-gradient(135deg, #d97706, #b45309) !important;
+    color: white !important;
+    font-weight: 700;
+}
+
+/* Override any potential low-contrast custom badges */
+span.badge {
+    min-height: 22px;
+    min-width: 40px;
+    font-size: 0.8rem !important;
+    font-weight: 700 !important;
+    padding: 0.4rem 0.8rem !important;
+}
+
+/* Specific fixes for inline styled badges to meet WCAG AA */
+span.badge[style*="background"] {
+    font-size: 0.85rem !important;
+    font-weight: 800 !important;
+    padding: 0.5rem 1rem !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+/* Ensure text on light backgrounds has sufficient contrast */
+.text-muted {
+    color: #374151 !important;
+}
+
+/* Fix any potential div elements with low contrast */
+div {
+    color: #1e293b;
+}
+
+/* Ensure sufficient contrast for small text elements */
+small, .small {
+    color: #374151 !important;
+}
+
+/* Additional accessibility improvements for all low-contrast elements */
+.form-label {
+    color: #1e293b !important;
+    font-weight: 600;
+}
+
+/* Ensure proper contrast for all text content */
+p, span, div {
+    color: inherit;
+}
+
+/* Override Bootstrap's default muted text for better accessibility */
+.text-muted, .text-secondary {
+    color: #475569 !important;
+    font-weight: 500;
+}
+
+/* Ensure input focus states have good contrast */
+.form-control:focus, .form-control-sm:focus {
+    border-color: #1e40af !important;
+    box-shadow: 0 0 0 2px rgba(30, 64, 175, 0.25) !important;
+    background-color: #ffffff !important;
+    color: #1e293b !important;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .action-buttons {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .section-title {
+        font-size: 1.1rem;
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+    
+    .modern-table {
+        font-size: 0.8rem;
+    }
+    
+    .modern-table th,
+    .modern-table td {
+        padding: 0.5rem;
+    }
+    
+    .nav-tabs .nav-link {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+    }
+    
+    .card-header.primary-header {
+        padding: 14px;
+        font-size: 1rem;
+    }
+    
+    .table-actions {
+        flex-direction: column;
+    }
+    
+    .action-btn {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.8rem;
+    }
 }
 
 /* Botões */
 .btn {
-    border-radius: 0;
+    border-radius: 6px;
     font-weight: 500;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+    text-transform: none;
+    letter-spacing: 0.2px;
+    padding: 8px 16px;
+}
+
+.btn i {
+    margin-right: 8px;
+}
+
+.btn::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: -100%;
+    background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0) 100%);
+    transition: all 0.6s ease;
+}
+
+.btn:hover::after {
+    left: 100%;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .btn-primary {
-    background-color: #0d6efd;
-    border-color: #0d6efd;
+    background: linear-gradient(135deg, #1e3a8a, #1e40af);
+    border: none;
+    color: white;
 }
 
 .btn-primary:hover {
-    background-color: #0b5ed7;
-    border-color: #0a58ca;
+    background: linear-gradient(135deg, #1e40af, #2563eb);
+    color: white;
 }
 
 /* Formulário */
 .form-label {
-    font-weight: 500;
-    font-size: 0.875rem;
-    color: #495057;
-    margin-bottom: 0.25rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
 }
 
 /* Seções */
@@ -285,6 +1071,10 @@ body {
 
 .bg-light {
     background-color: #f8f9fa !important;
+}
+
+.bg-primary {
+    background: linear-gradient(135deg, #1e3a8a, #1e40af) !important;
 }
 
 .text-primary {
@@ -329,27 +1119,123 @@ body {
     text-align: center;
     width: 80px;
     font-size: 1.2rem;
-    color: #28a745;
+    color: #0c7238;  /* Verde mais escuro para melhor contraste (AA: 4.5+) */
+    font-weight: 600; /* Peso maior para melhor legibilidade */
+}
+
+/* Estilos para tbody do checklist - 12px font size */
+.checklist-table tbody {
+    font-size: 12px !important;
+}
+
+.checklist-table tbody td {
+    font-size: 12px !important;
+}
+
+.checklist-table tbody select {
+    font-size: 12px !important;
+    min-width: 120px !important;
+    width: 100% !important;
+}
+
+.checklist-table tbody input {
+    font-size: 12px !important;
+}
+
+/* Larguras específicas para colunas do checklist */
+.checklist-table tbody td:nth-child(3) { /* Coluna SITUAÇÃO */
+    width: 140px !important;
+    min-width: 140px !important;
+}
+
+.checklist-table tbody td:nth-child(4) { /* Coluna NÃO APLICÁVEL */
+    width: 160px !important;
+    min-width: 160px !important;
+}
+
+/* Alinhamento à esquerda para coluna DESCRIÇÃO (segunda coluna) */
+.checklist-table tbody td:nth-child(2) {
+    text-align: left !important;
+    padding-left: 10px;
 }
 
 /* Tabela de componentes - Padrão Figma */
 .componentes-excel {
     width: 100%;
+    max-width: 100%;
     border-collapse: collapse;
     font-size: 0.75rem;
     margin-top: 15px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    table-layout: auto;
+    overflow-x: auto;
+}
+
+@media (max-width: 767px) {
+    .componentes-excel {
+        font-size: 0.7rem;
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+    
+    .componentes-excel thead,
+    .componentes-excel tbody,
+    .componentes-excel th,
+    .componentes-excel td,
+    .componentes-excel tr {
+        display: block;
+    }
+    
+    .componentes-excel thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+    
+    .componentes-excel tr {
+        border: 1px solid #ccc;
+        margin-bottom: 10px;
+        padding: 10px;
+        background: white;
+    }
+    
+    .componentes-excel td {
+        border: none;
+        border-bottom: 1px solid #eee;
+        position: relative;
+        padding-left: 50% !important;
+        text-align: left !important;
+    }
+    
+    .componentes-excel td:before {
+        content: attr(data-label) ": ";
+        position: absolute;
+        left: 6px;
+        width: 45%;
+        padding-right: 10px;
+        white-space: nowrap;
+        font-weight: bold;
+    }
 }
 
 .componentes-excel th {
     background: linear-gradient(135deg, #1e40af, #2563eb);
     color: white;
-    padding: 12px 8px;
+    padding: 8px 6px;
     text-align: center;
     font-weight: 600;
     border: 1px solid #ddd;
-    font-size: 0.7rem;
+    font-size: 0.9rem;
     line-height: 1.2;
+    white-space: nowrap;
+}
+
+@media (max-width: 767px) {
+    .componentes-excel th {
+        padding: 6px 4px;
+        font-size: 0.75rem;
+    }
 }
 
 .componentes-excel th.aga8-header {
@@ -362,20 +1248,27 @@ body {
 }
 
 .componentes-excel td {
-    padding: 8px;
+    padding: 6px 4px;
     border: 1px solid #ddd;
     text-align: center;
     vertical-align: middle;
+    font-size: 0.75rem;
+}
+
+@media (max-width: 767px) {
+    .componentes-excel td {
+        padding: 4px 2px;
+        font-size: 0.7rem;
+    }
 }
 
 .componentes-excel .component-name {
-    text-align: left;
+    text-align: center;
     font-weight: 500;
-    padding-left: 12px;
 }
 
 .componentes-excel .numeric {
-    text-align: right;
+    text-align: center;
     font-family: 'Courier New', monospace;
     font-weight: 500;
 }
@@ -391,37 +1284,56 @@ body {
 }
 
 .componentes-excel input {
-    border: none;
-    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    background: #f9fafb;
     text-align: center;
     width: 100%;
-    padding: 4px;
-    font-size: 0.75rem;
-    border-radius: 2px;
+    max-width: 120px;
+    padding: 3px 2px;
+    font-size: 0.7rem;
+    border-radius: 3px;
+    box-sizing: border-box;
+}
+
+@media (max-width: 767px) {
+    .componentes-excel input {
+        max-width: 80px;
+        font-size: 0.65rem;
+        padding: 2px 1px;
+    }
 }
 
 .componentes-excel input:focus {
     outline: 2px solid #3b82f6;
     background: white;
+    border-color: #3b82f6;
 }
 
 /* Status badges Excel-style */
 .status-validado {
-    background-color: #0b6623; /* Cor verde mais escura para melhor contraste */
+    display: inline-block;
+    background: linear-gradient(135deg, #065f46, #10b981);
     color: white;
-    padding: 2px 6px;
-    font-size: 0.8rem; /* Aumentado para melhor legibilidade */
-    font-weight: bold;
-    border-radius: 2px;
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-transform: uppercase;
 }
 
 .status-invalidado {
-    background-color: #a50000; /* Cor vermelha mais escura para melhor contraste */
+    display: inline-block;
+    background: linear-gradient(135deg, #991b1b, #dc2626);
     color: white;
-    padding: 2px 6px;
-    font-size: 0.8rem; /* Aumentado para melhor legibilidade */
-    font-weight: bold;
-    border-radius: 2px;
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-transform: uppercase;
 }
 
 /* Resultado final Excel-style */
@@ -439,6 +1351,7 @@ body {
     font-weight: bold;
     font-size: 0.9rem;
     border-right: 1px solid #dee2e6;
+    color: white;
 }
 
 .resultado-item:last-child {
@@ -474,6 +1387,7 @@ body {
 @media (max-width: 768px) {
     .table-responsive {
         font-size: 0.75rem;
+        overflow-x: auto;
     }
     
     .form-control-sm {
@@ -495,24 +1409,397 @@ body {
         display: block;
         margin-bottom: 10px;
     }
+    
+    /* Cards responsivos */
+    .card {
+        margin-bottom: 1rem;
+    }
+    
+    .card-body {
+        padding: 0.75rem;
+    }
+    
+    /* Ajustes para colunas em dispositivos móveis */
+    .col-md-3,
+    .col-md-6 {
+        margin-bottom: 0.75rem;
+    }
+    
+    /* Botões responsivos */
+    .control-buttons .btn {
+        margin-bottom: 0.5rem;
+        width: 100%;
+    }
+    
+    /* Melhor espaçamento para labels */
+    .form-label {
+        font-size: 0.8rem;
+        margin-bottom: 0.25rem;
+    }
 }
 
-/* Botões customizados */
-.btn-success {
+@media (min-width: 769px) and (max-width: 1200px) {
+    .excel-container {
+        max-width: 95%;
+    }
+    
+    .container {
+        max-width: 95%;
+    }
+}
+
+/* Ajustes para telas muito grandes */
+@media (min-width: 1400px) {
+    .excel-container {
+        max-width: 1300px;
+    }
+    
+    .container {
+        max-width: 1300px;
+    }
+}
+
+/* Ajustes específicos para botões de controle */
+.control-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.control-buttons .btn {
+    flex: 1 1 auto;
+    min-width: 150px;
+    white-space: nowrap;
+}
+
+@media (min-width: 768px) {
+    .control-buttons .btn {
+        flex: 0 1 auto;
+        min-width: auto;
+    }
+}
+
+/* Status cards para resultados de validação */
+.status-card-cep {
+    background: linear-gradient(135deg, #dc2626, #ef4444);
+    border-radius: 8px;
+    border: 1px solid #dc2626;
+    color: white;
+    box-shadow: 0 2px 4px rgba(220, 38, 38, 0.2);
+}
+
+.status-card-aga {
     background: linear-gradient(135deg, #10b981, #34d399);
+    border-radius: 8px;
+    border: 1px solid #10b981;
+    color: white;
+    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+}
+
+.status-card-checklist {
+    background: linear-gradient(135deg, #3b82f6, #60a5fa);
+    border-radius: 8px;
+    border: 1px solid #3b82f6;
+    color: white;
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+}
+
+/* Melhorias para cards */
+.card {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+}
+
+.card-header {
+    border-bottom: 1px solid #e2e8f0;
+    border-radius: 7px 7px 0 0 !important;
+}
+
+.card-body {
+    padding: 1.25rem;
+}
+
+@media (max-width: 767px) {
+    .card-body {
+        padding: 0.75rem;
+    }
+}
+
+/* Ajustes para forms em cards */
+.card .form-control,
+.card .form-control-sm {
+    border-radius: 4px;
+    border: 1px solid #d1d5db;
+}
+
+.card .form-control:focus,
+.card .form-control-sm:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+/* Melhorias específicas para container-fluid */
+.container-fluid {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+@media (min-width: 576px) {
+    .container-fluid {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+}
+
+@media (min-width: 1200px) {
+    .container-fluid {
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
+}
+.btn-success {
+    background: linear-gradient(135deg, #065f46, #10b981);
     color: white;
     border: none;
-    padding: 12px 24px;
+    padding: 10px 20px;
     border-radius: 6px;
     text-decoration: none;
-    font-weight: 500;
-    display: inline-block;
-    transition: all 0.2s;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
 }
 
 .btn-success:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    background: linear-gradient(135deg, #10b981, #34d399);
     color: white;
     text-decoration: none;
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, #d97706, #f59e0b);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+}
+
+.btn-warning:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+    background: linear-gradient(135deg, #f59e0b, #fbbf24);
+    color: white;
+    text-decoration: none;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #991b1b, #dc2626);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+}
+
+.btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+    background: linear-gradient(135deg, #dc2626, #ef4444);
+    color: white;
+    text-decoration: none;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    border-radius: 4px;
+}
+
+/* Cabeçalho BRAVA - Padrão Figma */
+.brava-header {
+    background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+    color: white;
+    padding: 18px 20px;
+    margin: -15px -20px 20px -20px;
+    border-radius: 10px 10px 0 0;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+}
+
+/* Efeito de brilho sutil no header da BRAVA (segunda definição) */
+.brava-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: all 0.8s;
+}
+
+.brava-header:hover::before {
+    left: 100%;
+}
+
+.brava-logo {
+    font-size: 18px;
+    font-weight: 700;
+    background: linear-gradient(90deg, #fbbf24, #f59e0b);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: 5px;
+    position: relative;
+    z-index: 2;
+}
+
+.brava-header h1 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+    color: white;
+    position: relative;
+    z-index: 1;
+}
+
+.brava-header .subtitle {
+    font-size: 12px;
+    color: #cbd5e1;
+    margin-top: 3px;
+    position: relative;
+    z-index: 1;
+}
+
+/* Sistema de Abas - Padrão Figma */
+.figma-tabs {
+    display: flex;
+    gap: 0;
+    margin: 0 -20px 20px -20px;
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.figma-tab {
+    background: transparent;
+    border: none;
+    padding: 12px 20px;
+    cursor: pointer;
+    font-weight: 500;
+    color: #64748b;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s ease;
+    font-size: 14px;
+}
+
+.figma-tab.active {
+    color: #1e40af;
+    border-bottom-color: #1e40af;
+    background: white;
+    text-transform: uppercase;
+}
+
+.figma-tab:hover:not(.active) {
+    color: #475569;
+    background: #f1f5f9;
+}
+
+/* Seção Header */
+.section-header {
+    background: linear-gradient(135deg, #1e40af, #3b82f6);
+    color: white;
+    padding: 10px 15px;
+    font-weight: 600;
+    border-radius: 6px 6px 0 0;
+    margin-bottom: 0;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Container Excel para cabeçalho */
+.excel-container {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid #e2e8f0;
+    max-width: 100%;
+    overflow-x: hidden;
+    box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+    .excel-container {
+        padding: 20px;
+    }
+}
+
+/* Melhorias para table-responsive */
+.table-responsive {
+    overflow-x: auto;
+    margin-bottom: 1rem;
+}
+
+.table-responsive table {
+    min-width: 100%;
+    width: auto;
+}
+
+/* Ajustes para inputs em tabelas em dispositivos móveis */
+@media (max-width: 767px) {
+    .componentes-excel input {
+        min-width: 80px;
+        font-size: 0.7rem;
+    }
+}
+
+/* Garantir que todos os containers sejam responsivos */
+.card,
+.card-body,
+.row,
+.col-md-3,
+.col-md-6 {
+    box-sizing: border-box;
+}
+
+/* Ajustes para forms responsivos */
+@media (max-width: 576px) {
+    .row {
+        margin-left: 0;
+        margin-right: 0;
+    }
+    
+    .col-md-3,
+    .col-md-6 {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+    
+    .form-control,
+    .form-control-sm {
+        font-size: 14px; /* Evita zoom no iOS */
+    }
 }

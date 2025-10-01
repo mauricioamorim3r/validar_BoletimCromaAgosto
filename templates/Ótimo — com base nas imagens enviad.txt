@@ -1,0 +1,286 @@
+Ótimo — com base nas imagens enviadas e no material de referência, consolidei o **texto oficial das regras obrigatórias da ANP** que devem ser seguidas em **todos os XMLs 004 (Alarmes & Eventos)**:
+
+---
+
+# **Regras Obrigatórias ANP – XML 004 (Alarmes e Eventos)**
+
+## 1. Estrutura do Arquivo
+
+* Declaração fixa:
+
+  ```xml
+  <?xml version="1.0" encoding="iso-8859-1"?>
+  ```
+* Hierarquia única e obrigatória:
+
+  ```xml
+  <a004>
+    <LISTA_DADOS_BASICOS>
+      <DADOS_BASICOS NUM_SERIE_COMPUTADOR_VAZAO="..." COD_INSTALACAO="...">
+        <LISTA_ALARMES>
+          <ALARMES> ... </ALARMES>
+        </LISTA_ALARMES>
+        <LISTA_EVENTOS>
+          <EVENTOS> ... </EVENTOS>
+        </LISTA_EVENTOS>
+      </DADOS_BASICOS>
+    </LISTA_DADOS_BASICOS>
+  </a004>
+  ```
+
+## 2. Dados Obrigatórios
+
+### Alarmes (`<ALARMES>`)
+
+* `DSC_DADO_ALARMADO` – Texto (máx. 50 caracteres).
+* `DHA_ALARME` – Data/hora no formato **DD/MM/AAAA HH\:mm\:SS** (19 caracteres).
+* `DSC_MEDIDA_ALARMADA` – Texto numérico ou literal (máx. 19 caracteres).
+
+### Eventos (`<EVENTOS>`)
+
+* `DSC_DADO_ALTERADO` – Texto (máx. 50 caracteres).
+* `DSC_CONTEUDO_ORIGINAL` – Texto (máx. 50 caracteres).
+* `DSC_CONTEUDO_ATUAL` – Texto (máx. 50 caracteres).
+* `DHA_OCORRENCIA_EVENTO` – Data/hora no formato **DD/MM/AAAA HH\:mm\:SS** (19 caracteres).
+
+**Campos obrigatórios nunca podem faltar**.
+Se não houver valor, preencher com `"0"` ou string vazia conforme aplicável.
+
+## 3. Regras de Formatação
+
+* **Datas:** sempre `DD/MM/AAAA HH:mm:SS`, com 19 caracteres.
+* **Números decimais:** usar **vírgula** como separador decimal.
+* **Inteiros:** não usar vírgula.
+* **Tamanho máximo:** respeitar limite de caracteres por campo.
+* **Não truncar datas/valores numéricos** (usar todas as casas do relatório).
+* **Strings maiores que 50 caracteres** devem ser truncadas.
+
+## 4. Conteúdo e Preenchimento
+
+* Alarmes: devem refletir exatamente os textos do relatório de origem (ex.: `03 ALARME VAZAO FIT-123456; Vazão Volumétrica; Baixo (Limpo)`).
+* Eventos: devem refletir `PRODUCT1[n] LDMB` com valores de “Encontrado” e “Deixado”.
+* **Não criar ou alterar conteúdo** além do que está nos relatórios originais.
+
+## 5. Organização do Arquivo
+
+* Alarmes aparecem primeiro, depois os eventos.
+* Registros devem estar em **ordem cronológica**.
+* Quando não houver alarmes ou eventos, gerar as listas vazias:
+
+  ```xml
+  <LISTA_ALARMES />
+  <LISTA_EVENTOS />
+  ```
+
+## 6. Arquivos Gerados
+
+* 1 arquivo XML por **dia** e por **computador de vazão**.
+* Nome do arquivo deve seguir o padrão:
+
+  ```
+  004_<CNPJ8>_<AAAAMMDDHHmmSS>.xml
+  ```
+
+  Onde `AAAAMMDDHHmmSS` é a data/hora local do processamento.
+
+---
+
+Essas são as regras **fixas, imutáveis e obrigatórias** — todos os XMLs 004 precisam ser validados contra elas antes da entrega.
+
+
+
+
+
+
+
+---
+
+# **Regras de Mapeamento CSV → XML 004**
+
+## 1. Estrutura Geral
+
+* Cada linha do **CSV** corresponde a **um registro `<ALARMES>` ou `<EVENTOS>`** no XML.
+* O agrupamento no XML é feito por **NUM\_SERIE\_COMPUTADOR\_VAZAO** e **data**.
+* Se não existirem registros de alarmes ou eventos, as listas correspondentes devem ser geradas vazias:
+
+  ```xml
+  <LISTA_ALARMES />
+  <LISTA_EVENTOS />
+  ```
+
+---
+
+## 2. Alarmes
+
+### Origem no CSV:
+
+* `NUM_SERIE_COMPUTADOR_VAZAO`
+* `DHA_ALARME`
+* `DSC_DADO_ALARMADO`
+* `DSC_MEDIDA_ALARMADA`
+
+### Transformação para XML:
+
+```xml
+<ALARMES>
+  <DSC_DADO_ALARMADO>Vazão Volumétrica:Baixo (ocorrido)</DSC_DADO_ALARMADO>
+  <DHA_ALARME>06/02/2025 00:06:19</DHA_ALARME>
+  <DSC_MEDIDA_ALARMADA>6,316653</DSC_MEDIDA_ALARMADA>
+</ALARMES>
+```
+
+* **`DSC_DADO_ALARMADO`** → concatenação direta do texto do CSV, mantendo formato do PDF (ex.: `"Vazão Volumétrica:Baixo (ocorrido)"`).
+* **`DHA_ALARME`** → data/hora do CSV, convertida para **DD/MM/AAAA HH\:mm\:SS**.
+* **`DSC_MEDIDA_ALARMADA`** → valor numérico do CSV, mantendo casas decimais e convertendo ponto → vírgula.
+
+---
+
+## 3. Eventos
+
+### Origem no CSV:
+
+* `NUM_SERIE_COMPUTADOR_VAZAO`
+* `DHA_OCORRENCIA_EVENTO`
+* `DSC_DADO_ALTERADO`
+* `DSC_CONTEUDO_ORIGINAL`
+* `DSC_CONTEUDO_ATUAL`
+
+### Transformação para XML:
+
+```xml
+<EVENTOS>
+  <DSC_DADO_ALTERADO>FQI-6250002-GKD:PRODUCT1[1]</DSC_DADO_ALTERADO>
+  <DSC_CONTEUDO_ORIGINAL>92,54</DSC_CONTEUDO_ORIGINAL>
+  <DSC_CONTEUDO_ATUAL>92,25</DSC_CONTEUDO_ATUAL>
+  <DHA_OCORRENCIA_EVENTO>01/02/2025 01:38:30</DHA_OCORRENCIA_EVENTO>
+</EVENTOS>
+```
+
+* **`DSC_DADO_ALTERADO`** → vem pronto do CSV, apenas respeitando limite de 50 caracteres.
+* **`DSC_CONTEUDO_ORIGINAL`** → valor do CSV, ponto → vírgula.
+* **`DSC_CONTEUDO_ATUAL`** → valor do CSV, ponto → vírgula.
+* **`DHA_OCORRENCIA_EVENTO`** → data/hora do CSV em formato **DD/MM/AAAA HH\:mm\:SS**.
+
+---
+
+## 4. Observações Importantes
+
+* **Separador decimal:** sempre vírgula.
+* **Formatação de data/hora:** **19 caracteres obrigatórios**.
+* **Truncamento de strings:** se ultrapassar 50 caracteres → cortar.
+* **Ordem cronológica:** os registros dentro de `<LISTA_ALARMES>` e `<LISTA_EVENTOS>` devem estar ordenados pela data/hora.
+* **Codificação:** `<?xml version="1.0" encoding="iso-8859-1"?>`.
+* **Estrutura fixa ANP** (sem mudanças).
+
+---
+
+Resumindo:
+O CSV já entrega os campos **diretamente mapeados para os obrigatórios da ANP**, apenas ajustando **datas**, **separador decimal** e **limites de tamanho**. O XML 004 então é construído seguindo a hierarquia ANP, agrupado por **CV + data**.
+
+---
+
+
+
+
+
+
+
+Abaixo estão as regras **obrigatórias** (ANP) + o mapeamento **PDF/CSV → XML 004** + checagens que usarei antes de te entregar qualquer arquivo.
+
+# Regras ANP (obrigatórias para todo XML 004)
+
+* **Estrutura fixa:**
+
+  ```xml
+  <?xml version="1.0" encoding="iso-8859-1"?>
+  <a004>
+    <LISTA_DADOS_BASICOS>
+      <DADOS_BASICOS NUM_SERIE_COMPUTADOR_VAZAO="..." COD_INSTALACAO="...">
+        <LISTA_ALARMES>
+          <ALARMES>
+            <DSC_DADO_ALARMADO>...</DSC_DADO_ALARMADO>
+            <DHA_ALARME>DD/MM/AAAA HH:MM:SS</DHA_ALARME>
+            <DSC_MEDIDA_ALARMADA>...</DSC_MEDIDA_ALARMADA>
+          </ALARMES>
+          <!-- 0..N -->
+        </LISTA_ALARMES>
+        <LISTA_EVENTOS>
+          <EVENTOS>
+            <DSC_DADO_ALTERADO>...</DSC_DADO_ALTERADO>
+            <DSC_CONTEUDO_ORIGINAL>...</DSC_CONTEUDO_ORIGINAL>
+            <DSC_CONTEUDO_ATUAL>...</DSC_CONTEUDO_ATUAL>
+            <DHA_OCORRENCIA_EVENTO>DD/MM/AAAA HH:MM:SS</DHA_OCORRENCIA_EVENTO>
+          </EVENTOS>
+          <!-- 0..N -->
+        </LISTA_EVENTOS>
+      </DADOS_BASICOS>
+    </LISTA_DADOS_BASICOS>
+  </a004>
+  ```
+* **Campos obrigatórios e tipos:**
+
+  * `NUM_SERIE_COMPUTADOR_VAZAO` (TEXTO, até 30) e `COD_INSTALACAO` (NATURAL, até 10).
+  * **Alarmes:** `DSC_DADO_ALARMADO` (TEXTO, 50), `DHA_ALARME` (DATA\_HORA, 19), `DSC_MEDIDA_ALARMADA` (TEXTO, 50).
+  * **Eventos:** `DSC_DADO_ALTERADO` (TEXTO, 50), `DSC_CONTEUDO_ORIGINAL` (TEXTO, 50), `DSC_CONTEUDO_ATUAL` (TEXTO, 50), `DHA_OCORRENCIA_EVENTO` (DATA\_HORA, 19).
+* **Formatação de dados:**
+
+  * **Data/hora:** `DD/MM/AAAA HH:MM:SS` (19 caracteres exatos).
+  * **Decimais:** **vírgula** como separador (ex.: `6,316653`). **Nunca** usar ponto.
+  * **Encoding:** `iso-8859-1`.
+  * **Ordem:** listas de alarmes e de eventos **em ordem cronológica crescente**.
+* **Vazio permitido:** `LISTA_ALARMES` e/ou `LISTA_EVENTOS` podem vir vazios (`<LISTA_ALARMES />`, `<LISTA_EVENTOS />`) quando não houver dados no período.
+* **Não alterar conteúdo:** nenhum valor pode ser inventado, arredondado ou “traduzido”; somente normalizado para o formato ANP.
+
+# Mapeamento PDF/CSV → XML 004
+
+## Alarmes
+
+**De onde vêm (exemplos do PDF SMAR “Alarmes e Eventos”):**
+
+* Cada linha contém: *Data / Hora*, *Tipo de Alarme* (ex.: “Vazão Volumétrica: Baixo (ocorrido|Limpo)”), e *Valor*.
+
+  * Ex.: `08/set/25 15:31:40 … Baixo (ocorrido) … 4,760323`.&#x20;
+
+**Para onde vai no XML:**
+
+* `DSC_DADO_ALARMADO` ⟵ texto do tipo de alarme (ex.: `Vazão Volumétrica:Baixo (ocorrido)`), respeitando até 50 chars.&#x20;
+* `DHA_ALARME` ⟵ data/hora convertida de `DD/mmm/aa HH:MM:SS` para `DD/MM/AAAA HH:MM:SS` (ex.: `08/set/25 15:31:40` → `08/09/2025 15:31:40`).&#x20;
+* `DSC_MEDIDA_ALARMADA` ⟵ coluna **Valor** do relatório (ex.: `4,760323`, manter vírgula).&#x20;
+
+> **CSV de alarmes:** quando vier em CSV (como no seu exemplo “DSC\_DADO\_ALARMADO”, “DHA\_ALARME”, “DSC\_MEDIDA\_ALARMADA”), o preenchimento é 1:1 nos mesmos campos (apenas normalizando a data/hora e garantindo vírgula).
+
+## Eventos (Audit Trail)
+
+**De onde vêm (exemplos do PDF SMAR “Audit Trail”):**
+
+* Cada linha traz: *Data / Hora*, *Tag/Bloco*, *Encontrado* (valor anterior), *Deixado* (valor novo).
+  Ex.: `08/set/25 02:17:54 … PRODUCT1[1] … Encontrado 92,55 Deixado 92,36026`.&#x20;
+
+**Para onde vai no XML:**
+
+* `DSC_DADO_ALTERADO` ⟵ identificação do parâmetro/variável (ex.: `FQI-6250002-GKD:PRODUCT1[1]` ou o rótulo equivalente fornecido no CSV).&#x20;
+* `DSC_CONTEUDO_ORIGINAL` ⟵ **Encontrado**. (ex.: `92,55`).&#x20;
+* `DSC_CONTEUDO_ATUAL` ⟵ **Deixado**. (ex.: `92,36026`).&#x20;
+* `DHA_OCORRENCIA_EVENTO` ⟵ data/hora convertida para `DD/MM/AAAA HH:MM:SS`.&#x20;
+
+> **CSV de eventos:** usar os campos `DSC_DADO_ALTERADO`, `DSC_CONTEUDO_ORIGINAL`, `DSC_CONTEUDO_ATUAL`, `DHA_OCORRENCIA_EVENTO` diretamente, apenas normalizando a data/hora e assegurando vírgula.
+
+## Cabeçalho (comum)
+
+* `NUM_SERIE_COMPUTADOR_VAZAO` ⟵ informado pela instalação (ex.: `0003020018:SMAR-FC302:314`/`315`).
+* `COD_INSTALACAO` ⟵ informado pela instalação (ex.: `10318`).
+* **Um XML por CV por dia**: se houver dados apenas de um tipo (só alarmes ou só eventos), o outro conjunto vai vazio.
+
+# Validações que sempre aplicarei antes de te devolver o XML
+
+1. **XSD lógico** (estrutura fixa EXACTA do 004).
+2. **Datas/hora**: 19 chars e conversão correta dos meses abreviados do PDF (`set`→`09` etc.).
+3. **Separador decimal**: vírgula em todos os números (nunca ponto).
+4. **Tamanhos máximos**: truncar com segurança se exceder (sem alterar significado).
+5. **Encoding**: `iso-8859-1`.
+6. **Ordem cronológica**: ordenação ascendente por data/hora dentro de cada lista.
+7. **Sem campos inventados**: o que não vier do PDF/CSV fica **em branco** (lista vazia), nunca preenchido “por inferência”.
+
+
+
+---

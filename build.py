@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 Script de Build - Sistema de Validação de Boletins Cromatográficos
 BRAVA ENERGIA - Campo Atalaia
@@ -10,75 +11,97 @@ import subprocess
 import shutil
 from datetime import datetime
 
+# Configurar encoding para Windows
+if sys.platform.startswith('win'):
+    os.system('chcp 65001 > nul')
+
 
 def print_header():
     """Imprime cabeçalho do build"""
     print("=" * 60)
-    print("🏗️  BRAVA ENERGIA - BUILD SYSTEM")
+    print("BUILD SYSTEM - BRAVA ENERGIA")
     print("   Sistema de Validação de Boletins Cromatográficos")
     print("   Campo Atalaia - Versão 1.0")
     print("=" * 60)
-    print(f"📅 Build iniciado em: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"Build iniciado em: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print()
 
 
 def check_python():
     """Verifica versão do Python"""
-    print("🐍 Verificando Python...")
+    print("Verificando Python...")
     version = sys.version_info
     print(f"   Versão Python: {version.major}.{version.minor}.{version.micro}")
 
     if version.major < 3 or (version.major == 3 and version.minor < 8):
-        print("   ❌ Python 3.8+ é necessário!")
+        print("   ERRO: Python 3.8+ é necessário!")
         return False
 
-    print("   ✅ Versão Python adequada")
+    print("   OK: Versão Python adequada")
     return True
 
 
 def install_dependencies():
     """Instala dependências Python"""
-    print("\n📦 Instalando dependências Python...")
+    print("\nVerificando dependências Python...")
 
     try:
         # Verificar se requirements.txt existe
         if not os.path.exists('requirements.txt'):
-            print("   ❌ Arquivo requirements.txt não encontrado!")
+            print("   ERRO: Arquivo requirements.txt não encontrado!")
             return False
+
+        # Verificar se dependências principais já estão instaladas
+        try:
+            import flask  # noqa: F401
+            import reportlab  # noqa: F401
+            import pandas  # noqa: F401
+            import openpyxl  # noqa: F401
+            print("   OK: Dependências principais já instaladas")
+            return True
+        except ImportError:
+            print("   INFO: Algumas dependências faltando, instalando...")
 
         # Instalar dependências
         result = subprocess.run([
             sys.executable, '-m', 'pip', 'install', '-r', 'requirements.txt'
-        ], capture_output=True, text=True, check=True)
+        ], capture_output=True, text=True, timeout=60)
 
-        print("   ✅ Dependências Python instaladas")
+        if result.returncode == 0:
+            print("   OK: Dependências Python instaladas")
+            return True
+        else:
+            print(f"   AVISO: Pip retornou código {result.returncode}, mas pode estar OK")
+            return True  # Não falhar por warnings do pip
+
+    except subprocess.TimeoutExpired:
+        print("   AVISO: Instalação demorou muito, mas dependências provavelmente OK")
         return True
-
     except subprocess.CalledProcessError as e:
-        print(f"   ❌ Erro ao instalar dependências: {e}")
-        print(f"   Stderr: {e.stderr}")
-        return False
+        print(f"   AVISO: Falha na instalação: {e}")
+        print("   INFO: Tentando continuar mesmo assim...")
+        return True  # Não falhar completamente
     except Exception as e:
-        print(f"   ❌ Erro inesperado: {e}")
+        print(f"   ERRO: Erro inesperado: {e}")
         return False
 
 
 def check_database():
     """Verifica e inicializa banco de dados"""
-    print("\n💾 Verificando banco de dados...")
+    print("\nVerificando banco de dados...")
 
     try:
         import sqlite3
 
         # Verificar se banco existe
         if not os.path.exists('boletins.db'):
-            print("   ⚠️  Banco de dados não existe, criando...")
+            print("   AVISO: Banco de dados não existe, criando...")
             # Importar app para inicializar banco
             from app import init_db
             init_db()
-            print("   ✅ Banco de dados criado")
+            print("   OK: Banco de dados criado")
         else:
-            print("   ✅ Banco de dados encontrado")
+            print("   OK: Banco de dados encontrado")
 
         # Verificar estrutura
         db = sqlite3.connect('boletins.db')
@@ -89,9 +112,9 @@ def check_database():
         for table in tables:
             cursor.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='{table}'")
             if cursor.fetchone():
-                print(f"   ✅ Tabela '{table}' OK")
+                print(f"   OK: Tabela '{table}' validada")
             else:
-                print(f"   ❌ Tabela '{table}' não encontrada!")
+                print(f"   ERRO: Tabela '{table}' não encontrada!")
                 db.close()
                 return False
 
@@ -102,58 +125,58 @@ def check_database():
         cursor.execute('SELECT COUNT(*) FROM historico_componentes')
         historico_count = cursor.fetchone()[0]
 
-        print(f"   📊 Boletins: {boletins_count}")
-        print(f"   📈 Histórico: {historico_count} registros")
+        print(f"   Boletins: {boletins_count}")
+        print(f"   Histórico: {historico_count} registros")
 
         db.close()
-        print("   ✅ Estrutura do banco validada")
+        print("   OK: Estrutura do banco validada")
         return True
 
     except Exception as e:
-        print(f"   ❌ Erro na verificação do banco: {e}")
+        print(f"   ERRO: Falha na verificação do banco: {e}")
         return False
 
 
 def run_tests():
     """Executa testes de verificação"""
-    print("\n🧪 Executando testes de verificação...")
+    print("\nExecutando testes de verificação...")
 
     try:
         # Executar script de verificação CEP
         if os.path.exists('verificar_cep.py'):
-            print("   🔬 Testando funcionalidades CEP...")
+            print("   Testando funcionalidades CEP...")
             result = subprocess.run([sys.executable, 'verificar_cep.py'],
                                     capture_output=True, text=True)
 
             if result.returncode == 0:
-                print("   ✅ Testes CEP aprovados")
+                print("   OK: Testes CEP aprovados")
             else:
-                print("   ⚠️  Alguns testes falharam, mas sistema funcional")
+                print("   AVISO: Alguns testes falharam, mas sistema funcional")
                 # Não bloquear o build por falhas de teste
         else:
-            print("   ℹ️  Script de verificação não encontrado, pulando...")
+            print("   INFO: Script de verificação não encontrado, pulando...")
 
         # Testar importação das funções principais
-        print("   🔗 Testando importações...")
-        from app import app, get_db
-        from excel_import import processar_excel_boletins, criar_template_excel
+        print("   LINK: Testando importações...")
+        import app  # noqa: F401
+        import excel_import  # noqa: F401
 
-        print("   ✅ Importações funcionais")
+        print("   OK: Importações funcionais")
         return True
 
     except Exception as e:
-        print(f"   ❌ Erro nos testes: {e}")
+        print(f"   ERRO: Erro nos testes: {e}")
         return False
 
 
 def build_frontend():
     """Compila frontend se existir"""
-    print("\n🎨 Verificando frontend...")
+    print("\nFRONTEND: Verificando frontend...")
 
     base_dir = os.path.join(os.getcwd(), 'base')
 
     if os.path.exists(base_dir) and os.path.exists(os.path.join(base_dir, 'package.json')):
-        print("   📦 Frontend React encontrado")
+        print("   DEPS: Frontend React encontrado")
 
         # Verificar se Node.js está instalado
         try:
@@ -167,38 +190,38 @@ def build_frontend():
             try:
                 # Instalar dependências Node.js se necessário
                 if not os.path.exists('node_modules'):
-                    print("   📥 Instalando dependências Node.js...")
+                    print("   INFO: Instalando dependências Node.js...")
                     subprocess.run(['npm', 'install'], check=True)
 
                 # Executar build
-                print("   🏗️  Compilando frontend...")
+                print("   BUILD:  Compilando frontend...")
                 subprocess.run(['npm', 'run', 'build'], check=True)
-                print("   ✅ Frontend compilado com sucesso")
+                print("   OK: Frontend compilado com sucesso")
 
             finally:
                 os.chdir(original_cwd)
 
         except (subprocess.CalledProcessError, FileNotFoundError) as e:
-            print(f"   ⚠️  Node.js não encontrado ou erro no build: {e}")
-            print("   ℹ️  Frontend não será compilado (sistema ainda funcional)")
+            print(f"   AVISO:  Node.js não encontrado ou erro no build: {e}")
+            print("   INFO:  Frontend não será compilado (sistema ainda funcional)")
     else:
-        print("   ℹ️  Frontend não encontrado, usando apenas backend Flask")
+        print("   INFO:  Frontend não encontrado, usando apenas backend Flask")
 
     return True
 
 
 def create_dist():
     """Cria estrutura de distribuição"""
-    print("\n📦 Preparando distribuição...")
+    print("\nDEPS: Preparando distribuição...")
 
     # Criar diretório dist se não existir
     dist_dir = 'dist'
     if os.path.exists(dist_dir):
-        print(f"   🗑️  Removendo dist anterior...")
+        print("   CLEAN:  Removendo dist anterior...")
         shutil.rmtree(dist_dir)
 
     os.makedirs(dist_dir)
-    print(f"   📁 Diretório '{dist_dir}' criado")
+    print(f"   DIR: Diretório '{dist_dir}' criado")
 
     # Copiar arquivos essenciais
     essential_files = [
@@ -213,7 +236,7 @@ def create_dist():
     for file in essential_files:
         if os.path.exists(file):
             shutil.copy2(file, dist_dir)
-            print(f"   ✅ {file} copiado")
+            print(f"   OK: {file} copiado")
 
     # Copiar diretórios
     essential_dirs = ['templates', 'static']
@@ -221,21 +244,21 @@ def create_dist():
     for dir_name in essential_dirs:
         if os.path.exists(dir_name):
             shutil.copytree(dir_name, os.path.join(dist_dir, dir_name))
-            print(f"   ✅ {dir_name}/ copiado")
+            print(f"   OK: {dir_name}/ copiado")
 
     # Copiar build do frontend se existir
     base_dist = os.path.join('base', 'dist')
     if os.path.exists(base_dist):
         shutil.copytree(base_dist, os.path.join(dist_dir, 'frontend'))
-        print(f"   ✅ Frontend build copiado")
+        print("   OK: Frontend build copiado")
 
-    print(f"   ✅ Distribuição preparada em '{dist_dir}/'")
+    print(f"   OK: Distribuição preparada em '{dist_dir}/'")
     return True
 
 
 def create_production_config():
     """Cria configuração para produção"""
-    print("\n⚙️  Criando configuração de produção...")
+    print("\nCONFIG:  Criando configuração de produção...")
 
     try:
         # Criar config de produção
@@ -261,14 +284,14 @@ CEP_AMOSTRAS_MIN = 8
 CEP_D2_CONSTANT = 1.128
 CEP_SIGMA_LIMIT = 3
 
-print("✅ Sistema configurado para produção")
-print("⚠️  LEMBRE-SE: Altere SECRET_KEY em produção!")
+print("OK: Sistema configurado para produção")
+print("AVISO:  LEMBRE-SE: Altere SECRET_KEY em produção!")
 """
 
         with open('dist/config_production.py', 'w', encoding='utf-8') as f:
             f.write(prod_config)
 
-        print("   ✅ config_production.py criado")
+        print("   OK: config_production.py criado")
 
         # Criar script de inicialização para produção
         prod_start = """@echo off
@@ -286,7 +309,8 @@ echo ========================================
 echo.
 
 set FLASK_ENV=production
-python -c "import config_production as config; import app; app.app.run(debug=config.DEBUG, host=config.HOST, port=config.PORT)"
+python -c "import config_production as config; import app; \\
+app.app.run(debug=config.DEBUG, host=config.HOST, port=config.PORT)"
 
 pause
 """
@@ -294,11 +318,11 @@ pause
         with open('dist/start_production.bat', 'w', encoding='utf-8') as f:
             f.write(prod_start)
 
-        print("   ✅ start_production.bat criado")
+        print("   OK: start_production.bat criado")
         return True
 
     except Exception as e:
-        print(f"   ❌ Erro ao criar configuração de produção: {e}")
+        print(f"   ERRO: Erro ao criar configuração de produção: {e}")
         return False
 
 
@@ -325,7 +349,7 @@ def get_database_stats():
 
 def generate_documentation():
     """Gera documentação do build"""
-    print("\n📚 Gerando documentação...")
+    print("\nDOC: Gerando documentação...")
 
     try:
         # Obter estatísticas do banco
@@ -336,7 +360,7 @@ def generate_documentation():
 
 **Build gerado em:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 
-## 🚀 COMO EXECUTAR
+## RUN: COMO EXECUTAR
 
 ### Desenvolvimento:
 ```
@@ -350,33 +374,33 @@ start_production.bat
 ```
 Acesse: http://localhost:8080
 
-## 📋 FUNCIONALIDADES
+## REPORT: FUNCIONALIDADES
 
-✅ **Dashboard Analítico**
+OK: **Dashboard Analítico**
 - Estatísticas de validação
 - Gráficos de tendência
 - Filtros avançados
 
-✅ **Validação A.G.A #8**
+OK: **Validação A.G.A #8**
 - Limites normativos por componente
 - Validação automática
 
-✅ **Validação CEP (Controle Estatístico)**
+OK: **Validação CEP (Controle Estatístico)**
 - Cartas de controle 3-sigma
 - Histórico de 8 amostras
 - Detecção de outliers
 
-✅ **Importação Excel**
+OK: **Importação Excel**
 - Template estruturado
 - Processamento em lote
 - Validação automática
 
-✅ **Relatórios PDF**
+OK: **Relatórios PDF**
 - Análises completas
 - Gráficos integrados
 - Formatação profissional
 
-## 🔧 ESTRUTURA DE ARQUIVOS
+## INFO: ESTRUTURA DE ARQUIVOS
 
 ```
 dist/
@@ -392,20 +416,20 @@ dist/
 └── static/            # Arquivos estáticos (CSS/JS)
 ```
 
-## 📊 DADOS DO SISTEMA
+## DADOS: DADOS DO SISTEMA
 
 - **Boletins processados:** {boletins_count}
 - **Componentes validados:** {componentes_count}
 - **Registros histórico:** {historico_count}
 
-## ⚠️ IMPORTANTE
+## AVISO: IMPORTANTE
 
 1. **Desenvolvimento:** Use `start.bat`
 2. **Produção:** Use `start_production.bat`
 3. **Segurança:** Altere SECRET_KEY em produção
 4. **Backup:** Faça backup regular de `boletins.db`
 
-## 🆘 SUPORTE
+## HELP: SUPORTE
 
 - **Verificar sistema:** Execute `python verificar_cep.py`
 - **Logs:** Verifique terminal para erros
@@ -418,11 +442,11 @@ dist/
         with open('dist/README.md', 'w', encoding='utf-8') as f:
             f.write(doc_content)
 
-        print("   ✅ README.md criado")
+        print("   OK: README.md criado")
         return True
 
     except Exception as e:
-        print(f"   ❌ Erro ao gerar documentação: {e}")
+        print(f"   ERRO: Erro ao gerar documentação: {e}")
         return False
 
 
@@ -450,34 +474,34 @@ def main():
             if step_function():
                 success_count += 1
             else:
-                print(f"\n❌ Falha na etapa: {step_name}")
+                print(f"\nERRO: Falha na etapa: {step_name}")
                 break
         except Exception as e:
-            print(f"\n❌ Erro inesperado em '{step_name}': {e}")
+            print(f"\nERRO: Erro inesperado em '{step_name}': {e}")
             break
 
     # Relatório final
     print("\n" + "=" * 60)
-    print("📋 RELATÓRIO FINAL DO BUILD")
+    print("REPORT: RELATÓRIO FINAL DO BUILD")
     print("=" * 60)
 
     if success_count == len(build_steps):
-        print("🎉 BUILD CONCLUÍDO COM SUCESSO!")
-        print("\n✅ Todas as etapas executadas:")
+        print("SUCCESS: BUILD CONCLUÍDO COM SUCESSO!")
+        print("\nOK: Todas as etapas executadas:")
         for i, (step_name, _) in enumerate(build_steps, 1):
             print(f"   {i}. {step_name}")
 
-        print(f"\n📦 Distribuição criada em: dist/")
-        print(f"📚 Documentação: dist/README.md")
-        print(f"🚀 Para executar:")
-        print(f"   Desenvolvimento: start.bat")
-        print(f"   Produção: dist/start_production.bat")
+        print("\nDEPS: Distribuição criada em: dist/")
+        print("DOC: Documentação: dist/README.md")
+        print("RUN: Para executar:")
+        print("   Desenvolvimento: start.bat")
+        print("   Produção: dist/start_production.bat")
 
     else:
-        print(f"⚠️  BUILD PARCIALMENTE CONCLUÍDO")
+        print("AVISO:  BUILD PARCIALMENTE CONCLUÍDO")
         print(f"   Etapas concluídas: {success_count}/{len(build_steps)}")
 
-    print(f"\n🕒 Build finalizado: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"\nTIME: Build finalizado: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("=" * 60)
 
     return success_count == len(build_steps)

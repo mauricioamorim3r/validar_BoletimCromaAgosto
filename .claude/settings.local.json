@@ -4,7 +4,18 @@
       "WebFetch(domain:bear-gale-46336448.figma.site)",
       "Bash(pip install:*)",
       "Bash(python:*)",
-      "Bash(timeout:*)"
+      "Bash(timeout:*)",
+      "Bash(for template in dashboard.html main.html cadastrar.html editar_boletim.html relatorio_excel.html importar_excel.html)",
+      "Bash(do if [ -f \"$template\" ])",
+      "Bash(then echo \"$template: OK\")",
+      "Bash(else echo \"$template: MISSING\")",
+      "Bash(fi)",
+      "Bash(done)",
+      "Bash(ruff:*)",
+      "Bash(find:*)",
+      "Bash(chcp:*)",
+      "Bash(do if [ -f \"templates/$template\" ])",
+      "Bash(sqlite3:*)"
     ],
     "deny": [],
     "ask": []

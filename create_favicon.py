@@ -1,5 +1,4 @@
 from PIL import Image, ImageDraw
-import os
 
 # Create a simple 16x16 favicon
 

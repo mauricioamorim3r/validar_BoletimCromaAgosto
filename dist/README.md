@@ -1,9 +1,9 @@
 # SISTEMA DE VALIDAÇÃO DE BOLETINS CROMATOGRÁFICOS
 ## BRAVA ENERGIA - Campo Atalaia
 
-**Build gerado em:** 2025-08-27 07:26:19
+**Build gerado em:** 2025-08-30 19:34:52
 
-## 🚀 COMO EXECUTAR
+## RUN: COMO EXECUTAR
 
 ### Desenvolvimento:
 ```
@@ -17,33 +17,33 @@ start_production.bat
 ```
 Acesse: http://localhost:8080
 
-## 📋 FUNCIONALIDADES
+## REPORT: FUNCIONALIDADES
 
-✅ **Dashboard Analítico**
+OK: **Dashboard Analítico**
 - Estatísticas de validação
 - Gráficos de tendência
 - Filtros avançados
 
-✅ **Validação A.G.A #8**
+OK: **Validação A.G.A #8**
 - Limites normativos por componente
 - Validação automática
 
-✅ **Validação CEP (Controle Estatístico)**
+OK: **Validação CEP (Controle Estatístico)**
 - Cartas de controle 3-sigma
 - Histórico de 8 amostras
 - Detecção de outliers
 
-✅ **Importação Excel**
+OK: **Importação Excel**
 - Template estruturado
 - Processamento em lote
 - Validação automática
 
-✅ **Relatórios PDF**
+OK: **Relatórios PDF**
 - Análises completas
 - Gráficos integrados
 - Formatação profissional
 
-## 🔧 ESTRUTURA DE ARQUIVOS
+## INFO: ESTRUTURA DE ARQUIVOS
 
 ```
 dist/
@@ -59,20 +59,20 @@ dist/
 └── static/            # Arquivos estáticos (CSS/JS)
 ```
 
-## 📊 DADOS DO SISTEMA
+## DADOS: DADOS DO SISTEMA
 
-- **Boletins processados:** 22
-- **Componentes validados:** 330
-- **Registros histórico:** 330
+- **Boletins processados:** 23
+- **Componentes validados:** 348
+- **Registros histórico:** 345
 
-## ⚠️ IMPORTANTE
+## AVISO: IMPORTANTE
 
 1. **Desenvolvimento:** Use `start.bat`
 2. **Produção:** Use `start_production.bat`
 3. **Segurança:** Altere SECRET_KEY em produção
 4. **Backup:** Faça backup regular de `boletins.db`
 
-## 🆘 SUPORTE
+## HELP: SUPORTE
 
 - **Verificar sistema:** Execute `python verificar_cep.py`
 - **Logs:** Verifique terminal para erros

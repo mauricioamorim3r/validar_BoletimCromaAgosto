@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 Script de verificação completa das funcionalidades CEP e integração do banco de dados
 """
@@ -9,6 +10,10 @@ import os
 from datetime import datetime, timedelta
 import random
 
+# Configurar encoding para Windows
+if sys.platform.startswith('win'):
+    os.system('chcp 65001 > nul')
+
 
 def conectar_banco():
     """Conecta ao banco de dados"""
@@ -17,13 +22,13 @@ def conectar_banco():
         db.row_factory = sqlite3.Row
         return db
     except Exception as e:
-        print(f"❌ Erro ao conectar ao banco: {e}")
+        print(f"ERRO: Falha ao conectar ao banco: {e}")
         return None
 
 
 def verificar_estrutura_banco():
     """Verifica se as tabelas necessárias existem"""
-    print("🔍 Verificando estrutura do banco de dados...")
+    print("INFO: Verificando estrutura do banco de dados...")
 
     db = conectar_banco()
     if not db:
@@ -37,7 +42,7 @@ def verificar_estrutura_banco():
             resultado = cursor.fetchone()
 
             if resultado:
-                print(f"✅ Tabela '{tabela}' encontrada")
+                print(f"OK: Tabela '{tabela}' encontrada")
 
                 # Verificar colunas específicas
                 if tabela == 'historico_componentes':
@@ -47,16 +52,16 @@ def verificar_estrutura_banco():
 
                     for col in colunas_necessarias:
                         if col in colunas:
-                            print(f"   ✅ Coluna '{col}' presente")
+                            print(f"   OK: Coluna '{col}' presente")
                         else:
-                            print(f"   ❌ Coluna '{col}' AUSENTE")
+                            print(f"   ERRO: Coluna '{col}' AUSENTE")
                             return False
             else:
-                print(f"❌ Tabela '{tabela}' NÃO encontrada")
+                print(f"ERRO: Tabela '{tabela}' NÃO encontrada")
                 return False
 
         except Exception as e:
-            print(f"❌ Erro ao verificar tabela {tabela}: {e}")
+            print(f"ERRO: Falha ao verificar tabela {tabela}: {e}")
             return False
 
     db.close()
@@ -65,7 +70,7 @@ def verificar_estrutura_banco():
 
 def verificar_dados_historico():
     """Verifica dados existentes no histórico"""
-    print("\n📊 Verificando dados do histórico...")
+    print("\nDADOS: Verificando dados do histórico...")
 
     db = conectar_banco()
     if not db:
@@ -75,10 +80,10 @@ def verificar_dados_historico():
         # Contar registros totais
         cursor = db.execute('SELECT COUNT(*) FROM historico_componentes')
         total_historico = cursor.fetchone()[0]
-        print(f"📈 Total de registros no histórico: {total_historico}")
+        print(f"DADOS: Total de registros no histórico: {total_historico}")
 
         if total_historico == 0:
-            print("⚠️  HISTÓRICO VAZIO - Isso explicaria porque CEP não funciona!")
+            print("AVISO: HISTÓRICO VAZIO - Isso explicaria porque CEP não funciona!")
             return False
 
         # Verificar distribuição por componente
@@ -90,7 +95,7 @@ def verificar_dados_historico():
         ''')
 
         componentes_historico = cursor.fetchall()
-        print(f"📋 Componentes no histórico: {len(componentes_historico)}")
+        print(f"DADOS: Componentes no histórico: {len(componentes_historico)}")
 
         for comp in componentes_historico[:5]:  # Mostrar top 5
             print(f"   • {comp['componente']}: {comp['quantidade']} registros")
@@ -104,12 +109,12 @@ def verificar_dados_historico():
         ''')
 
         dados_recentes = cursor.fetchall()
-        print(f"\n📅 Últimos 10 registros:")
+        print("\nDATA: Últimos 10 registros:")
         for dado in dados_recentes:
             print(f"   • {dado['componente']}: {dado['valor']}% ({dado['data_coleta']})")
 
     except Exception as e:
-        print(f"❌ Erro ao verificar dados histórico: {e}")
+        print(f"ERRO: Falha ao verificar dados histórico: {e}")
         return False
 
     db.close()
@@ -118,24 +123,24 @@ def verificar_dados_historico():
 
 def testar_funcao_cep():
     """Testa a função de validação CEP"""
-    print("\n🧮 Testando função CEP...")
+    print("\nTESTE: Testando função CEP...")
 
     # Importar funções do app principal
     try:
         sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-        from app import valida_cep, get_historico_componente
-        print("✅ Funções CEP importadas com sucesso")
+        from app import valida_cep
+        print("OK: Funções CEP importadas com sucesso")
     except Exception as e:
-        print(f"❌ Erro ao importar funções: {e}")
+        print(f"ERRO: Falha ao importar funções: {e}")
         return False
 
     # Teste 1: Componente sem histórico (deve retornar True)
-    print("\n🔬 Teste 1: Componente sem histórico suficiente")
+    print("\nTESTE: Teste 1: Componente sem histórico suficiente")
     resultado = valida_cep("TesteComponente", 50.0, [45.0])
     print(f"   Resultado: {resultado} (esperado: True - sem dados suficientes)")
 
     # Teste 2: Componente com histórico simulado (valores estáveis)
-    print("\n🔬 Teste 2: Histórico estável (deve VALIDAR)")
+    print("\nTESTE: Teste 2: Histórico estável (deve VALIDAR)")
     historico_estavel = [50.0, 51.0, 49.5, 50.5, 50.2, 49.8, 50.3, 49.7]
     novo_valor = 50.1
     resultado = valida_cep("TesteEstavel", novo_valor, historico_estavel)
@@ -156,7 +161,7 @@ def testar_funcao_cep():
     print(f"   Resultado CEP: {resultado}")
 
     # Teste 3: Valor fora dos limites (deve INVALIDAR)
-    print("\n🔬 Teste 3: Valor fora dos limites (deve INVALIDAR)")
+    print("\nTESTE: Teste 3: Valor fora dos limites (deve INVALIDAR)")
     valor_outlier = 70.0  # Muito acima da média
     resultado_outlier = valida_cep("TesteOutlier", valor_outlier, historico_estavel)
     print(f"   Valor outlier: {valor_outlier}")
@@ -167,7 +172,7 @@ def testar_funcao_cep():
 
 def testar_integracao_banco():
     """Testa a integração completa banco + CEP"""
-    print("\n🔗 Testando integração banco de dados...")
+    print("\nINFO: Testando integração banco de dados...")
 
     db = conectar_banco()
     if not db:
@@ -185,11 +190,11 @@ def testar_integracao_banco():
 
         sem_historico = cursor.fetchall()
         if sem_historico:
-            print(f"⚠️  {len(sem_historico)} componentes SEM histórico:")
+            print(f"AVISO:  {len(sem_historico)} componentes SEM histórico:")
             for comp in sem_historico[:5]:
                 print(f"   • {comp['nome']}")
         else:
-            print("✅ Todos os componentes têm histórico")
+            print("OK: Todos os componentes têm histórico")
 
         # Verificar consistência boletin_id
         cursor = db.execute('''
@@ -200,8 +205,8 @@ def testar_integracao_banco():
         ''')
 
         consistencia = cursor.fetchone()
-        print(f"📊 Boletins com histórico: {consistencia['boletins_historico']}")
-        print(f"📊 Total de boletins: {consistencia['boletins_total']}")
+        print(f"DADOS: Boletins com histórico: {consistencia['boletins_historico']}")
+        print(f"DADOS: Total de boletins: {consistencia['boletins_total']}")
 
         # Testar busca de histórico real
         cursor = db.execute('''
@@ -211,7 +216,7 @@ def testar_integracao_banco():
         componente_teste = cursor.fetchone()
         if componente_teste:
             comp_nome = componente_teste['componente']
-            print(f"\n🔍 Testando busca histórico para: {comp_nome}")
+            print(f"\nINFO: Testando busca histórico para: {comp_nome}")
 
             # Importar função
             from app import get_historico_componente
@@ -231,10 +236,10 @@ def testar_integracao_banco():
                     resultado_real = valida_cep(comp_nome, ultimo_valor, historico_anterior)
                     print(f"   Teste CEP com último valor: {resultado_real}")
                 else:
-                    print(f"   ⚠️  Histórico insuficiente para CEP ({len(historico_real)} < 8)")
+                    print(f"   AVISO:  Histórico insuficiente para CEP ({len(historico_real)} < 8)")
 
     except Exception as e:
-        print(f"❌ Erro na integração: {e}")
+        print(f"ERRO: Erro na integração: {e}")
         return False
 
     db.close()
@@ -243,7 +248,7 @@ def testar_integracao_banco():
 
 def simular_dados_teste():
     """Cria alguns dados de teste se necessário"""
-    print("\n🧪 Simulando dados de teste...")
+    print("\nTESTE: Simulando dados de teste...")
 
     db = conectar_banco()
     if not db:
@@ -255,10 +260,10 @@ def simular_dados_teste():
         total_existente = cursor.fetchone()[0]
 
         if total_existente > 0:
-            print(f"✅ Já existem {total_existente} registros no histórico")
+            print(f"OK: Já existem {total_existente} registros no histórico")
             return True
 
-        print("📝 Criando dados de teste...")
+        print("INFO: Criando dados de teste...")
 
         # Criar dados simulados para teste
         componentes_teste = ['Metano', 'Etano', 'Propano']
@@ -278,10 +283,10 @@ def simular_dados_teste():
                 ''', (componente, boletim_id_teste, valor, data_coleta))
 
         db.commit()
-        print("✅ Dados de teste criados")
+        print("OK: Dados de teste criados")
 
     except Exception as e:
-        print(f"❌ Erro ao criar dados teste: {e}")
+        print(f"ERRO: Erro ao criar dados teste: {e}")
         return False
 
     db.close()
@@ -291,7 +296,7 @@ def simular_dados_teste():
 def relatorio_final():
     """Gera relatório final da verificação"""
     print("\n" + "=" * 60)
-    print("📋 RELATÓRIO FINAL - VERIFICAÇÃO CEP E BANCO")
+    print("DADOS: RELATÓRIO FINAL - VERIFICAÇÃO CEP E BANCO")
     print("=" * 60)
 
     # Resumo das verificações
@@ -302,13 +307,13 @@ def relatorio_final():
         ("Integração banco", testar_integracao_banco())
     ]
 
-    print("\n🎯 RESULTADOS:")
+    print("\nRESULTADO: RESULTADOS:")
     for nome, resultado in verificacoes:
-        status = "✅ PASS" if resultado else "❌ FAIL"
+        status = "OK: PASS" if resultado else "ERRO: FAIL"
         print(f"   {status} {nome}")
 
     # Recomendações
-    print("\n💡 RECOMENDAÇÕES:")
+    print("\nINFO: RECOMENDAÇÕES:")
 
     db = conectar_banco()
     if db:
@@ -316,34 +321,34 @@ def relatorio_final():
         total_historico = cursor.fetchone()[0]
 
         if total_historico == 0:
-            print("   🚨 URGENTE: Execute 'Processar Boletins Existentes' no sistema web")
-            print("   📝 Isso criará o histórico necessário para o CEP funcionar")
+            print("   INFO: URGENTE: Execute 'Processar Boletins Existentes' no sistema web")
+            print("   INFO: Isso criará o histórico necessário para o CEP funcionar")
         elif total_historico < 50:
-            print(f"   ⚠️  Histórico pequeno ({total_historico} registros)")
-            print("   📈 CEP funcionará melhor com mais dados históricos")
+            print(f"   AVISO:  Histórico pequeno ({total_historico} registros)")
+            print("   DADOS: CEP funcionará melhor com mais dados históricos")
         else:
-            print("   ✅ Histórico suficiente para CEP funcionar corretamente")
+            print("   OK: Histórico suficiente para CEP funcionar corretamente")
 
         db.close()
 
-    print("\n🔧 STATUS GERAL:")
+    print("\nSTATUS: STATUS GERAL:")
     todos_ok = all(resultado for _, resultado in verificacoes)
     if todos_ok:
-        print("   ✅ SISTEMA FUNCIONANDO CORRETAMENTE")
+        print("   OK: SISTEMA FUNCIONANDO CORRETAMENTE")
     else:
-        print("   ⚠️  NECESSITA CORREÇÕES")
+        print("   AVISO:  NECESSITA CORREÇÕES")
 
     return todos_ok
 
 
 def main():
     """Função principal"""
-    print("🔬 VERIFICAÇÃO COMPLETA - CEP E INTEGRAÇÃO BANCO")
+    print("TESTE: VERIFICAÇÃO COMPLETA - CEP E INTEGRAÇÃO BANCO")
     print("=" * 60)
 
     # Verificar se estamos no diretório correto
     if not os.path.exists('boletins.db'):
-        print("❌ Arquivo boletins.db não encontrado!")
+        print("ERRO: Arquivo boletins.db não encontrado!")
         print("   Certifique-se de estar no diretório correto do projeto")
         return False
 

@@ -3,76 +3,613 @@
 {% block title %}Cadastrar Boletim - Validação de Boletins Cromatográficos{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-12">
-        <h2 class="mb-4" style="font-family: var(--bs-font-sans-serif); font-size: 1.75rem; font-weight: var(--bs-body-font-weight); line-height: var(--bs-body-line-height); background: linear-gradient(135deg, #1e3a8a, #1e40af); color: white; padding: 16px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-radius: 6px;">
-            <i class="bi bi-file-earmark-plus"></i> Cadastrar Novo Boletim Cromatográfico
-        </h2>
+<div class="cadastro-page">
+<style>
+    /* ===== SISTEMA DE DESIGN LIMPO E ORGANIZADO ===== */
+    
+    /* Fontes e tipografia */
+    * {
+        font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif !important;
+    }
+    
+    /* Container principal */
+    .cadastro-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
+        background: #f8fafc;
+        min-height: 100vh;
+    }
+    
+    /* Layout principal em grid */
+    .cadastro-grid {
+        display: grid;
+        gap: 2rem;
+        grid-template-columns: 1fr;
+        align-items: start;
+    }
+    
+    /* Cards padronizados */
+    .section-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e2e8f0;
+        overflow: hidden;
+        margin-bottom: 0;
+    }
+    
+    /* Headers dos cards */
+    .section-header {
+        background: linear-gradient(135deg, #1e40af, #3b82f6);
+        color: white;
+        padding: 1.25rem 1.5rem;
+        font-weight: 600;
+        font-size: 0.95rem;
+        letter-spacing: 0.025em;
+        border: none;
+        margin: 0;
+    }
+    
+    /* Ajuste dos headings para acessibilidade */
+    h1 {
+        font-size: 1.5rem !important;
+        font-weight: 600;
+    }
+    
+    .section-header h2 {
+        font-size: 0.95rem !important;
+        font-weight: 600;
+        margin: 0;
+    }
+    
+    .section-header h4 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+        text-align: center;
+    }
+    
+    .section-header h6 {
+        margin: 0;
+        font-size: 0.95rem;
+        font-weight: 600;
+    }
+    
+    /* Corpo dos cards */
+    .section-body {
+        padding: 1.5rem;
+    }
+    
+    .section-body-table {
+        padding: 0;
+    }
+    
+    /* Grid responsivo para formulários */
+    .form-grid {
+        display: grid;
+        gap: 1rem;
+    }
+    
+    .form-grid-2 {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .form-grid-3 {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+    
+    .form-grid-4 {
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+    }
+    
+    /* Campos de formulário */
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: #374151;
+        font-size: 0.875rem;
+        margin: 0;
+    }
+    
+    .form-control {
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        padding: 0.75rem;
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
+        background: white;
+    }
+    
+    .form-control:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        outline: none;
+    }
+    
+    .form-control-sm {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+    }
+    
+    /* Tabelas com design aprimorado - Visual da Imagem */
+    .table-container {
+        overflow-x: auto;
+        border-radius: 0;
+        box-shadow: none;
+        background: white;
+        border: 1px solid #dee2e6;
+    }
+    
+    .table {
+        margin: 0;
+        font-size: 0.875rem;
+        background: transparent;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+    
+    /* Cabeçalho da tabela - Cor #1e40af igual ao COMPONENTE do relatório */
+    .table thead th {
+        background: #1e40af !important; /* Cor específica do header COMPONENTE */
+        font-weight: 600;
+        color: white !important;
+        border: 1px solid #1e40af;
+        padding: 12px 8px;
+        vertical-align: middle;
+        text-align: center;
+        position: center;
+        font-size: 0.85rem;
+        letter-spacing: 0.025em;
+        text-transform: uppercase; /* Texto em maiúsculo */
+    }
+    
+    /* Corpo da tabela - Fundo branco para todas as linhas */
+    .table tbody td {
+        padding: 8px;
+        vertical-align: middle;
+        border: 1px solid #dee2e6;
+        text-align: center;
+        font-size: 0.85rem;
+        background: white !important; /* Fundo branco para todas as linhas */
+        color: #333 !important;
+    }
+    
+    /* Coluna de componente alinhada à esquerda */
+    .table tbody td:first-child {
+        text-align: center !important;
+        font-weight: 500;
+        background: white !important;
+        color: #333 !important;
+    }
+    
+    /* Inputs na tabela com fundo branco */
+    .table tbody td input.form-control {
+        background: white !important;
+        border: 1px solid #ced4da;
+        color: #333;
+        text-align: center;
+    }
+    
+    /* Todas as linhas com fundo branco */
+    .table tbody tr {
+        background: white !important;
+    }
+    
+    .table tbody tr td {
+        background: white !important;
+    }
+    
+    .table tbody tr td:first-child {
+        background: white !important;
+    }
+    
+    /* Remove hover effects especiais */
+    .table tbody tr:hover {
+        background: inherit !important;
+    }
+    
+    /* Inputs na tabela */
+    .table .form-control {
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        padding: 6px 8px;
+        font-size: 0.85rem;
+        text-align: center;
+        min-width: 100px;
+        background: white !important;
+        transition: all 0.2s ease;
+        width: 100%;
+    }
+    
+    .table .form-control:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+        transform: none;
+    }
+    
+    /* Badges de status com cores específicas */
+    .table .badge {
+        color: white !important;
+        font-weight: 600;
+        font-size: 0.75rem;
+        padding: 6px 10px;
+        border-radius: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: inline-block;
+        min-width: 70px;
+        text-align: center;
+        border: none;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    /* Status AGUARDANDO - Cinza neutro */
+    .table .badge:contains('AGUARDANDO'),
+    .badge.badge-aguardando,
+    .badge[data-status='AGUARDANDO'] {
+        background: #6c757d !important; /* Cinza neutro para estado de espera */
+        opacity: 1 !important;
+        color: white !important;
+    }
+    
+    /* Status OK/VALIDADO - Verde */
+    .table .badge:contains('OK'),
+    .table .badge:contains('VALIDADO'),
+    .badge.badge-ok,
+    .badge[data-status='OK'],
+    .badge.bg-success {
+        background: #28a745 !important; /* Verde */
+    }
+    
+    /* Status FORA/INVALIDADO - Vermelho */
+    .table .badge:contains('FORA'),
+    .table .badge:contains('INVALIDADO'),
+    .badge.badge-fora,
+    .badge[data-status='FORA'],
+    .badge.bg-danger {
+        background: #dc3545 !important; /* Vermelho */
+    }
+    
+    /* Status PENDENTE - Cinza neutro */
+    .table .badge:contains('PENDENTE'),
+    .badge.badge-pendente,
+    .badge[data-status='PENDENTE'] {
+        background: #6c757d !important; /* Cinza neutro */
+    }
+    
+    /* Status NOK - Vermelho */
+    .table .badge:contains('NOK'),
+    .badge.badge-nok,
+    .badge[data-status='NOK'] {
+        background: #dc3545 !important; /* Vermelho */
+    }
+    
+    /* Padronização para badges CEP */
+    .cep-status {
+        display: inline-block;
+        padding: 6px 10px !important;
+        border-radius: 4px;
+        font-weight: 600;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: white !important;
+        min-width: 70px;
+        text-align: center;
+        border: none;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .cep-status.ok {
+        background: #28a745 !important;
+    }
+    
+    .cep-status.nok {
+        background: #dc3545 !important;
+    }
+    
+    .cep-status.pendente {
+        background: #6c757d !important;
+    }
+    
+    /* Padrão para badges sem status específico */
+    .table .badge:not([class*="badge-"]):not([class*="bg-"]):not([data-status]) {
+        background: #495057 !important; /* Cinza mais escuro para AGUARDANDO */
+        opacity: 1 !important;
+    }
+    
+    /* Específico para componentes gasosos */
+    .section-card .table tbody td.component-name {
+        text-align: center !important;
+        padding-left: 12px;
+        font-weight: 500;
+    }
+    
+    .section-card .table tbody td.unit-cell {
+        font-weight: 500;
+    }
+    
+    .table .unit-cell {
+        font-size: 0.8rem;
+        color: #64748b;
+        font-style: italic;
+    }
+    
+    /* Botões */
+    .btn {
+        border-radius: 8px;
+        font-weight: 500;
+        padding: 0.75rem 1.5rem;
+        border: none;
+        transition: all 0.2s ease;
+        font-size: 0.9rem;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #1e40af, #3b82f6);
+    }
+    
+    .btn-success {
+        background: linear-gradient(135deg, #10b981, #059669);
+    }
+    
+    .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+    
+    /* Alertas e badges */
+    .alert {
+        border-radius: 8px;
+        border: none;
+        padding: 1rem;
+    }
+    
+    .badge {
+        font-size: 0.75rem;
+        padding: 0.5rem 0.75rem;
+        border-radius: 6px;
+        font-weight: 500;
+    }
+    
+    /* Layout para dois cards lado a lado */
+    .two-column-layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        align-items: start;
+    }
+    
+    /* Layout especial para seções maiores */
+    .full-width-section {
+        grid-column: 1 / -1;
+    }
+    
+    /* Responsividade */
+    @media (max-width: 1200px) {
+        .cadastro-container {
+            padding: 1.5rem;
+        }
+        
+        .form-grid-4 {
+            grid-template-columns: 1fr 1fr;
+        }
+        
+        .two-column-layout {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .cadastro-container {
+            padding: 1rem;
+        }
+        
+        .cadastro-grid {
+            gap: 1.5rem;
+        }
+        
+        .form-grid-2,
+        .form-grid-3,
+        .form-grid-4 {
+            grid-template-columns: 1fr;
+        }
+        
+        .section-header {
+            padding: 1rem;
+        }
+        
+        .section-body {
+            padding: 1rem;
+        }
+    }
+    
+    /* Estados específicos */
+    .hidden-section {
+        display: none !important;
+    }
+    
+    /* Melhorias de acessibilidade - bordas cinzas padrão */
+    .form-control:invalid {
+        border-color: #d1d5db;
+        background-color: white;
+        border-width: 1px;
+    }
+    
+    .form-control:invalid:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        background-color: white;
+    }
+    
+    .form-control:valid {
+        border-color: #d1d5db;
+        background-color: white;
+        border-width: 1px;
+    }
+    
+    /* Estilo para select boxes */
+    .form-select {
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        padding: 0.75rem;
+        background: white;
+        font-size: 0.9rem;
+    }
+    
+    .form-select:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        outline: none;
+    }
+    
+    /* Título do CHECK LIST com tamanho específico */
+    .card-header h2 {
+        font-size: 15.2px !important;
+    }
+    
+    /* Estilos para os limites CEP */
+    .cep-limite {
+        font-size: 12px;
+        color: #666;
+        font-style: italic;
+        margin-top: 2px;
+        display: block;
+    }
+    
+    .cep-status {
+        font-weight: bold;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-size: 11px;
+    }
+    
+    .cep-status.ok {
+        background-color: #d4edda;
+        color: #155724;
+    }
+    
+    .cep-status.nok {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+    
+    .cep-status.pendente {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+</style>
+
+<div class="cadastro-container">
+    <div class="cadastro-grid">
+        
+        <!-- Cabeçalho principal -->
+        <div class="section-card full-width-section">
+            <div class="section-header">
+                <h1><i class="bi bi-file-earmark-plus"></i> CADASTRAR NOVO BOLETIM CROMATOGRÁFICO</h1>
+            </div>
+        </div>
         
         <form method="post" id="cadastroForm">
-            <!-- Cabeçalho da planilha -->
-            <div class="row mb-4">
-                <div class="col-md-12">
-                    <div class="border p-3 bg-light">
-                        <h6 class="text-primary">INFORMAÇÕES DO BOLETIM</h6>
-                        <div class="row">
-                            <div class="col-md-3 mb-3">
-                                <label for="numero_boletim" class="form-label small">Número do Boletim</label>
-                                <input type="text" class="form-control form-control-sm" id="numero_boletim" name="numero_boletim" required>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label for="data_coleta" class="form-label small">Data de Coleta</label>
-                                <input type="date" class="form-control form-control-sm" id="data_coleta" name="data_coleta" required>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label for="data_recebimento" class="form-label small">Data de Recebimento</label>
-                                <input type="date" class="form-control form-control-sm" id="data_recebimento" name="data_recebimento">
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label for="data_analise" class="form-label small">Data de Análise</label>
-                                <input type="date" class="form-control form-control-sm" id="data_analise" name="data_analise">
-                            </div>
+            
+            <!-- Informações do Boletim -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h2><i class="bi bi-info-circle"></i> INFORMAÇÕES DO BOLETIM</h2>
+                </div>
+                <div class="section-body">
+                    <div class="form-grid form-grid-4">
+                        <div class="form-group">
+                            <label class="form-label" for="numero_documento">Número do Documento</label>
+                            <input type="text" class="form-control" id="numero_documento" name="numero_documento">
                         </div>
-                        <div class="row">
-                            <div class="col-md-3 mb-3">
-                                <label for="data_emissao" class="form-label small">Data de Emissão</label>
-                                <input type="date" class="form-control form-control-sm" id="data_emissao" name="data_emissao" required>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label for="identificacao_instalacao" class="form-label small">Instalação</label>
-                                <input type="text" class="form-control form-control-sm" id="identificacao_instalacao" name="identificacao_instalacao" required>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label for="plataforma" class="form-label small">Plataforma</label>
-                                <input type="text" class="form-control form-control-sm" id="plataforma" name="plataforma" value="FPSO ATLANTE" required>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label for="sistema_medicao" class="form-label small">Sistema de Medição</label>
-                                <input type="text" class="form-control form-control-sm" id="sistema_medicao" name="sistema_medicao" value="GÁS COMBUSTÍVEL LP" required>
-                            </div>
+                        <div class="form-group">
+                            <label class="form-label" for="numero_boletim">Número do Boletim</label>
+                            <input type="text" class="form-control" id="numero_boletim" name="numero_boletim" required>
                         </div>
-                        <div class="row">
-                            <div class="col-md-3 mb-3">
-                                <label for="classificacao" class="form-label small">Classificação</label>
-                                <input type="text" class="form-control form-control-sm" id="classificacao" name="classificacao" value="FISCAL" required>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label for="ponto_coleta" class="form-label small">Ponto de Coleta</label>
-                                <input type="text" class="form-control form-control-sm" id="ponto_coleta" name="ponto_coleta" value="LP FUEL GAS" required>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label for="agente_regulado" class="form-label small">Agente Regulado</label>
-                                <input type="text" class="form-control form-control-sm" id="agente_regulado" name="agente_regulado" required>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label for="ponto_medicao" class="form-label small">Ponto de Medição</label>
-                                <input type="text" class="form-control form-control-sm" id="ponto_medicao" name="ponto_medicao" required>
-                            </div>
+                        <div class="form-group">
+                            <label class="form-label" for="data_coleta">Data de Coleta</label>
+                            <input type="date" class="form-control" id="data_coleta" name="data_coleta" required>
                         </div>
-                        <div class="row">
-                            <div class="col-md-12 mb-3">
-                                <label for="responsavel_amostragem" class="form-label small">Responsável Amostragem</label>
-                                <input type="text" class="form-control form-control-sm" id="responsavel_amostragem" name="responsavel_amostragem" required>
+                        <div class="form-group">
+                            <label class="form-label" for="data_emissao">Data de Emissão</label>
+                            <input type="date" class="form-control" id="data_emissao" name="data_emissao" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-grid form-grid-2">
+                        <div class="form-group">
+                            <label class="form-label" for="agente_regulado">Agente Regulado</label>
+                            <input type="text" class="form-control" id="agente_regulado" name="agente_regulado" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="plataforma">Plataforma</label>
+                            <input type="text" class="form-control" id="plataforma" name="plataforma" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-grid form-grid-4">
+                        <div class="form-group">
+                            <label class="form-label" for="identificacao_instalacao">Instalação</label>
+                            <input type="text" class="form-control" id="identificacao_instalacao" name="identificacao_instalacao" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="sistema_medicao">Sistema de Medição</label>
+                            <input type="text" class="form-control" id="sistema_medicao" name="sistema_medicao" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="ponto_coleta">Ponto de Coleta</label>
+                            <input type="text" class="form-control" id="ponto_coleta" name="ponto_coleta" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="classificacao">Classificação</label>
+                            <input type="text" class="form-control" id="classificacao" name="classificacao" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-grid form-grid-4">
+                        <div class="form-group">
+                            <label class="form-label" for="data_recebimento">Data de Recebimento</label>
+                            <input type="date" class="form-control" id="data_recebimento" name="data_recebimento">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="data_analise">Data de Análise</label>
+                            <input type="date" class="form-control" id="data_analise" name="data_analise">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="data_validacao">Data de Validação</label>
+                            <input type="date" class="form-control" id="data_validacao" name="data_validacao">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="responsavel_amostragem">Responsável Amostragem</label>
+                            <input type="text" class="form-control" id="responsavel_amostragem" name="responsavel_amostragem" required>
+                        </div>
+                    </div>
+
+                    <!-- Validação de Prazos ANP -->
+                    <div class="alert alert-info" id="validacao-prazos-anp" style="display: none;">
+                        <h6 class="alert-heading">
+                            <i class="bi bi-clock-history"></i> Validação de Prazos ANP - Regulamento Técnico 52
+                        </h6>
+                        <div class="form-grid form-grid-3">
+                            <div>
+                                <small><strong>Coleta → Emissão:</strong> <span id="prazo-coleta-emissao" class="text-muted">-</span></small><br>
+                                <small class="text-muted">Máximo: 25 dias (Portaria 52 ANP)</small>
+                            </div>
+                            <div>
+                                <small><strong>Emissão → Validação:</strong> <span id="prazo-emissao-validacao" class="text-muted">-</span></small><br>
+                                <small class="text-muted">Máximo: 1 dia (Portaria 52 ANP)</small>
+                            </div>
+                            <div>
+                                <small><strong>Prazo Total:</strong> <span id="prazo-total" class="text-muted">-</span></small><br>
+                                <small class="text-muted">Máximo: 28 dias (Portaria 52 ANP)</small>
                             </div>
                         </div>
                     </div>
@@ -80,221 +617,776 @@
             </div>
 
             <!-- Condições do Processo -->
-            <div class="row mb-4">
-                <div class="col-md-12">
-                    <div class="border p-3 bg-light">
-                        <h6 class="text-primary">CONDIÇÕES DO PROCESSO</h6>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="pressao" class="form-label small">Pressão (atm)</label>
-                                <input type="number" step="0.01" class="form-control form-control-sm" id="pressao" name="pressao" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="temperatura" class="form-label small">Temperatura (°C)</label>
-                                <input type="number" step="0.01" class="form-control form-control-sm" id="temperatura" name="temperatura" required>
-                            </div>
-                        </div>
-                    </div>
+            <div class="section-card">
+                <div class="section-header">
+                    <h2><i class="bi bi-thermometer-half"></i> CONDIÇÕES DO PROCESSO</h2>
                 </div>
-            </div>
-
-            <!-- Propriedades do Fluido -->
-            <div class="row mb-4">
-                <div class="col-md-12">
-                    <div class="border p-3" style="background: linear-gradient(135deg, #e3f2fd, #f3e5f5); border-color: #1e40af;">
-                        <h6 class="text-primary">
-                            <i class="bi bi-calculator"></i> PROPRIEDADES DO FLUIDO - CÁLCULO AUTOMÁTICO
-                        </h6>
-                        <div class="alert alert-info mb-0" role="alert" style="border: none; background: rgba(30, 64, 175, 0.1);">
-                            <small>
-                                <strong>ℹ️ As propriedades do fluido serão calculadas automaticamente:</strong><br>
-                                • <strong>Massa Molecular:</strong> Calculada pela composição molar dos componentes<br>
-                                • <strong>Fator de Compressibilidade:</strong> Baseado na metodologia A.G.A #8<br>
-                                • <strong>Massa Específica:</strong> Calculada pelas condições padrão (20°C, 101.325 kPa)<br>
-                                • <strong>Validação CEP:</strong> Aplicada automaticamente com base no histórico
-                            </small>
+                <div class="section-body">
+                    <div class="form-grid form-grid-2">
+                        <div class="form-group">
+                            <label class="form-label" for="pressao">Pressão (atm)</label>
+                            <input type="number" step="0.01" class="form-control" id="pressao" name="pressao" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="temperatura">Temperatura (°C)</label>
+                            <input type="number" step="0.01" class="form-control" id="temperatura" name="temperatura" required>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Componentes Gasosos -->
-            <div class="row mb-4">
-                <div class="col-md-12">
-                    <div class="border p-3 bg-light">
-                        <h6 class="text-primary">COMPONENTES GASOSOS (%)</h6>
-                        <div class="table-responsive">
-                            <table class="table table-sm table-bordered">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Componente</th>
-                                        <th>Percentual Molar</th>
-                                        <th>Min A.G.A #8</th>
-                                        <th>Max A.G.A #8</th>
-                                        <th>Status A.G.A #8</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><label for="Metano">Metano</label></td>
-                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="Metano" name="Metano" required></td>
-                                        <td>0</td>
-                                        <td>100</td>
-                                        <td class="text-center"><span id="status_Metano" class="badge bg-secondary">-</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td><label for="Etano">Etano</label></td>
-                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="Etano" name="Etano" required></td>
-                                        <td>0</td>
-                                        <td>100</td>
-                                        <td class="text-center"><span id="status_Etano" class="badge bg-secondary">-</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td><label for="Propano">Propano</label></td>
-                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="Propano" name="Propano" required></td>
-                                        <td>0</td>
-                                        <td>12</td>
-                                        <td class="text-center"><span id="status_Propano" class="badge bg-secondary">-</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td><label for="i-Butano">i-Butano</label></td>
-                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="i-Butano" name="i-Butano" required></td>
-                                        <td>0</td>
-                                        <td>6</td>
-                                        <td class="text-center"><span id="status_i-Butano" class="badge bg-secondary">-</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td><label for="n-Butano">n-Butano</label></td>
-                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="n-Butano" name="n-Butano" required></td>
-                                        <td>0</td>
-                                        <td>6</td>
-                                        <td class="text-center"><span id="status_n-Butano" class="badge bg-secondary">-</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td><label for="i-Pentano">i-Pentano</label></td>
-                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="i-Pentano" name="i-Pentano" required></td>
-                                        <td>0</td>
-                                        <td>4</td>
-                                        <td class="text-center"><span id="status_i-Pentano" class="badge bg-secondary">-</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td><label for="n-Pentano">n-Pentano</label></td>
-                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="n-Pentano" name="n-Pentano" required></td>
-                                        <td>0</td>
-                                        <td>4</td>
-                                        <td class="text-center"><span id="status_n-Pentano" class="badge bg-secondary">-</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td><label for="Hexano">Hexano</label></td>
-                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="Hexano" name="Hexano" required></td>
-                                        <td>0</td>
-                                        <td>100</td>
-                                        <td class="text-center"><span id="status_Hexano" class="badge bg-secondary">-</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td><label for="Heptano">Heptano</label></td>
-                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="Heptano" name="Heptano" required></td>
-                                        <td>0</td>
-                                        <td>100</td>
-                                        <td class="text-center"><span id="status_Heptano" class="badge bg-secondary">-</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td><label for="Octano">Octano</label></td>
-                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="Octano" name="Octano" required></td>
-                                        <td>0</td>
-                                        <td>100</td>
-                                        <td class="text-center"><span id="status_Octano" class="badge bg-secondary">-</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td><label for="Nonano">Nonano</label></td>
-                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="Nonano" name="Nonano" required></td>
-                                        <td>0</td>
-                                        <td>100</td>
-                                        <td class="text-center"><span id="status_Nonano" class="badge bg-secondary">-</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td><label for="Decano">Decano</label></td>
-                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="Decano" name="Decano" required></td>
-                                        <td>0</td>
-                                        <td>100</td>
-                                        <td class="text-center"><span id="status_Decano" class="badge bg-secondary">-</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td><label for="Oxigênio">Oxigênio</label></td>
-                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="Oxigênio" name="Oxigênio" required></td>
-                                        <td>0</td>
-                                        <td>21</td>
-                                        <td class="text-center"><span id="status_Oxigênio" class="badge bg-secondary">-</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td><label for="Nitrogênio">Nitrogênio</label></td>
-                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="Nitrogênio" name="Nitrogênio" required></td>
-                                        <td>0</td>
-                                        <td>100</td>
-                                        <td class="text-center"><span id="status_Nitrogênio" class="badge bg-secondary">-</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td><label for="CO2">CO2</label></td>
-                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="CO2" name="CO2" required></td>
-                                        <td>0</td>
-                                        <td>100</td>
-                                        <td class="text-center"><span id="status_CO2" class="badge bg-secondary">-</span></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+            <div class="section-card">
+                <div class="section-header">
+                    <h2><i class="bi bi-list-check"></i> COMPONENTES GASOSOS (%)</h2>
+                </div>
+                <div class="section-body-table">
+                    <div class="table-container">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Componente</th>
+                                    <th>Unidade</th>
+                                    <th>Percentual Molar</th>
+                                    <th>Min A.G.A #8</th>
+                                    <th>Max A.G.A #8</th>
+                                    <th>Status A.G.A #8</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="component-name">Metano, CH₄</td>
+                                    <td class="unit-cell">% mol</td>
+                                    <td><input type="number" step="0.001" class="form-control" id="Metano" name="Metano" required placeholder="0.000" aria-label="Percentual molar do Metano CH₄"></td>
+                                    <td>0</td>
+                                    <td>100</td>
+                                    <td><span class="badge" id="status_Metano">AGUARDANDO</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="component-name">Etano, C₂H₆</td>
+                                    <td class="unit-cell">% mol</td>
+                                    <td><input type="number" step="0.001" class="form-control" id="Etano" name="Etano" required placeholder="0.000" aria-label="Percentual molar do Etano C₂H₆"></td>
+                                    <td>0</td>
+                                    <td>100</td>
+                                    <td><span class="badge" id="status_Etano">AGUARDANDO</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="component-name">Propano, C₃H₈</td>
+                                    <td class="unit-cell">% mol</td>
+                                    <td><input type="number" step="0.001" class="form-control" id="Propano" name="Propano" required placeholder="0.000" aria-label="Percentual molar do Propano C₃H₈"></td>
+                                    <td>0</td>
+                                    <td>12</td>
+                                    <td><span class="badge" id="status_Propano">AGUARDANDO</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="component-name">i-Butano, i-C₄H₁₀</td>
+                                    <td class="unit-cell">% mol</td>
+                                    <td><input type="number" step="0.001" class="form-control" id="i-Butano" name="i-Butano" required placeholder="0.000" aria-label="Percentual molar do i-Butano i-C₄H₁₀"></td>
+                                    <td>0</td>
+                                    <td>6</td>
+                                    <td><span class="badge" id="status_i-Butano">AGUARDANDO</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="component-name">n-Butano, n-C₄H₁₀</td>
+                                    <td class="unit-cell">% mol</td>
+                                    <td><input type="number" step="0.001" class="form-control" id="n-Butano" name="n-Butano" required placeholder="0.000" aria-label="Percentual molar do n-Butano n-C₄H₁₀"></td>
+                                    <td>0</td>
+                                    <td>6</td>
+                                    <td><span class="badge" id="status_n-Butano">AGUARDANDO</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="component-name">i-Pentano, i-C₅H₁₂</td>
+                                    <td class="unit-cell">% mol</td>
+                                    <td><input type="number" step="0.001" class="form-control" id="i-Pentano" name="i-Pentano" required placeholder="0.000" aria-label="Percentual molar do i-Pentano i-C₅H₁₂"></td>
+                                    <td>0</td>
+                                    <td>4</td>
+                                    <td><span class="badge" id="status_i-Pentano">AGUARDANDO</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="component-name">n-Pentano, n-C₅H₁₂</td>
+                                    <td class="unit-cell">% mol</td>
+                                    <td><input type="number" step="0.001" class="form-control" id="n-Pentano" name="n-Pentano" required placeholder="0.000" aria-label="Percentual molar do n-Pentano n-C₅H₁₂"></td>
+                                    <td>0</td>
+                                    <td>4</td>
+                                    <td><span class="badge" id="status_n-Pentano">AGUARDANDO</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="component-name">n-Hexano, n-C₆H₁₄</td>
+                                    <td class="unit-cell">% mol</td>
+                                    <td><input type="number" step="0.001" class="form-control" id="Hexano" name="Hexano" required placeholder="0.000" aria-label="Percentual molar do n-Hexano n-C₆H₁₄"></td>
+                                    <td>0</td>
+                                    <td>100</td>
+                                    <td><span class="badge" id="status_Hexano">AGUARDANDO</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="component-name">n-Heptano, n-C₇H₁₆</td>
+                                    <td class="unit-cell">% mol</td>
+                                    <td><input type="number" step="0.001" class="form-control" id="Heptano" name="Heptano" required placeholder="0.000" aria-label="Percentual molar do n-Heptano n-C₇H₁₆"></td>
+                                    <td>0</td>
+                                    <td>100</td>
+                                    <td><span class="badge" id="status_Heptano">AGUARDANDO</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="component-name">n-Octano, n-C₈H₁₈</td>
+                                    <td class="unit-cell">% mol</td>
+                                    <td><input type="number" step="0.001" class="form-control" id="Octano" name="Octano" required placeholder="0.000" aria-label="Percentual molar do n-Octano n-C₈H₁₈"></td>
+                                    <td>0</td>
+                                    <td>100</td>
+                                    <td><span class="badge" id="status_Octano">AGUARDANDO</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="component-name">n-Nonano, n-C₉H₂₀</td>
+                                    <td class="unit-cell">% mol</td>
+                                    <td><input type="number" step="0.001" class="form-control" id="Nonano" name="Nonano" required placeholder="0.000" aria-label="Percentual molar do n-Nonano n-C₉H₂₀"></td>
+                                    <td>0</td>
+                                    <td>100</td>
+                                    <td><span class="badge" id="status_Nonano">AGUARDANDO</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="component-name">n-Decano, n-C₁₀H₂₂</td>
+                                    <td class="unit-cell">% mol</td>
+                                    <td><input type="number" step="0.001" class="form-control" id="Decano" name="Decano" required placeholder="0.000" aria-label="Percentual molar do n-Decano n-C₁₀H₂₂"></td>
+                                    <td>0</td>
+                                    <td>100</td>
+                                    <td><span class="badge" id="status_Decano">AGUARDANDO</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="component-name">Oxigênio, O₂</td>
+                                    <td class="unit-cell">% mol</td>
+                                    <td><input type="number" step="0.001" class="form-control" id="Oxigenio" name="Oxigenio" required placeholder="0.000" aria-label="Percentual molar do Oxigênio O₂"></td>
+                                    <td>0</td>
+                                    <td>21</td>
+                                    <td><span class="badge" id="status_Oxigenio">AGUARDANDO</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="component-name">Nitrogênio, N₂</td>
+                                    <td class="unit-cell">% mol</td>
+                                    <td><input type="number" step="0.001" class="form-control" id="Nitrogenio" name="Nitrogenio" required placeholder="0.000" aria-label="Percentual molar do Nitrogênio N₂"></td>
+                                    <td>0</td>
+                                    <td>100</td>
+                                    <td><span class="badge" id="status_Nitrogenio">AGUARDANDO</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="component-name">Dióxido de Carbono, CO₂</td>
+                                    <td class="unit-cell">% mol</td>
+                                    <td><input type="number" step="0.001" class="form-control" id="CO2" name="CO2" required placeholder="0.000" aria-label="Percentual molar do Dióxido de Carbono CO₂"></td>
+                                    <td>0</td>
+                                    <td>100</td>
+                                    <td><span class="badge" id="status_CO2">AGUARDANDO</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Propriedades do Fluido -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h2><i class="bi bi-calculator"></i> PROPRIEDADES DO FLUIDO</h2>
+                </div>
+                <div class="section-body-table">
+                    <div class="table-container">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Propriedade</th>
+                                    <th>Unidade</th>
+                                    <th>Valor</th>
+                                    <th>CEP Status</th>
+                                    <th>CEP Limite Inferior</th>
+                                    <th>CEP Limite Superior</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="component-name">Fator de compressibilidade<br>Condição de Referência (20°C / 1 atm)</td>
+                                    <td class="unit-cell">adimensional</td>
+                                    <td><input type="number" step="0.00001" class="form-control" id="fator_compressibilidade" name="fator_compressibilidade" required placeholder="0,00000" aria-label="Valor do Fator de Compressibilidade"></td>
+                                    <td><span class="badge" id="status_fator_compressibilidade">AGUARDANDO</span></td>
+                                    <td class="limite-inferior" id="limite_inf_fator_compressibilidade">---</td>
+                                    <td class="limite-superior" id="limite_sup_fator_compressibilidade">---</td>
+                                </tr>
+                                <tr>
+                                    <td class="component-name">Massa Específica<br>Condição de Referência<br>(20°C / 1 atm)</td>
+                                    <td class="unit-cell">kg/m³</td>
+                                    <td><input type="number" step="0.0001" class="form-control" id="massa_especifica" name="massa_especifica" required placeholder="0,0000" aria-label="Valor da Massa Específica"></td>
+                                    <td><span class="badge" id="status_massa_especifica">AGUARDANDO</span></td>
+                                    <td class="limite-inferior" id="limite_inf_massa_especifica">---</td>
+                                    <td class="limite-superior" id="limite_sup_massa_especifica">---</td>
+                                </tr>
+                                <tr>
+                                    <td class="component-name">Massa Molecular</td>
+                                    <td class="unit-cell">g/mol</td>
+                                    <td><input type="number" step="0.0001" class="form-control" id="massa_molecular" name="massa_molecular" required placeholder="0,0000" aria-label="Valor da Massa Molecular"></td>
+                                    <td><span class="badge" id="status_massa_molecular">AGUARDANDO</span></td>
+                                    <td class="limite-inferior" id="limite_inf_massa_molecular">---</td>
+                                    <td class="limite-superior" id="limite_sup_massa_molecular">---</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
 
             <!-- Responsáveis -->
-            <div class="row mb-4">
-                <div class="col-md-12">
-                    <div class="border p-3 bg-light">
-                        <h6 class="text-primary">RESPONSÁVEIS</h6>
-                        <div class="row">
-                            <div class="col-md-4 mb-3">
-                                <label for="responsavel_tecnico" class="form-label small">Responsável Técnico</label>
-                                <input type="text" class="form-control form-control-sm" id="responsavel_tecnico" name="responsavel_tecnico" required>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label for="responsavel_elaboracao" class="form-label small">Responsável Elaboração</label>
-                                <input type="text" class="form-control form-control-sm" id="responsavel_elaboracao" name="responsavel_elaboracao" required>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label for="responsavel_aprovacao" class="form-label small">Responsável Aprovação</label>
-                                <input type="text" class="form-control form-control-sm" id="responsavel_aprovacao" name="responsavel_aprovacao" required>
-                            </div>
+            <div class="section-card">
+                <div class="section-header">
+                    <h2><i class="bi bi-people"></i> RESPONSÁVEIS</h2>
+                </div>
+                <div class="section-body">
+                    <div class="form-grid form-grid-3">
+                        <div class="form-group">
+                            <label class="form-label" for="responsavel_tecnico">Responsável Técnico</label>
+                            <input type="text" class="form-control" id="responsavel_tecnico" name="responsavel_tecnico" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="responsavel_elaboracao">Responsável Elaboração</label>
+                            <input type="text" class="form-control" id="responsavel_elaboracao" name="responsavel_elaboracao" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="responsavel_aprovacao">Responsável Aprovação</label>
+                            <input type="text" class="form-control" id="responsavel_aprovacao" name="responsavel_aprovacao" required>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Observações -->
-            <div class="row mb-4">
-                <div class="col-md-12">
-                    <div class="border p-3 bg-light">
-                        <h6 class="text-primary">OBSERVAÇÕES</h6>
-                        <div class="mb-3">
-                            <textarea class="form-control form-control-sm" id="observacoes" name="observacoes" rows="2"></textarea>
-                        </div>
+            <!-- Objetivo -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h2><i class="bi bi-bullseye"></i> OBJETIVO</h2>
+                </div>
+                <div class="section-body">
+                    <div class="form-group">
+                        <label class="form-label" for="objetivo">Descrição do Objetivo</label>
+                        <textarea class="form-control" id="objetivo" name="objetivo" rows="1"></textarea>
                     </div>
                 </div>
             </div>
 
-            <div class="text-center">
-                <button type="submit" class="btn btn-primary btn-lg">
-                    <i class="bi bi-check-circle"></i> Validar e Cadastrar Boletim
-                </button>
+            <!-- Check List ISO 17025 -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0"><i class="bi bi-list-check"></i> CHECK LIST NBR ISO/IEC 17025</h2>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="checklist-table table table-striped table-hover table-sm mb-0">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th scope="col" style="background: linear-gradient(135deg, #1e40af, #2563eb); color: white; width: 60px;" class="text-center">ITEM</th>
+                                    <th scope="col" style="background: linear-gradient(135deg, #1e40af, #2563eb); color: white;" class="text-center">DESCRIÇÃO</th>
+                                    <th scope="col" style="background: linear-gradient(135deg, #1e40af, #2563eb); color: white; width: 140px;" class="text-center">SITUAÇÃO</th>
+                                    <th scope="col" style="background: linear-gradient(135deg, #1e40af, #2563eb); color: white; width: 160px;" class="text-center">NÃO APLICÁVEL</th>
+                                    <th scope="col" style="background: linear-gradient(135deg, #1e40af, #2563eb); color: white; width: 200px;" class="text-center">OBSERVAÇÃO</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-center">1</td>
+                                    <td>Identificação do boletim de resultados analíticos</td>
+                                    <td class="text-center">
+                                        <select name="checklist_1_situacao" class="form-select form-select-sm" aria-label="Situação do item 1 - Identificação do boletim de resultados analíticos">
+                                            <option value="">Selecionar</option>
+                                            <option value="OK">✓ OK</option>
+                                            <option value="NOK">✗ NOK</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <select name="checklist_1_nao_aplicavel" class="form-select form-select-sm" aria-label="Item 1 não aplicável - Identificação do boletim de resultados analíticos">
+                                            <option value="">Selecionar</option>
+                                            <option value="0">Não</option>
+                                            <option value="1">Sim</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <input type="text" name="checklist_1_observacao" value="" class="form-control form-control-sm text-center" aria-label="Observação do item 1 - Identificação do boletim de resultados analíticos">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center">2</td>
+                                    <td>Identificação da amostra</td>
+                                    <td class="text-center">
+                                        <select name="checklist_2_situacao" class="form-select form-select-sm" aria-label="Situação do item 2 - Identificação da amostra">
+                                            <option value="">Selecionar</option>
+                                            <option value="OK">✓ OK</option>
+                                            <option value="NOK">✗ NOK</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <select name="checklist_2_nao_aplicavel" class="form-select form-select-sm" aria-label="Item 2 não aplicável - Identificação da amostra">
+                                            <option value="">Selecionar</option>
+                                            <option value="0">Não</option>
+                                            <option value="1">Sim</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <input type="text" name="checklist_2_observacao" value="" class="form-control form-control-sm text-center" aria-label="Observação do item 2 - Identificação da amostra">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center">3</td>
+                                    <td>Descrição da data de amostragem</td>
+                                    <td class="text-center">
+                                        <select name="checklist_3_situacao" class="form-select form-select-sm" aria-label="Situação do item 3 - Descrição da data de amostragem">
+                                            <option value="">Selecionar</option>
+                                            <option value="OK">✓ OK</option>
+                                            <option value="NOK">✗ NOK</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <select name="checklist_3_nao_aplicavel" class="form-select form-select-sm" aria-label="Item 3 não aplicável - Descrição da data de amostragem">
+                                            <option value="">Selecionar</option>
+                                            <option value="0">Não</option>
+                                            <option value="1">Sim</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <input type="text" name="checklist_3_observacao" value="" class="form-control form-control-sm text-center" aria-label="Observação do item 3 - Descrição da data de amostragem">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center">4</td>
+                                    <td>Descrição da data de recebimento da amostra pelo laboratório</td>
+                                    <td class="text-center">
+                                        <select name="checklist_4_situacao" class="form-select form-select-sm" aria-label="Situação do item 4 - Descrição da data de recebimento da amostra pelo laboratório">
+                                            <option value="">Selecionar</option>
+                                            <option value="OK">✓ OK</option>
+                                            <option value="NOK">✗ NOK</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <select name="checklist_4_nao_aplicavel" class="form-select form-select-sm" aria-label="Item 4 não aplicável - Descrição da data de recebimento da amostra pelo laboratório">
+                                            <option value="">Selecionar</option>
+                                            <option value="0">Não</option>
+                                            <option value="1">Sim</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <input type="text" name="checklist_4_observacao" value="" class="form-control form-control-sm text-center" aria-label="Observação do item 4 - Descrição da data de recebimento da amostra pelo laboratório">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center">5</td>
+                                    <td>Descrição da data de realização das análises</td>
+                                    <td class="text-center">
+                                        <select name="checklist_5_situacao" class="form-select form-select-sm" aria-label="Situação do item 5 - Descrição da data de realização das análises">
+                                            <option value="">Selecionar</option>
+                                            <option value="OK">✓ OK</option>
+                                            <option value="NOK">✗ NOK</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <select name="checklist_5_nao_aplicavel" class="form-select form-select-sm" aria-label="Item 5 não aplicável - Descrição da data de realização das análises">
+                                            <option value="">Selecionar</option>
+                                            <option value="0">Não</option>
+                                            <option value="1">Sim</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <input type="text" name="checklist_5_observacao" value="" class="form-control form-control-sm text-center" aria-label="Observação do item 5 - Descrição da data de realização das análises">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center">6</td>
+                                    <td>Descrição da data de emissão do BRA</td>
+                                    <td class="text-center">
+                                        <select name="checklist_6_situacao" class="form-select form-select-sm" aria-label="Situação do item 6 - Descrição da data de emissão do BRA">
+                                            <option value="">Selecionar</option>
+                                            <option value="OK">✓ OK</option>
+                                            <option value="NOK">✗ NOK</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <select name="checklist_6_nao_aplicavel" class="form-select form-select-sm" aria-label="Item 6 não aplicável - Descrição da data de emissão do BRA">
+                                            <option value="">Selecionar</option>
+                                            <option value="0">Não</option>
+                                            <option value="1">Sim</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <input type="text" name="checklist_6_observacao" value="" class="form-control form-control-sm text-center" aria-label="Observação do item 6 - Descrição da data de emissão do BRA">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center">7</td>
+                                    <td>Identificação do campo produtor ou da instalação</td>
+                                    <td class="text-center">
+                                        <select name="checklist_7_situacao" class="form-select form-select-sm" aria-label="Situação do item 7 - Identificação do campo produtor ou da instalação">
+                                            <option value="">Selecionar</option>
+                                            <option value="OK">✓ OK</option>
+                                            <option value="NOK">✗ NOK</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <select name="checklist_7_nao_aplicavel" class="form-select form-select-sm" aria-label="Item 7 não aplicável - Identificação do campo produtor ou da instalação">
+                                            <option value="">Selecionar</option>
+                                            <option value="0">Não</option>
+                                            <option value="1">Sim</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <input type="text" name="checklist_7_observacao" value="" class="form-control form-control-sm text-center" aria-label="Observação do item 7 - Identificação do campo produtor ou da instalação">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center">8</td>
+                                    <td>Identificação do agente regulado</td>
+                                    <td class="text-center">
+                                        <select name="checklist_8_situacao" class="form-select form-select-sm" aria-label="Situação do item 8 - Identificação do agente regulado">
+                                            <option value="">Selecionar</option>
+                                            <option value="OK">✓ OK</option>
+                                            <option value="NOK">✗ NOK</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <select name="checklist_8_nao_aplicavel" class="form-select form-select-sm" aria-label="Item 8 não aplicável - Identificação do agente regulado">
+                                            <option value="">Selecionar</option>
+                                            <option value="0">Não</option>
+                                            <option value="1">Sim</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <input type="text" name="checklist_8_observacao" value="" class="form-control form-control-sm text-center" aria-label="Observação do item 8 - Identificação do agente regulado">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center">9</td>
+                                    <td>Identificação do ponto de medição e/ou do poço quando aplicável</td>
+                                    <td class="text-center">
+                                        <select name="checklist_9_situacao" class="form-select form-select-sm" aria-label="Situação do item 9 - Identificação do ponto de medição e/ou do poço quando aplicável">
+                                            <option value="">Selecionar</option>
+                                            <option value="OK">✓ OK</option>
+                                            <option value="NOK">✗ NOK</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <select name="checklist_9_nao_aplicavel" class="form-select form-select-sm" aria-label="Item 9 não aplicável - Identificação do ponto de medição e/ou do poço quando aplicável">
+                                            <option value="">Selecionar</option>
+                                            <option value="0">Não</option>
+                                            <option value="1">Sim</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <input type="text" name="checklist_9_observacao" value="" class="form-control form-control-sm text-center" aria-label="Observação do item 9 - Identificação do ponto de medição e/ou do poço quando aplicável">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center">10</td>
+                                    <td>Resultados das análises e normas ou procedimentos utilizados</td>
+                                    <td class="text-center">
+                                        <select name="checklist_10_situacao" class="form-select form-select-sm" aria-label="Situação do item 10 - Resultados das análises e normas ou procedimentos utilizados">
+                                            <option value="">Selecionar</option>
+                                            <option value="OK">✓ OK</option>
+                                            <option value="NOK">✗ NOK</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <select name="checklist_10_nao_aplicavel" class="form-select form-select-sm" aria-label="Item 10 não aplicável - Resultados das análises e normas ou procedimentos utilizados">
+                                            <option value="">Selecionar</option>
+                                            <option value="0">Não</option>
+                                            <option value="1">Sim</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <input type="text" name="checklist_10_observacao" value="" class="form-control form-control-sm text-center" aria-label="Observação do item 10 - Resultados das análises e normas ou procedimentos utilizados">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center">11</td>
+                                    <td>Descrição das características do processo do ponto de amostragem do fluido (pressão e temperatura)</td>
+                                    <td class="text-center">
+                                        <select name="checklist_11_situacao" class="form-select form-select-sm" aria-label="Situação do item 11 - Descrição das características do processo do ponto de amostragem do fluido (pressão e temperatura)">
+                                            <option value="">Selecionar</option>
+                                            <option value="OK">✓ OK</option>
+                                            <option value="NOK">✗ NOK</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <select name="checklist_11_nao_aplicavel" class="form-select form-select-sm" aria-label="Item 11 não aplicável - Descrição das características do processo do ponto de amostragem do fluido (pressão e temperatura)">
+                                            <option value="">Selecionar</option>
+                                            <option value="0">Não</option>
+                                            <option value="1">Sim</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <input type="text" name="checklist_11_observacao" value="" class="form-control form-control-sm text-center" aria-label="Observação do item 11 - Descrição das características do processo do ponto de amostragem do fluido (pressão e temperatura)">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center">12</td>
+                                    <td>Identificação do responsável pela amostragem</td>
+                                    <td class="text-center">
+                                        <select name="checklist_12_situacao" class="form-select form-select-sm" aria-label="Situação do item 12 - Identificação do responsável pela amostragem">
+                                            <option value="">Selecionar</option>
+                                            <option value="OK">✓ OK</option>
+                                            <option value="NOK">✗ NOK</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <select name="checklist_12_nao_aplicavel" class="form-select form-select-sm" aria-label="Item 12 não aplicável - Identificação do responsável pela amostragem">
+                                            <option value="">Selecionar</option>
+                                            <option value="0">Não</option>
+                                            <option value="1">Sim</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <input type="text" name="checklist_12_observacao" value="" class="form-control form-control-sm text-center" aria-label="Observação do item 12 - Identificação do responsável pela amostragem">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center">13</td>
+                                    <td>Indicação dos incertezas de medição, com descrição do nível de confiança e fator de abrangência</td>
+                                    <td class="text-center">
+                                        <select name="checklist_13_situacao" class="form-select form-select-sm" aria-label="Situação do item 13 - Indicação dos incertezas de medição, com descrição do nível de confiança e fator de abrangência">
+                                            <option value="">Selecionar</option>
+                                            <option value="OK">✓ OK</option>
+                                            <option value="NOK">✗ NOK</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <select name="checklist_13_nao_aplicavel" class="form-select form-select-sm" aria-label="Item 13 não aplicável - Indicação dos incertezas de medição, com descrição do nível de confiança e fator de abrangência">
+                                            <option value="">Selecionar</option>
+                                            <option value="0">Não</option>
+                                            <option value="1">Sim</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <input type="text" name="checklist_13_observacao" value="" class="form-control form-control-sm text-center" aria-label="Observação do item 13 - Indicação dos incertezas de medição, com descrição do nível de confiança e fator de abrangência">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center">14</td>
+                                    <td>Identificação dos responsáveis técnicos pela realização da análise</td>
+                                    <td class="text-center">
+                                        <select name="checklist_14_situacao" class="form-select form-select-sm" aria-label="Situação do item 14 - Identificação dos responsáveis técnicos pela realização da análise">
+                                            <option value="">Selecionar</option>
+                                            <option value="OK">✓ OK</option>
+                                            <option value="NOK">✗ NOK</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <select name="checklist_14_nao_aplicavel" class="form-select form-select-sm" aria-label="Item 14 não aplicável - Identificação dos responsáveis técnicos pela realização da análise">
+                                            <option value="">Selecionar</option>
+                                            <option value="0">Não</option>
+                                            <option value="1">Sim</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <input type="text" name="checklist_14_observacao" value="" class="form-control form-control-sm text-center" aria-label="Observação do item 14 - Identificação dos responsáveis técnicos pela realização da análise">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center">15</td>
+                                    <td>Identificação dos responsáveis pela elaboração e aprovação do boletim</td>
+                                    <td class="text-center">
+                                        <select name="checklist_15_situacao" class="form-select form-select-sm" aria-label="Situação do item 15 - Identificação dos responsáveis pela elaboração e aprovação do boletim">
+                                            <option value="">Selecionar</option>
+                                            <option value="OK">✓ OK</option>
+                                            <option value="NOK">✗ NOK</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <select name="checklist_15_nao_aplicavel" class="form-select form-select-sm" aria-label="Item 15 não aplicável - Identificação dos responsáveis pela elaboração e aprovação do boletim">
+                                            <option value="">Selecionar</option>
+                                            <option value="0">Não</option>
+                                            <option value="1">Sim</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <input type="text" name="checklist_15_observacao" value="" class="form-control form-control-sm text-center" aria-label="Observação do item 15 - Identificação dos responsáveis pela elaboração e aprovação do boletim">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botões de ação -->
+            <div class="section-card">
+                <div class="section-body">
+                    <div class="form-grid form-grid-2">
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-circle"></i> Salvar Boletim
+                        </button>
+                        <button type="reset" class="btn btn-secondary">
+                            <i class="bi bi-arrow-clockwise"></i> Limpar Formulário
+                        </button>
+                    </div>
+                </div>
             </div>
         </form>
     </div>
 </div>
-
+                                    <th class="text-center">Limite Inferior</th>
+                                    <th class="text-center">Limite Superior</th>
+                                </tr>
+                            </thead>
+                            <tbody>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Validação de Prazos ANP em Tempo Real
+    function calcularDias(dataInicial, dataFinal) {
+        if (!dataInicial || !dataFinal) return null;
+        const dt1 = new Date(dataInicial);
+        const dt2 = new Date(dataFinal);
+        return Math.floor((dt2 - dt1) / (1000 * 60 * 60 * 24));
+    }
+
+    function validarPrazosANP() {
+        const dataColeta = document.getElementById('data_coleta').value;
+        const dataEmissao = document.getElementById('data_emissao').value;
+        const dataValidacao = document.getElementById('data_validacao').value;
+        
+        const alertBox = document.getElementById('validacao-prazos-anp');
+        const prazoColetaEmissaoSpan = document.getElementById('prazo-coleta-emissao');
+        const prazoEmissaoValidacaoSpan = document.getElementById('prazo-emissao-validacao');
+        const prazoTotalSpan = document.getElementById('prazo-total');
+
+        if (!dataColeta && !dataEmissao) {
+            alertBox.style.display = 'none';
+            return;
+        }
+
+        alertBox.style.display = 'block';
+
+        // Validar Coleta → Emissão (25 dias)
+        if (dataColeta && dataEmissao) {
+            const dias = calcularDias(dataColeta, dataEmissao);
+            if (dias !== null) {
+                if (dias < 0) {
+                    prazoColetaEmissaoSpan.innerHTML = `<span class="text-danger">❌ ERRO: Data de emissão anterior à coleta (${dias} dias)</span>`;
+                } else if (dias <= 25) {
+                    prazoColetaEmissaoSpan.innerHTML = `<span class="text-success">${dias}/25 dias ✓</span>`;
+                } else {
+                    prazoColetaEmissaoSpan.innerHTML = `<span class="text-danger">${dias}/25 dias ⚠️ EXCEDIDO</span>`;
+                }
+            }
+        } else {
+            prazoColetaEmissaoSpan.innerHTML = '<span class="text-muted">Aguardando datas</span>';
+        }
+
+        // Validar Emissão → Validação (1 dia)
+        if (dataEmissao && dataValidacao) {
+            const dias = calcularDias(dataEmissao, dataValidacao);
+            if (dias !== null) {
+                if (dias < 0) {
+                    prazoEmissaoValidacaoSpan.innerHTML = `<span class="text-danger">❌ ERRO: Data de validação anterior à emissão (${dias} dias)</span>`;
+                } else if (dias <= 1) {
+                    prazoEmissaoValidacaoSpan.innerHTML = `<span class="text-success">${dias}/1 dia ✓</span>`;
+                } else {
+                    prazoEmissaoValidacaoSpan.innerHTML = `<span class="text-danger">${dias}/1 dia ⚠️ EXCEDIDO</span>`;
+                }
+            }
+        } else if (dataEmissao) {
+            // Se só temos emissão, calcular com data atual
+            const hoje = new Date().toISOString().split('T')[0];
+            const dias = calcularDias(dataEmissao, hoje);
+            if (dias !== null) {
+                if (dias < 0) {
+                    prazoEmissaoValidacaoSpan.innerHTML = `<span class="text-danger">❌ ERRO: Data de emissão futura (${Math.abs(dias)} dias no futuro)</span>`;
+                } else if (dias <= 1) {
+                    prazoEmissaoValidacaoSpan.innerHTML = `<span class="text-warning">${dias}/1 dia (até hoje) ⚠️</span>`;
+                } else {
+                    prazoEmissaoValidacaoSpan.innerHTML = `<span class="text-danger">${dias}/1 dia (até hoje) ⚠️ EXCEDIDO</span>`;
+                }
+            }
+        } else {
+            prazoEmissaoValidacaoSpan.innerHTML = '<span class="text-muted">Aguardando datas</span>';
+        }
+
+        // Validar Prazo Total (28 dias)
+        if (dataColeta) {
+            const dataFinalValidacao = dataValidacao || new Date().toISOString().split('T')[0];
+            const dias = calcularDias(dataColeta, dataFinalValidacao);
+            if (dias !== null) {
+                if (dias < 0) {
+                    prazoTotalSpan.innerHTML = `<span class="text-danger">❌ ERRO: Data de validação anterior à coleta (${dias} dias)</span>`;
+                } else if (dias <= 28) {
+                    prazoTotalSpan.innerHTML = `<span class="text-success">${dias}/28 dias ✓</span>`;
+                } else {
+                    prazoTotalSpan.innerHTML = `<span class="text-danger">${dias}/28 dias ⚠️ EXCEDIDO</span>`;
+                }
+            }
+        } else {
+            prazoTotalSpan.innerHTML = '<span class="text-muted">Aguardando data de coleta</span>';
+        }
+    }
+
+    // Event listeners para as datas
+    ['data_coleta', 'data_emissao', 'data_validacao'].forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.addEventListener('change', function() {
+                validarSequenciaDatasCampo(this);
+                validarPrazosANP();
+            });
+            element.addEventListener('blur', function() {
+                validarSequenciaDatasCampo(this);
+                validarPrazosANP();
+            });
+        }
+    });
+
+    // Função para validar sequência de datas nos campos individuais
+    function validarSequenciaDatasCampo(campo) {
+        const dataColeta = document.getElementById('data_coleta').value;
+        const dataEmissao = document.getElementById('data_emissao').value;
+        const dataValidacao = document.getElementById('data_validacao').value;
+        
+        // Remove classes de erro anteriores
+        campo.classList.remove('is-invalid');
+        
+        // Remove mensagens de erro anteriores
+        const errorMsg = campo.parentNode.querySelector('.invalid-feedback');
+        if (errorMsg) {
+            errorMsg.remove();
+        }
+
+        // Validações específicas
+        if (campo.id === 'data_emissao' && dataColeta && dataEmissao) {
+            const dias = calcularDias(dataColeta, dataEmissao);
+            if (dias < 0) {
+                mostrarErroData(campo, 'Data de emissão não pode ser anterior à data de coleta');
+                return false;
+            }
+        }
+        
+        if (campo.id === 'data_validacao' && dataEmissao && dataValidacao) {
+            const dias = calcularDias(dataEmissao, dataValidacao);
+            if (dias < 0) {
+                mostrarErroData(campo, 'Data de validação não pode ser anterior à data de emissão');
+                return false;
+            }
+        }
+
+        if (campo.id === 'data_validacao' && dataColeta && dataValidacao) {
+            const dias = calcularDias(dataColeta, dataValidacao);
+            if (dias < 0) {
+                mostrarErroData(campo, 'Data de validação não pode ser anterior à data de coleta');
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    // Função para mostrar erro em campo de data
+    function mostrarErroData(campo, mensagem) {
+        campo.classList.add('is-invalid');
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'invalid-feedback';
+        errorDiv.textContent = mensagem;
+        campo.parentNode.appendChild(errorDiv);
+    }
+
+    // Validação inicial
+    validarPrazosANP();
+
     // Validação em tempo real dos componentes gasosos
-    const componentes = ['Metano', 'Etano', 'Propano', 'i-Butano', 'n-Butano', 'i-Pentano', 'n-Pentano', 'Hexano', 'Heptano', 'Octano', 'Nonano', 'Decano', 'Oxigênio', 'Nitrogênio', 'CO2'];
+    const componentes = ['Metano', 'Etano', 'Propano', 'i-Butano', 'n-Butano', 'i-Pentano', 'n-Pentano', 'Hexano', 'Heptano', 'Octano', 'Nonano', 'Decano', 'Oxigenio', 'Nitrogenio', 'CO2'];
     
     const limites = {
         'Metano': {min: 0, max: 100},
@@ -309,8 +1401,8 @@ document.addEventListener('DOMContentLoaded', function() {
         'Octano': {min: 0, max: 100},
         'Nonano': {min: 0, max: 100},
         'Decano': {min: 0, max: 100},
-        'Oxigênio': {min: 0, max: 21},
-        'Nitrogênio': {min: 0, max: 100},
+        'Oxigenio': {min: 0, max: 21},
+        'Nitrogenio': {min: 0, max: 100},
         'CO2': {min: 0, max: 100}
     };
     
@@ -333,7 +1425,138 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     });
+
+    // Validação CEP para propriedades calculadas
+    const propriedadesCep = {
+        'fator_compressibilidade': {
+            limiteInferior: 0.900,
+            limiteSuperior: 1.100,
+            nome: 'Fator de compressibilidade'
+        },
+        'massa_especifica': {
+            limiteInferior: 0.650,
+            limiteSuperior: 0.900,
+            nome: 'Massa Específica'
+        },
+        'massa_molecular': {
+            limiteInferior: 16.00,
+            limiteSuperior: 22.00,
+            nome: 'Massa Molecular'
+        }
+    };
+
+    function validarCepPropriedade(idPropriedade, valor) {
+        const limite = propriedadesCep[idPropriedade];
+        if (!limite) return 'PENDENTE';
+        
+        const valorNum = parseFloat(valor);
+        if (isNaN(valorNum)) return 'PENDENTE';
+        
+        return (valorNum >= limite.limiteInferior && valorNum <= limite.limiteSuperior) ? 'OK' : 'NOK';
+    }
+
+    function atualizarStatusCep(idPropriedade) {
+        const input = document.getElementById(idPropriedade);
+        const statusCell = document.getElementById('status_' + idPropriedade);
+        const limiteInfCell = document.getElementById('limite_inf_' + idPropriedade);
+        const limiteSupCell = document.getElementById('limite_sup_' + idPropriedade);
+        
+        if (!input || !statusCell) return;
+        
+        const valor = input.value;
+        const status = validarCepPropriedade(idPropriedade, valor);
+        const limite = propriedadesCep[idPropriedade];
+        
+        // Atualizar status
+        statusCell.innerHTML = `<span class="cep-status ${status.toLowerCase()}">${status}</span>`;
+        
+        // Atualizar limites
+        if (limiteInfCell && limite) {
+            limiteInfCell.innerHTML = `<span class="cep-limite">${limite.limiteInferior}</span>`;
+        }
+        if (limiteSupCell && limite) {
+            limiteSupCell.innerHTML = `<span class="cep-limite">${limite.limiteSuperior}</span>`;
+        }
+    }
+
+    // Event listeners para propriedades
+    Object.keys(propriedadesCep).forEach(function(idPropriedade) {
+        const input = document.getElementById(idPropriedade);
+        if (input) {
+            input.addEventListener('input', function() {
+                atualizarStatusCep(idPropriedade);
+            });
+            input.addEventListener('blur', function() {
+                atualizarStatusCep(idPropriedade);
+            });
+            
+            // Inicializar limites na carga da página
+            atualizarStatusCep(idPropriedade);
+        }
+    });
+
+    // Função para aplicar cores corretas aos badges baseado no texto
+    function aplicarCoresBadges() {
+        const badges = document.querySelectorAll('.badge');
+        badges.forEach(function(badge) {
+            const texto = badge.textContent.trim().toUpperCase();
+            
+            // Remove classes de cor existentes
+            badge.classList.remove('badge-aguardando', 'badge-ok', 'badge-fora', 'badge-pendente', 'badge-nok');
+            
+            if (texto.includes('AGUARDANDO')) {
+                badge.classList.add('badge-aguardando');
+                badge.setAttribute('data-status', 'AGUARDANDO');
+            } else if (texto.includes('OK') || texto.includes('✓') || texto.includes('VALIDADO')) {
+                badge.classList.add('badge-ok');
+                badge.setAttribute('data-status', 'OK');
+            } else if (texto.includes('FORA') || texto.includes('✗') || texto.includes('INVALIDADO')) {
+                badge.classList.add('badge-fora');
+                badge.setAttribute('data-status', 'FORA');
+            } else if (texto.includes('PENDENTE')) {
+                badge.classList.add('badge-pendente');
+                badge.setAttribute('data-status', 'PENDENTE');
+            } else if (texto.includes('NOK')) {
+                badge.classList.add('badge-nok');
+                badge.setAttribute('data-status', 'NOK');
+            }
+        });
+        
+        // Aplicar estilos aos spans com classe cep-status
+        const cepStatuses = document.querySelectorAll('.cep-status');
+        cepStatuses.forEach(function(span) {
+            const texto = span.textContent.trim().toUpperCase();
+            span.classList.remove('ok', 'nok', 'pendente');
+            
+            if (texto === 'OK') {
+                span.classList.add('ok');
+            } else if (texto === 'NOK') {
+                span.classList.add('nok');  
+            } else if (texto === 'PENDENTE') {
+                span.classList.add('pendente');
+            }
+        });
+    }
+
+    // Aplicar cores na carga da página
+    aplicarCoresBadges();
+    
+    // Observer para detectar mudanças dinâmicas nos badges
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.type === 'childList' || mutation.type === 'characterData') {
+                aplicarCoresBadges();
+            }
+        });
+    });
+    
+    // Observar mudanças no documento
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+        characterData: true
+    });
 });
 </script>
-
+</div>
 {% endblock %}

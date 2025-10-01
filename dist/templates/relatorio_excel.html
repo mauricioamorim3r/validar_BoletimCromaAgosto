@@ -1,411 +1,847 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="excel-container">
-    <!-- Cabeçalho BRAVA Energia - Padrão Figma -->
-    <div class="brava-header">
-        <div class="brava-logo">BRAVA</div>
-        <h1>SISTEMA DE ANÁLISES QUÍMICAS</h1>
-        <div class="subtitle">Campo de Atalaia - Controle de Qualidade</div>
-    </div>
+<style>
+    /* Aplicando a fonte Inter e melhorias visuais */
+    .card, .table, .btn, .form-control, .form-label, label, th, td, h4, h5, h6, input, select, textarea {
+        font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif !important;
+    }
+    
+    .card-header.primary-header, .card-header.bg-pri                            <td class="text-center">
+                                {% if edit_mode %}
+                                    <input type="number" step="0.0001" name="c6_plus" class="form-control form-control-sm text-center" value="{{ componentes_dict['c6_plus'] if 'c6_plus' in componentes_dict else '' }}">
+                                {% else %}
+                                    <span class="numeric">{{ "%.4f"|format(componentes_dict['c6_plus']) if 'c6_plus' in componentes_dict and componentes_dict['c6_plus'] else '-' }}</span>
+                                {% endif %}
+                            </td>
+        background: linear-gradient(135deg, #1e40af, #3b82f6) !important;
+        color: white;
+        border-radius: 8px 8px 0 0;
+        padding: 15px 20px;
+        font-weight: 600;
+    }
+    
+    .card {
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e2e8f0;
+        margin-bottom: 20px;
+    }
+    
+    .table th {
+        font-size: 0.9rem;
+        font-weight: 600;
+        background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+        color: #374151;
+        padding: 12px 10px;
+    }
+    
+    .form-control {
+        border-radius: 6px;
+        border: 1px solid #cbd5e1;
+        transition: all 0.2s ease;
+    }
+    
+    .form-control:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 6px;
+    }
+    
+    .btn {
+        border-radius: 6px;
+        font-weight: 500;
+        padding: 10px 16px;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #1e40af, #3b82f6);
+        border: none;
+    }
+    
+    .btn-success {
+        background: linear-gradient(135deg, #10b981, #059669);
+        border: none;
+    }
+    
+    .btn-secondary {
+        background: linear-gradient(135deg, #64748b, #475569);
+        border: none;
+    }
+    
+    .control-buttons .btn {
+        min-width: 140px;
+    }
+    
+    .excel-container .card-header h4, .excel-container .card-header h6 {
+        color: white;
+        font-weight: 600;
+    }
+</style>
 
-    <!-- Sistema de Abas - Padrão Figma -->
-    <div class="figma-tabs">
-        <button class="figma-tab active">VALIDAÇÃO</button>
-        <button class="figma-tab">FULL GAS</button>
-    </div>
+<div class="excel-container">
+
+<div class="row">
+    <div class="col-md-12">
+        <!-- Cabeçalho BRAVA Energia -->
+        <div class="card mb-3">
+            <div class="card-header primary-header">
+                <h4 class="mb-0">VISUALIZAÇÃO DE BOLETINS VALIDADOS</h4>
+            </div>
+        </div>
+
+        <!-- Botões de Controle -->
+        <div class="control-buttons mb-3 d-flex flex-wrap gap-2">
+            {% if not edit_mode %}
+                <a href="{{ url_for('relatorio', boletim_id=boletim.id, edit_mode='edit') }}" class="btn btn-primary flex-fill flex-md-grow-0">
+                    <i class="bi bi-pencil"></i> Editar Boletim
+                </a>
+                <a href="{{ url_for('listar_boletins') }}" class="btn btn-secondary flex-fill flex-md-grow-0">
+                    <i class="bi bi-arrow-left"></i> Voltar
+                </a>
+                <a href="{{ url_for('relatorio_pdf', boletim_id=boletim.id) }}" class="btn btn-success flex-fill flex-md-grow-0">
+                    <i class="bi bi-file-earmark-pdf"></i> Gerar PDF
+                </a>
+            {% else %}
+                <button type="button" id="salvar-btn" class="btn btn-success flex-fill flex-md-grow-0">
+                    <i class="bi bi-check"></i> Salvar Alterações
+                </button>
+                <a href="{{ url_for('relatorio', boletim_id=boletim.id) }}" class="btn btn-secondary flex-fill flex-md-grow-0">
+                    <i class="bi bi-x"></i> Cancelar
+                </a>
+            {% endif %}
+        </div>
+
+    {% if edit_mode %}
+    <form method="post" id="editForm" action="{{ url_for('relatorio', boletim_id=boletim.id, edit_mode='edit') }}">
+    {% endif %}
 
     <!-- Informações do Boletim -->
-    <div class="boletim-info-grid">
-        <div class="info-left">
-            <div class="info-row">
-                <div class="info-label">Nº BOLETIM:</div>
-                <div class="info-value">{{ boletim['numero_boletim'] }}</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">CFQ ATLANTIS:</div>
-                <div class="info-value">{{ boletim['numero_boletim'] }}</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">DATA DA COLETA:</div>
-                <div class="info-value">{{ boletim['data_coleta'] }}</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">DATA DA EMISSÃO:</div>
-                <div class="info-value">{{ boletim['data_emissao'] }}</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">DATA DE VALIDAÇÃO:</div>
-                <div class="info-value">{{ boletim['data_validacao'] or '-' }}</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">PLATAFORMA:</div>
-                <div class="info-value">FPSO ATLANTE</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">CLASSIFICAÇÃO:</div>
-                <div class="info-value">FISCAL</div>
-            </div>
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h6 class="mb-0"><i class="bi bi-info-circle"></i> INFORMAÇÕES DO BOLETIM</h6>
         </div>
-        <div class="info-right">
-            <div class="info-row">
-                <div class="info-label">Nº DO DOC:</div>
-                <div class="info-value">{{ boletim['id'] }}/2025</div>
+        <div class="card-body">
+            <!-- Primeira linha: Número do Documento, Número do Boletim, Data de Coleta, Data de Emissão -->
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <label for="numero_documento" class="form-label small">Número do Documento</label>
+                    {% if edit_mode %}
+                        <input type="text" class="form-control form-control-sm" id="numero_documento" name="numero_documento" value="{{ boletim['numero_documento'] or (boletim['id']|string + '/2025') }}">
+                    {% else %}
+                        <input type="text" class="form-control form-control-sm" id="numero_documento" name="numero_documento" value="{{ boletim['numero_documento'] or (boletim['id']|string + '/2025') }}" readonly>
+                    {% endif %}
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="numero_boletim" class="form-label small">Número do Boletim</label>
+                    {% if edit_mode %}
+                        <input type="text" class="form-control form-control-sm" id="numero_boletim" name="numero_boletim" value="{{ boletim['numero_boletim'] }}" required>
+                    {% else %}
+                        <input type="text" class="form-control form-control-sm" id="numero_boletim" name="numero_boletim" value="{{ boletim['numero_boletim'] }}" readonly>
+                    {% endif %}
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="data_coleta" class="form-label small">Data de Coleta</label>
+                    {% if edit_mode %}
+                        <input type="date" class="form-control form-control-sm" id="data_coleta" name="data_coleta" value="{{ boletim['data_coleta'] or '' }}">
+                    {% else %}
+                        <input type="date" class="form-control form-control-sm" id="data_coleta" name="data_coleta" value="{{ boletim['data_coleta'] }}" readonly>
+                    {% endif %}
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="data_emissao" class="form-label small">Data de Emissão</label>
+                    {% if edit_mode %}
+                        <input type="date" class="form-control form-control-sm" id="data_emissao" name="data_emissao" value="{{ boletim['data_emissao'] or '' }}">
+                    {% else %}
+                        <input type="date" class="form-control form-control-sm" id="data_emissao" name="data_emissao" value="{{ boletim['data_emissao'] }}" readonly>
+                    {% endif %}
+                </div>
             </div>
-            <div class="info-row">
-                <div class="info-label">DATA DE VALIDAÇÃO:</div>
-                <div class="info-value">{{ boletim['data_validacao'] or '-' }}</div>
+            
+            <!-- Segunda linha: Agente Regulado, Plataforma -->
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="agente_regulado" class="form-label small">Agente Regulado</label>
+                    {% if edit_mode %}
+                        <input type="text" class="form-control form-control-sm" id="agente_regulado" name="agente_regulado" value="{{ boletim['agente_regulado'] }}" required>
+                    {% else %}
+                        <input type="text" class="form-control form-control-sm" id="agente_regulado" name="agente_regulado" value="{{ boletim['agente_regulado'] }}" readonly>
+                    {% endif %}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="plataforma" class="form-label small">Plataforma</label>
+                    {% if edit_mode %}
+                        <input type="text" class="form-control form-control-sm" id="plataforma" name="plataforma" value="{{ boletim['plataforma'] or 'FPSO ATLANTE' }}" required>
+                    {% else %}
+                        <input type="text" class="form-control form-control-sm" id="plataforma" name="plataforma" value="{{ boletim['plataforma'] or 'FPSO ATLANTE' }}" readonly>
+                    {% endif %}
+                </div>
             </div>
-            <div class="info-row">
-                <div class="info-label">SISTEMA DE MEDIÇÃO:</div>
-                <div class="info-value">GÁS COMBUSTÍVEL LP</div>
+            
+            <!-- Terceira linha: Instalação, Sistema de Medição, Ponto de Coleta, Classificação -->
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <label for="identificacao_instalacao" class="form-label small">Instalação</label>
+                    {% if edit_mode %}
+                        <input type="text" class="form-control form-control-sm" id="identificacao_instalacao" name="identificacao_instalacao" value="{{ boletim['identificacao_instalacao'] }}" required>
+                    {% else %}
+                        <input type="text" class="form-control form-control-sm" id="identificacao_instalacao" name="identificacao_instalacao" value="{{ boletim['identificacao_instalacao'] }}" readonly>
+                    {% endif %}
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="sistema_medicao" class="form-label small">Sistema de Medição</label>
+                    {% if edit_mode %}
+                        <input type="text" class="form-control form-control-sm" id="sistema_medicao" name="sistema_medicao" value="{{ boletim['sistema_medicao'] or 'GÁS COMBUSTÍVEL LP' }}" required>
+                    {% else %}
+                        <input type="text" class="form-control form-control-sm" id="sistema_medicao" name="sistema_medicao" value="{{ boletim['sistema_medicao'] or 'GÁS COMBUSTÍVEL LP' }}" readonly>
+                    {% endif %}
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="ponto_coleta" class="form-label small">Ponto de Coleta</label>
+                    {% if edit_mode %}
+                        <input type="text" class="form-control form-control-sm" id="ponto_coleta" name="ponto_coleta" value="{{ boletim['ponto_coleta'] or 'LP FUEL GAS' }}" required>
+                    {% else %}
+                        <input type="text" class="form-control form-control-sm" id="ponto_coleta" name="ponto_coleta" value="{{ boletim['ponto_coleta'] or 'LP FUEL GAS' }}" readonly>
+                    {% endif %}
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="classificacao" class="form-label small">Classificação</label>
+                    {% if edit_mode %}
+                        <input type="text" class="form-control form-control-sm" id="classificacao" name="classificacao" value="{{ boletim['classificacao'] or 'FISCAL' }}" required>
+                    {% else %}
+                        <input type="text" class="form-control form-control-sm" id="classificacao" name="classificacao" value="{{ boletim['classificacao'] or 'FISCAL' }}" readonly>
+                    {% endif %}
+                </div>
             </div>
-            <div class="info-row">
-                <div class="info-label">PONTO DE COLETA:</div>
-                <div class="info-value">{{ boletim['ponto_medicao'] }}</div>
+            
+            <!-- Quarta linha: Data de Recebimento, Data de Análise, Data de Validação, Responsável Amostragem -->
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <label for="data_recebimento" class="form-label small">Data de Recebimento</label>
+                    {% if edit_mode %}
+                        <input type="date" class="form-control form-control-sm" id="data_recebimento" name="data_recebimento" value="{{ boletim['data_recebimento'] if boletim['data_recebimento'] else '' }}">
+                    {% else %}
+                        <input type="date" class="form-control form-control-sm" id="data_recebimento" name="data_recebimento" value="{{ boletim['data_recebimento'] if boletim['data_recebimento'] else '' }}" readonly>
+                    {% endif %}
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="data_analise" class="form-label small">Data de Análise</label>
+                    {% if edit_mode %}
+                        <input type="date" class="form-control form-control-sm" id="data_analise" name="data_analise" value="{{ boletim['data_analise'] if boletim['data_analise'] else '' }}">
+                    {% else %}
+                        <input type="date" class="form-control form-control-sm" id="data_analise" name="data_analise" value="{{ boletim['data_analise'] if boletim['data_analise'] else '' }}" readonly>
+                    {% endif %}
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="data_validacao" class="form-label small">Data de Validação</label>
+                    {% if edit_mode %}
+                        <input type="date" class="form-control form-control-sm" id="data_validacao" name="data_validacao" value="{{ boletim['data_validacao'] if boletim['data_validacao'] else '' }}">
+                    {% else %}
+                        <input type="date" class="form-control form-control-sm" id="data_validacao" name="data_validacao" value="{{ boletim['data_validacao'] if boletim['data_validacao'] else '' }}" readonly>
+                    {% endif %}
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="responsavel_amostragem" class="form-label small">Responsável Amostragem</label>
+                    {% if edit_mode %}
+                        <input type="text" class="form-control form-control-sm" id="responsavel_amostragem" name="responsavel_amostragem" value="{{ boletim['responsavel_amostragem'] }}" required>
+                    {% else %}
+                        <input type="text" class="form-control form-control-sm" id="responsavel_amostragem" name="responsavel_amostragem" value="{{ boletim['responsavel_amostragem'] }}" readonly>
+                    {% endif %}
+                </div>
             </div>
-        </div>
-    </div>
-
-    <!-- Seção 1: Objetivo -->
-    <div class="section-header">1) OBJETIVO</div>
-    <div style="padding: 10px; border: 1px solid #dee2e6; background: white;">
-        Validar os resultados analíticos conforme metodologia A.G.A #8 e Controle Estatístico de Processo (CEP).
-    </div>
-
-    <!-- Seção 2: Check List -->
-    <div class="section-header">2) CHECK LIST</div>
-    <table class="checklist-table">
-        <thead>
-            <tr>
-                <th>ITEM</th>
-                <th>DESCRIÇÃO</th>
-                <th>SITUAÇÃO</th>
-                <th>NÃO APLICÁVEL</th>
-                <th>OBSERVAÇÃO</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td class="checklist-item">1</td>
-                <td>Identificação do boletim de resultados analíticos</td>
-                <td class="checklist-situacao">✓</td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td class="checklist-item">2</td>
-                <td>Identificação da amostra</td>
-                <td class="checklist-situacao">✓</td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td class="checklist-item">3</td>
-                <td>Descrição da data de amostragem</td>
-                <td class="checklist-situacao">✓</td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td class="checklist-item">4</td>
-                <td>Descrição da data de recebimento da amostra pelo laboratório</td>
-                <td class="checklist-situacao">✓</td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td class="checklist-item">5</td>
-                <td>Descrição da data de realização das análises</td>
-                <td class="checklist-situacao">✓</td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td class="checklist-item">6</td>
-                <td>Descrição da data de emissão do BRA</td>
-                <td class="checklist-situacao">✓</td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td class="checklist-item">7</td>
-                <td>Identificação do campo produtor ou da instalação</td>
-                <td class="checklist-situacao">✓</td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td class="checklist-item">8</td>
-                <td>Identificação do agente regulado</td>
-                <td class="checklist-situacao">✓</td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td class="checklist-item">9</td>
-                <td>Identificação do ponto de medição e/ou do poço quando aplicável</td>
-                <td class="checklist-situacao">✓</td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td class="checklist-item">10</td>
-                <td>Resultados das análises e normas ou procedimentos utilizados</td>
-                <td class="checklist-situacao">✓</td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td class="checklist-item">11</td>
-                <td>Descrição das características do processo do ponto de amostragem do fluido (pressão e temperatura)</td>
-                <td class="checklist-situacao">✓</td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td class="checklist-item">12</td>
-                <td>Identificação do responsável pela amostragem</td>
-                <td class="checklist-situacao">✓</td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td class="checklist-item">13</td>
-                <td>Indicação dos incertezas de medição, com descrição do nível de confiança e fator de abrangência</td>
-                <td class="checklist-situacao">✓</td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td class="checklist-item">14</td>
-                <td>Identificação dos responsáveis técnicos pela realização da análise</td>
-                <td class="checklist-situacao">✓</td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td class="checklist-item">15</td>
-                <td>Identificação dos responsáveis pela elaboração e aprovação do boletim</td>
-                <td class="checklist-situacao">✓</td>
-                <td></td>
-                <td></td>
-            </tr>
-        </tbody>
-    </table>
-
-    <!-- Seção 3: Análise CEP -->
-    <div class="section-header">3) ANÁLISE CEP</div>
-    
-    <!-- Componentes - Padrão Figma Avançado -->
-    <table class="componentes-excel">
-        <thead>
-            <tr>
-                <th rowspan="2">Item</th>
-                <th rowspan="2">Componente</th>
-                <th rowspan="2">% Molar</th>
-                <th colspan="2">Status</th>
-                <th colspan="2" class="aga8-header">A.G.A 8</th>
-                <th colspan="2" class="cep-header">CEP</th>
-            </tr>
-            <tr>
-                <th>A.G.A 8</th>
-                <th>CEP</th>
-                <th class="aga8-header">Limite Inferior</th>
-                <th class="aga8-header">Limite Superior</th>
-                <th class="cep-header">Limite Inferior</th>
-                <th class="cep-header">Limite Superior</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for comp in componentes %}
-            <tr>
-                <td class="checklist-item">{{ loop.index }}</td>
-                <td class="component-name">{{ comp['nome'] }}</td>
-                <td class="numeric">{{ "%.3f"|format(comp['percentual_molar']) }}%</td>
-                <td>
-                    <span class="status-{{ 'validado' if comp['status_aga'] == 'VALIDADO' else 'invalidado' }}">
-                        {{ comp['status_aga'] }}
-                    </span>
-                </td>
-                <td>
-                    <span class="status-{{ 'validado' if comp['status_cep'] == 'VALIDADO' else 'invalidado' }}">
-                        {{ comp['status_cep'] }}
-                    </span>
-                </td>
-                <td class="numeric aga8-limit">
-                    {% if comp['nome'] == 'Propano' %}0%{% elif comp['nome'] in ['i-Butano', 'n-Butano'] %}0%{% elif comp['nome'] in ['i-Pentano', 'n-Pentano'] %}0%{% elif comp['nome'] == 'Oxigênio' %}0%{% else %}0%{% endif %}
-                </td>
-                <td class="numeric aga8-limit">
-                    {% if comp['nome'] == 'Propano' %}12%{% elif comp['nome'] in ['i-Butano', 'n-Butano'] %}6%{% elif comp['nome'] in ['i-Pentano', 'n-Pentano'] %}4%{% elif comp['nome'] == 'Oxigênio' %}21%{% else %}100%{% endif %}
-                </td>
-                <td class="numeric cep-limit">
-                    {% if comp['nome'] == 'Metano' %}96.35%
-                    {% elif comp['nome'] == 'Etano' %}0.05%
-                    {% elif comp['nome'] == 'Propano' %}-0.51%
-                    {% elif comp['nome'] == 'i-Butano' %}-0.02%
-                    {% elif comp['nome'] == 'n-Butano' %}-0.07%
-                    {% elif comp['nome'] == 'i-Pentano' %}-0.07%
-                    {% elif comp['nome'] == 'n-Pentano' %}-0.15%
-                    {% elif comp['nome'] == 'Hexano' %}-0.06%
-                    {% elif comp['nome'] == 'Heptano' %}-0.10%
-                    {% elif comp['nome'] == 'Octano' %}0.00%
-                    {% elif comp['nome'] == 'Nonano' %}0.00%
-                    {% elif comp['nome'] == 'Decano' %}0.00%
-                    {% elif comp['nome'] == 'Oxigênio' %}-0.04%
-                    {% elif comp['nome'] == 'Nitrogênio' %}-0.29%
-                    {% elif comp['nome'] == 'CO2' %}0.69%{% endif %}
-                </td>
-                <td class="numeric cep-limit">
-                    {% if comp['nome'] == 'Metano' %}99.15%
-                    {% elif comp['nome'] == 'Etano' %}0.16%
-                    {% elif comp['nome'] == 'Propano' %}1.32%
-                    {% elif comp['nome'] == 'i-Butano' %}0.04%
-                    {% elif comp['nome'] == 'n-Butano' %}0.14%
-                    {% elif comp['nome'] == 'i-Pentano' %}0.12%
-                    {% elif comp['nome'] == 'n-Pentano' %}0.25%
-                    {% elif comp['nome'] == 'Hexano' %}0.33%
-                    {% elif comp['nome'] == 'Heptano' %}0.27%
-                    {% elif comp['nome'] == 'Octano' %}0.04%
-                    {% elif comp['nome'] == 'Nonano' %}0.01%
-                    {% elif comp['nome'] == 'Decano' %}0.00%
-                    {% elif comp['nome'] == 'Oxigênio' %}1.41%
-                    {% elif comp['nome'] == 'Nitrogênio' %}1.41%
-                    {% elif comp['nome'] == 'CO2' %}0.89%{% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <!-- Propriedades -->
-    <table class="componentes-excel" style="margin-top: 20px;">
-        <thead>
-            <tr>
-                <th rowspan="2">Propriedade</th>
-                <th rowspan="2">Valor</th>
-                <th colspan="2">Status</th>
-                <th colspan="2" class="aga8-header">A.G.A 8</th>
-                <th colspan="2" class="cep-header">CEP</th>
-            </tr>
-            <tr>
-                <th>A.G.A 8</th>
-                <th>CEP</th>
-                <th class="aga8-header">Limite Inferior</th>
-                <th class="aga8-header">Limite Superior</th>
-                <th class="cep-header">Limite Inferior</th>
-                <th class="cep-header">Limite Superior</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for prop in propriedades %}
-            <tr>
-                <td class="component-name">{{ prop['nome'] }}</td>
-                <td class="numeric">{{ "%.4f"|format(prop['valor']) }}</td>
-                <td>
-                    <span class="status-{{ 'validado' if prop['status_aga'] == 'VALIDADO' else 'invalidado' }}">
-                        {{ prop['status_aga'] }}
-                    </span>
-                </td>
-                <td>
-                    <span class="status-{{ 'validado' if prop['status_cep'] == 'VALIDADO' else 'invalidado' }}">
-                        {{ prop['status_cep'] }}
-                    </span>
-                </td>
-                <td class="numeric aga8-limit">---</td>
-                <td class="numeric aga8-limit">---</td>
-                <td class="numeric cep-limit">
-                    {% if prop['nome'] == 'Fator de Compressibilidade' %}0.99771
-                    {% elif prop['nome'] == 'Massa Específica' %}0.6659
-                    {% elif prop['nome'] == 'Massa Molecular' %}15.9888{% endif %}
-                </td>
-                <td class="numeric cep-limit">
-                    {% if prop['nome'] == 'Fator de Compressibilidade' %}0.99824
-                    {% elif prop['nome'] == 'Massa Específica' %}0.7962
-                    {% elif prop['nome'] == 'Massa Molecular' %}17.4312{% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <!-- Resultado Final - Padrão Figma -->
-    <div class="resultado-header">RESULTADO DA VALIDAÇÃO</div>
-    
-    <div class="resultado-final">
-        <div class="resultado-item resultado-cep">
-            CEP<br>INVALIDADO
-        </div>
-        <div class="resultado-item resultado-aga8">
-            A.G.A #8<br>VALIDADO
-        </div>
-        <div class="resultado-item resultado-checklist">
-            CHECKLIST<br>VALIDADO
-        </div>
-    </div>
-
-    <!-- Resumo de Validação - Estilo Figma -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 24px;">
-        <div style="background: white; padding: 16px; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-            <h4 style="margin-bottom: 8px; color: #1e40af; font-weight: 600;">Resumo AGA8</h4>
-            <div style="font-size: 0.875rem;">
-                <div>Validados: {{ componentes|selectattr("status_aga", "equalto", "VALIDADO")|list|count }}/{{ componentes|count }}</div>
-                <div style="margin-top: 8px; padding: 8px; border-radius: 4px; text-align: center; color: white; 
-                     background: {% if componentes|selectattr("status_aga", "equalto", "VALIDADO")|list|count == componentes|count %}#10b981{% else %}#dc2626{% endif %};">
-                    {% if componentes|selectattr("status_aga", "equalto", "VALIDADO")|list|count == componentes|count %}APROVADO{% else %}REPROVADO{% endif %}
                 </div>
             </div>
         </div>
+    </div>
 
-        <div style="background: white; padding: 16px; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-            <h4 style="margin-bottom: 8px; color: #1e40af; font-weight: 600;">Resumo CEP</h4>
-            <div style="font-size: 0.875rem;">
-                <div>Validados: {{ componentes|selectattr("status_cep", "equalto", "VALIDADO")|list|count }}/{{ componentes|count }}</div>
-                <div style="margin-top: 8px; padding: 8px; border-radius: 4px; text-align: center; color: white;
-                     background: {% if componentes|selectattr("status_cep", "equalto", "VALIDADO")|list|count == componentes|count %}#10b981{% else %}#dc2626{% endif %};">
-                    {% if componentes|selectattr("status_cep", "equalto", "VALIDADO")|list|count == componentes|count %}APROVADO{% else %}REPROVADO{% endif %}
+    <!-- Condições do Processo -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h6 class="mb-0"><i class="bi bi-thermometer-half"></i> CONDIÇÕES DO PROCESSO</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="pressao" class="form-label small">Pressão (atm)</label>
+                    {% if edit_mode %}
+                        <input type="number" step="0.01" class="form-control form-control-sm" id="pressao" name="pressao" value="{{ boletim['pressao'] or '' }}">
+                    {% else %}
+                        <input type="number" step="0.01" class="form-control form-control-sm" id="pressao" name="pressao" value="{{ boletim['pressao'] }}" readonly>
+                    {% endif %}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="temperatura" class="form-label small">Temperatura (°C)</label>
+                    {% if edit_mode %}
+                        <input type="number" step="0.01" class="form-control form-control-sm" id="temperatura" name="temperatura" value="{{ boletim['temperatura'] or '' }}">
+                    {% else %}
+                        <input type="number" step="0.01" class="form-control form-control-sm" id="temperatura" name="temperatura" value="{{ boletim['temperatura'] }}" readonly>
+                    {% endif %}
                 </div>
             </div>
         </div>
+    </div>
 
-        <div style="background: white; padding: 16px; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-            <h4 style="margin-bottom: 8px; color: #1e40af; font-weight: 600;">Status Geral</h4>
-            <div style="font-size: 0.875rem;">
-                <div>Total: {{ "%.2f"|format((componentes|sum(attribute="percentual_molar")) if componentes else 0) }}%</div>
-                <div style="margin-top: 8px; padding: 8px; border-radius: 4px; text-align: center; color: white;
-                     background: {% set total = (componentes|sum(attribute="percentual_molar")) if componentes else 0 %}{% if total > 99.5 and total < 100.5 %}#10b981{% else %}#f59e0b{% endif %};">
-                    {% set total = (componentes|sum(attribute="percentual_molar")) if componentes else 0 %}{% if total > 99.5 and total < 100.5 %}BALANÇO OK{% else %}VERIFICAR BALANÇO{% endif %}
+    <!-- Composição Cromatográfica -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h6 class="mb-0"><i class="bi bi-graph-up"></i> COMPOSIÇÃO CROMATOGRÁFICA</h6>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="componentes-excel table-sm">
+                    <thead>
+                        <tr>
+                            <th class="text-center">COMPONENTE</th>
+                            <th class="text-center">UNIDADE</th>
+                            <th class="text-center">RESULTADO NUMÉRICO</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="component-name" data-label="Componente">Metano, CH₄</td>
+                            <td class="numeric text-center" data-label="Unidade">% mol</td>
+                            <td data-label="Resultado" class="text-center">
+                                {% if edit_mode %}
+                                    <input type="number" step="0.0001" name="metano_ch4" class="form-control form-control-sm text-center" value="{{ componentes_dict['metano_ch4'] if 'metano_ch4' in componentes_dict else '' }}">
+                                {% else %}
+                                    <span class="numeric">{{ "%.4f"|format(componentes_dict['metano_ch4']) if 'metano_ch4' in componentes_dict and componentes_dict['metano_ch4'] else '-' }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="component-name" data-label="Componente">Etano, C₂H₆</td>
+                            <td class="numeric text-center" data-label="Unidade">% mol</td>
+                            <td data-label="Resultado" class="text-center">
+                                {% if edit_mode %}
+                                    <input type="number" step="0.0001" name="etano_c2h6" class="form-control form-control-sm text-center" value="{{ componentes_dict['etano_c2h6'] if 'etano_c2h6' in componentes_dict else '' }}">
+                                {% else %}
+                                    <span class="numeric">{{ "%.4f"|format(componentes_dict['etano_c2h6']) if 'etano_c2h6' in componentes_dict and componentes_dict['etano_c2h6'] else '-' }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="component-name">Propano, C₃H₈</td>
+                            <td class="numeric">% mol</td>
+                            <td class="text-center">
+                                {% if edit_mode %}
+                                    <input type="number" step="0.0001" name="propano_c3h8" class="form-control form-control-sm text-center" value="{{ componentes_dict['propano_c3h8'] if 'propano_c3h8' in componentes_dict else '' }}">
+                                {% else %}
+                                    <span class="numeric">{{ "%.4f"|format(componentes_dict['propano_c3h8']) if 'propano_c3h8' in componentes_dict and componentes_dict['propano_c3h8'] else '-' }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="component-name">i-Butano, i-C₄H₁₀</td>
+                            <td class="numeric">% mol</td>
+                            <td class="text-center">
+                                {% if edit_mode %}
+                                    <input type="number" step="0.0001" name="i_butano_ic4h10" class="form-control form-control-sm text-center" value="{{ componentes_dict['i_butano_ic4h10'] if 'i_butano_ic4h10' in componentes_dict else '' }}">
+                                {% else %}
+                                    <span class="numeric">{{ "%.4f"|format(componentes_dict['i_butano_ic4h10']) if 'i_butano_ic4h10' in componentes_dict and componentes_dict['i_butano_ic4h10'] else '-' }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="component-name">n-Butano, n-C₄H₁₀</td>
+                            <td class="numeric">% mol</td>
+                            <td class="text-center">
+                                {% if edit_mode %}
+                                    <input type="number" step="0.0001" name="n_butano_nc4h10" class="form-control form-control-sm text-center" value="{{ componentes_dict['n_butano_nc4h10'] if 'n_butano_nc4h10' in componentes_dict else '' }}">
+                                {% else %}
+                                    <span class="numeric">{{ "%.4f"|format(componentes_dict['n_butano_nc4h10']) if 'n_butano_nc4h10' in componentes_dict and componentes_dict['n_butano_nc4h10'] else '-' }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="component-name">i-Pentano, i-C₅H₁₂</td>
+                            <td class="numeric">% mol</td>
+                            <td class="text-center">
+                                {% if edit_mode %}
+                                    <input type="number" step="0.0001" name="i_pentano_ic5h12" class="form-control form-control-sm text-center" value="{{ componentes_dict['i_pentano_ic5h12'] if 'i_pentano_ic5h12' in componentes_dict else '' }}">
+                                {% else %}
+                                    <span class="numeric">{{ "%.4f"|format(componentes_dict['i_pentano_ic5h12']) if 'i_pentano_ic5h12' in componentes_dict and componentes_dict['i_pentano_ic5h12'] else '-' }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="component-name">n-Pentano, n-C₅H₁₂</td>
+                            <td class="numeric">% mol</td>
+                            <td class="text-center">
+                                {% if edit_mode %}
+                                    <input type="number" step="0.0001" name="n_pentano_nc5h12" class="form-control form-control-sm text-center" value="{{ componentes_dict['n_pentano_nc5h12'] if 'n_pentano_nc5h12' in componentes_dict else '' }}">
+                                {% else %}
+                                    <span class="numeric">{{ "%.4f"|format(componentes_dict['n_pentano_nc5h12']) if 'n_pentano_nc5h12' in componentes_dict and componentes_dict['n_pentano_nc5h12'] else '-' }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="component-name">C₆+</td>
+                            <td class="numeric">% mol</td>
+                            <td>
+                                {% if edit_mode %}
+                                    <input type="number" step="0.0001" name="c6_mais" value="{{ componentes_dict['c6_mais'] if 'c6_mais' in componentes_dict else '' }}">
+                                {% else %}
+                                    <span class="numeric">{{ "%.4f"|format(componentes_dict['c6_mais']) if 'c6_mais' in componentes_dict and componentes_dict['c6_mais'] else '-' }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="component-name">Nitrogênio, N₂</td>
+                            <td class="numeric">% mol</td>
+                            <td class="text-center">
+                                {% if edit_mode %}
+                                    <input type="number" step="0.0001" name="nitrogenio_n2" class="form-control form-control-sm text-center" value="{{ componentes_dict['nitrogenio_n2'] if 'nitrogenio_n2' in componentes_dict else '' }}">
+                                {% else %}
+                                    <span class="numeric">{{ "%.4f"|format(componentes_dict['nitrogenio_n2']) if 'nitrogenio_n2' in componentes_dict and componentes_dict['nitrogenio_n2'] else '-' }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="component-name">Dióxido de Carbono, CO₂</td>
+                            <td class="numeric">% mol</td>
+                            <td class="text-center">
+                                {% if edit_mode %}
+                                    <input type="number" step="0.0001" name="dioxido_carbono_co2" class="form-control form-control-sm text-center" value="{{ componentes_dict['dioxido_carbono_co2'] if 'dioxido_carbono_co2' in componentes_dict else '' }}">
+                                {% else %}
+                                    <span class="numeric">{{ "%.4f"|format(componentes_dict['dioxido_carbono_co2']) if 'dioxido_carbono_co2' in componentes_dict and componentes_dict['dioxido_carbono_co2'] else '-' }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr style="background: linear-gradient(135deg, #1e40af, #2563eb); color: white;">
+                            <td class="component-name" style="font-weight: bold;">TOTAL</td>
+                            <td class="numeric" style="font-weight: bold;">% mol</td>
+                            <td class="numeric" style="font-weight: bold;">100,0000</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Seção 1: Check List -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h6 class="mb-0"><i class="bi bi-list-check"></i> 1) CHECK LIST</h6>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="checklist-table table table-striped table-hover table-sm mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th scope="col" style="background: linear-gradient(135deg, #1e40af, #2563eb); color: white; width: 60px;" class="text-center">ITEM</th>
+                            <th scope="col" style="background: linear-gradient(135deg, #1e40af, #2563eb); color: white;" class="text-center">DESCRIÇÃO</th>
+                            <th scope="col" style="background: linear-gradient(135deg, #1e40af, #2563eb); color: white; width: 140px;" class="text-center">SITUAÇÃO</th>
+                            <th scope="col" style="background: linear-gradient(135deg, #1e40af, #2563eb); color: white; width: 160px;" class="text-center">NÃO APLICÁVEL</th>
+                            <th scope="col" style="background: linear-gradient(135deg, #1e40af, #2563eb); color: white; width: 200px;" class="text-center">OBSERVAÇÃO</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in checklist %}
+                        <tr>
+                            <td class="text-center fw-bold">{{ item['item_numero'] }}</td>
+                            <td>{{ item['descricao'] }}</td>
+                            <td class="text-center">
+                                {% if edit_mode %}
+                                    <select name="checklist_{{ item['item_numero'] }}_situacao" class="form-select form-select-sm">
+                                        <option value="">Selecionar</option>
+                                        <option value="OK" {% if item['situacao'] == 'OK' %}selected{% endif %}>✓ OK</option>
+                                        <option value="NOK" {% if item['situacao'] == 'NOK' %}selected{% endif %}>✗ NOK</option>
+                                    </select>
+                                {% else %}
+                                    {% if item['situacao'] == 'OK' %}
+                                        <span class="badge bg-success">✓</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">✗</span>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                {% if edit_mode %}
+                                    <select name="checklist_{{ item['item_numero'] }}_nao_aplicavel" class="form-select form-select-sm">
+                                        <option value="">Selecionar</option>
+                                        <option value="0" {% if not item['nao_aplicavel'] %}selected{% endif %}>Não</option>
+                                        <option value="1" {% if item['nao_aplicavel'] %}selected{% endif %}>Sim</option>
+                                    </select>
+                                {% else %}
+                                    {% if item['nao_aplicavel'] %}
+                                        <span class="badge bg-secondary">Sim</span>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                {% if edit_mode %}
+                                    <input type="text" name="checklist_{{ item['item_numero'] }}_observacao" value="{{ item['observacao'] or '' }}" class="form-control form-control-sm text-center">
+                                {% else %}
+                                    {{ item['observacao'] or '-' }}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Seção 2: Objetivo -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h6 class="mb-0"><i class="bi bi-bullseye"></i> 2) OBJETIVO</h6>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <label for="objetivo" class="form-label small">Descrição do Objetivo</label>
+                <textarea class="form-control form-control-sm" id="objetivo" name="objetivo" rows="3">Validar os resultados analíticos conforme metodologia A.G.A #8 e Controle Estatístico de Processo (CEP).</textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- Seção 3: Análise CEP - Oculta no modo edição -->
+    {% if not edit_mode %}
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h6 class="mb-0"><i class="bi bi-bar-chart"></i> 3) ANÁLISE CEP</h6>
+        </div>
+        <div class="card-body p-0">
+            
+            <!-- Componentes -->
+            <div class="table-responsive">
+                <table class="table table-striped table-hover table-sm mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th rowspan="2" class="align-middle" style="background: linear-gradient(135deg, #1e40af, #2563eb); color: white;">Item</th>
+                            <th rowspan="2" class="align-middle" style="background: linear-gradient(135deg, #1e40af, #2563eb); color: white;">Componente</th>
+                            <th rowspan="2" class="align-middle" style="background: linear-gradient(135deg, #1e40af, #2563eb); color: white;">% Molar</th>
+                            <th colspan="2" class="text-center" style="background: linear-gradient(135deg, #1e40af, #2563eb); color: white;">Status</th>
+                            <th colspan="2" class="text-center" style="background: linear-gradient(135deg, #1e40af, #2563eb); color: white;">A.G.A 8</th>
+                            <th colspan="2" class="text-center" style="background: linear-gradient(135deg, #10b981, #34d399); color: white;">CEP</th>
+                        </tr>
+                        <tr>
+                            <th style="background: linear-gradient(135deg, #374151, #4b5563); color: white;">A.G.A 8</th>
+                            <th style="background: linear-gradient(135deg, #374151, #4b5563); color: white;">CEP</th>
+                            <th style="background: linear-gradient(135deg, #1e40af, #2563eb); color: white;">Limite Inferior</th>
+                            <th style="background: linear-gradient(135deg, #1e40af, #2563eb); color: white;">Limite Superior</th>
+                            <th style="background: linear-gradient(135deg, #10b981, #34d399); color: white;">Limite Inferior</th>
+                            <th style="background: linear-gradient(135deg, #10b981, #34d399); color: white;">Limite Superior</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for comp in componentes %}
+                        <tr>
+                            <td class="text-center"><strong>{{ loop.index }}</strong></td>
+                            <td>{{ comp['nome'] }}</td>
+                            <td class="text-end">{{ comp['percentual_molar'] | number_format(3) }}%</td>
+                            <td class="text-center">
+                                <span class="badge bg-{{ 'success' if comp['status_aga'] == 'VALIDADO' else 'danger' }}">
+                                    {{ comp['status_aga'] }}
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-{{ 'success' if comp['status_cep'] == 'VALIDADO' else 'danger' }}">
+                                    {{ comp['status_cep'] }}
+                                </span>
+                            </td>
+                            <td class="text-end" style="background: linear-gradient(135deg, rgba(30, 64, 175, 0.1), rgba(37, 99, 235, 0.1)); border-left: 3px solid #1e40af;">
+                                {% if comp['nome'] == 'Propano' %}0%{% elif comp['nome'] in ['i-Butano', 'n-Butano'] %}0%{% elif comp['nome'] in ['i-Pentano', 'n-Pentano'] %}0%{% elif comp['nome'] == 'Oxigênio' %}0%{% else %}0%{% endif %}
+                            </td>
+                            <td class="text-end" style="background: linear-gradient(135deg, rgba(30, 64, 175, 0.1), rgba(37, 99, 235, 0.1));">
+                                {% if comp['nome'] == 'Propano' %}12%{% elif comp['nome'] in ['i-Butano', 'n-Butano'] %}6%{% elif comp['nome'] in ['i-Pentano', 'n-Pentano'] %}4%{% elif comp['nome'] == 'Oxigênio' %}21%{% else %}100%{% endif %}
+                            </td>
+                            <td class="text-end" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(52, 211, 153, 0.1)); border-left: 3px solid #10b981;">
+                                {% if comp['cep_lci'] is not none %}{{ comp['cep_lci'] | number_format(3) }}%{% else %}-{% endif %}
+                            </td>
+                            <td class="text-end" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(52, 211, 153, 0.1));">
+                                {% if comp['cep_lcs'] is not none %}{{ comp['cep_lcs'] | number_format(3) }}%{% else %}-{% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Propriedades -->
+            <div class="mt-4">
+                <h6 class="px-3 mb-3 text-muted">PROPRIEDADES</h6>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover table-sm mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th rowspan="2" class="align-middle" style="background: linear-gradient(135deg, #1e40af, #2563eb); color: white;">Propriedade</th>
+                                <th rowspan="2" class="align-middle" style="background: linear-gradient(135deg, #1e40af, #2563eb); color: white;">Valor</th>
+                                <th colspan="2" class="text-center" style="background: linear-gradient(135deg, #1e40af, #2563eb); color: white;">Status</th>
+                                <th colspan="2" class="text-center" style="background: linear-gradient(135deg, #1e40af, #2563eb); color: white;">A.G.A 8</th>
+                                <th colspan="2" class="text-center" style="background: linear-gradient(135deg, #10b981, #34d399); color: white;">CEP</th>
+                            </tr>
+                            <tr>
+                                <th style="background: linear-gradient(135deg, #374151, #4b5563); color: white;">A.G.A 8</th>
+                                <th style="background: linear-gradient(135deg, #374151, #4b5563); color: white;">CEP</th>
+                                <th style="background: linear-gradient(135deg, #1e40af, #2563eb); color: white;">Limite Inferior</th>
+                                <th style="background: linear-gradient(135deg, #1e40af, #2563eb); color: white;">Limite Superior</th>
+                                <th style="background: linear-gradient(135deg, #10b981, #34d399); color: white;">Limite Inferior</th>
+                                <th style="background: linear-gradient(135deg, #10b981, #34d399); color: white;">Limite Superior</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for prop in propriedades %}
+                            <tr>
+                                <td>{{ prop['nome'] }}</td>
+                                <td class="text-end">{{ prop['valor'] | number_format(4) }}</td>
+                                <td class="text-center">
+                                    <span class="badge bg-{{ 'success' if prop['status_aga'] == 'VALIDADO' else 'danger' }}">
+                                        {{ prop['status_aga'] }}
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-{{ 'success' if prop['status_cep'] == 'VALIDADO' else 'danger' }}">
+                                        {{ prop['status_cep'] }}
+                                    </span>
+                                </td>
+                                <td class="text-center" style="background-color: #f8f9fa;">---</td>
+                                <td class="text-center" style="background-color: #f8f9fa;">---</td>
+                                <td class="text-end" style="background-color: #e8f5e8;">
+                                    {% if prop['nome'] == 'Fator de Compressibilidade' %}0.99771
+                                    {% elif prop['nome'] == 'Massa Específica' %}0.6659
+                                    {% elif prop['nome'] == 'Massa Molecular' %}15.9888{% endif %}
+                                </td>
+                                <td class="text-end" style="background-color: #e8f5e8;">
+                                    {% if prop['nome'] == 'Fator de Compressibilidade' %}0.99824
+                                    {% elif prop['nome'] == 'Massa Específica' %}0.7962
+                                    {% elif prop['nome'] == 'Massa Molecular' %}17.4312{% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Seção 4: Observações -->
-    <div class="section-header">4) OBSERVAÇÕES E INFORMAÇÕES COMPLEMENTARES</div>
-    <div class="observacoes-excel">
-        {% if boletim['observacoes'] %}
-        {{ boletim['observacoes'] }}
-        {% else %}
-        1) Amostra apresentou altas concentrações de Nitrogênio sendo um indício de contaminação da amostra por ar, o que acabou impactando no percentual de C1.<br>
-        2) O BRA será revalidado e resultado da análise não deverá ser aceito devido as anormalidades computadas do vazão.<br>
-        Uma nova amostra deverá ser coletada no prazo de 3 (três) dias úteis a partir da data de avaliação da amostra.
-        {% endif %}
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h6 class="mb-0"><i class="bi bi-chat-text"></i> 4) OBSERVAÇÕES E INFORMAÇÕES COMPLEMENTARES</h6>
+        </div>
+        <div class="card-body">
+            {% if edit_mode %}
+                <textarea name="observacoes" class="form-control" rows="6">{{ boletim['observacoes'] or '1) Amostra apresentou altas concentrações de Nitrogênio sendo um indício de contaminação da amostra por ar, o que acabou impactando no percentual de C1.
+2) O BRA será revalidado e resultado da análise não deverá ser aceito devido as anormalidades computadas do vazão.
+Uma nova amostra deverá ser coletada no prazo de 3 (três) dias úteis a partir da data de avaliação da amostra.' }}</textarea>
+            {% else %}
+                <div class="border p-3 rounded bg-light">
+                    {% if boletim['observacoes'] %}
+                        {{ boletim['observacoes']|replace('\n', '<br>')|safe }}
+                    {% else %}
+                        <p class="mb-2">1) Amostra apresentou altas concentrações de Nitrogênio sendo um indício de contaminação da amostra por ar, o que acabou impactando no percentual de C1.</p>
+                        <p class="mb-2">2) O BRA será revalidado e resultado da análise não deverá ser aceito devido as anormalidades computadas do vazão.</p>
+                        <p class="mb-0">Uma nova amostra deverá ser coletada no prazo de 3 (três) dias úteis a partir da data de avaliação da amostra.</p>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
     </div>
 
+    <!-- Resultado Final -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h6 class="mb-0"><i class="bi bi-check-circle"></i> RESULTADO DA VALIDAÇÃO</h6>
+        </div>
+        <div class="card-body">
+            <div class="row text-center g-3">
+                <div class="col-md-4">
+                    <div class="p-4 border rounded h-100" style="background: linear-gradient(135deg, #dc3545, #c82333); color: white;">
+                        <h5 class="mb-2">CEP</h5>
+                        <h4 class="mb-0">INVALIDADO</h4>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-4 border rounded h-100" style="background: linear-gradient(135deg, #28a745, #20c997); color: white;">
+                        <h5 class="mb-2">A.G.A #8</h5>
+                        <h4 class="mb-0">VALIDADO</h4>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-4 border rounded h-100" style="background: linear-gradient(135deg, #007bff, #0056b3); color: white;">
+                        <h5 class="mb-2">CHECKLIST</h5>
+                        <h4 class="mb-0">VALIDADO</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Validação de Prazos ANP - Regulamento Técnico 52 -->
+    <div class="card mb-4">
+        <div class="card-header" style="background: linear-gradient(135deg, #1e40af, #2563eb); color: white; padding: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <h6 class="mb-0" style="font-weight: 600;">
+                <i class="bi bi-clock-history"></i> VALIDAÇÃO DE PRAZOS ANP - REGULAMENTO TÉCNICO 52
+                <small class="float-end" style="opacity: 0.9;">Portaria 52 ANP</small>
+            </h6>
+        </div>
+        <div class="card-body">
+            {% if validacao_prazos %}
+            <!-- Status Geral dos Prazos -->
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <div style="background: linear-gradient(135deg, {% if validacao_prazos.status_geral == 'CONFORME' %}#10b981, #34d399{% else %}#dc2626, #ef4444{% endif %}); color: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 0;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong style="font-size: 1.1rem;">
+                                    {% if validacao_prazos.status_geral == 'CONFORME' %}
+                                        ✅ CONFORME - Todos os prazos dentro dos limites regulamentários
+                                    {% else %}
+                                        ❌ NÃO CONFORME - Prazos excedidos detectados
+                                    {% endif %}
+                                </strong>
+                                {% if validacao_prazos.alertas %}
+                                    <div class="small mt-1" style="opacity: 0.9;">
+                                        <strong>Alertas:</strong> {{ validacao_prazos.alertas | join(', ') }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <span style="background: rgba(255, 255, 255, 0.2); color: white; padding: 8px 16px; border-radius: 20px; font-size: 1rem; font-weight: 600; backdrop-filter: blur(5px);">
+                                {{ validacao_prazos.status_geral }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detalhamento dos Prazos -->
+            <div class="row g-3">
+                <!-- Coleta → Emissão (25 dias) -->
+                {% if validacao_prazos.prazo_coleta_emissao %}
+                <div class="col-md-4">
+                    <div class="card h-100" style="border: 2px solid {% if validacao_prazos.prazo_coleta_emissao.status == 'CONFORME' %}#10b981{% else %}#dc2626{% endif %}; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                        <div class="card-header" style="background: linear-gradient(135deg, {% if validacao_prazos.prazo_coleta_emissao.status == 'CONFORME' %}#10b981, #34d399{% else %}#dc2626, #ef4444{% endif %}); color: white; padding: 16px; font-weight: 600;">
+                            <h6 class="mb-0">Coleta → Emissão</h6>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text small mb-2">
+                                <strong>Limite:</strong> {{ validacao_prazos.prazo_coleta_emissao.prazo_limite }} dias<br>
+                                <strong>Decorridos:</strong> {{ validacao_prazos.prazo_coleta_emissao.dias_decorridos or 'N/A' }} dias
+                            </p>
+                            <p class="card-text">
+                                <span class="badge" style="background: {% if validacao_prazos.prazo_coleta_emissao.status == 'CONFORME' %}#10b981{% else %}#dc2626{% endif %}; color: white; padding: 6px 12px;">
+                                    {{ validacao_prazos.prazo_coleta_emissao.status }}
+                                </span>
+                            </p>
+                            <small class="text-muted">{{ validacao_prazos.prazo_coleta_emissao.mensagem }}</small>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Emissão → Validação (1 dia) -->
+                {% if validacao_prazos.prazo_emissao_validacao %}
+                <div class="col-md-4">
+                    <div class="card h-100" style="border: 2px solid {% if validacao_prazos.prazo_emissao_validacao.status == 'CONFORME' %}#10b981{% else %}#dc2626{% endif %}; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                        <div class="card-header" style="background: linear-gradient(135deg, {% if validacao_prazos.prazo_emissao_validacao.status == 'CONFORME' %}#10b981, #34d399{% else %}#dc2626, #ef4444{% endif %}); color: white; padding: 16px; font-weight: 600;">
+                            <h6 class="mb-0">Emissão → Validação</h6>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text small mb-2">
+                                <strong>Limite:</strong> {{ validacao_prazos.prazo_emissao_validacao.prazo_limite }} dia<br>
+                                <strong>Decorridos:</strong> {{ validacao_prazos.prazo_emissao_validacao.dias_decorridos or 'N/A' }} dias
+                            </p>
+                            <p class="card-text">
+                                <span class="badge" style="background: {% if validacao_prazos.prazo_emissao_validacao.status == 'CONFORME' %}#10b981{% else %}#dc2626{% endif %}; color: white; padding: 6px 12px;">
+                                    {{ validacao_prazos.prazo_emissao_validacao.status }}
+                                </span>
+                            </p>
+                            <small class="text-muted">{{ validacao_prazos.prazo_emissao_validacao.mensagem }}</small>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Prazo Total (28 dias) -->
+                {% if validacao_prazos.prazo_total %}
+                <div class="col-md-4">
+                    <div class="card h-100" style="border: 2px solid {% if validacao_prazos.prazo_total.status == 'CONFORME' %}#10b981{% else %}#dc2626{% endif %}; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                        <div class="card-header" style="background: linear-gradient(135deg, {% if validacao_prazos.prazo_total.status == 'CONFORME' %}#10b981, #34d399{% else %}#dc2626, #ef4444{% endif %}); color: white; padding: 16px; font-weight: 600;">
+                            <h6 class="mb-0">Prazo Total</h6>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text small mb-2">
+                                <strong>Limite:</strong> {{ validacao_prazos.prazo_total.prazo_limite }} dias<br>
+                                <strong>Decorridos:</strong> {{ validacao_prazos.prazo_total.dias_decorridos or 'N/A' }} dias
+                            </p>
+                            <p class="card-text">
+                                <span class="badge" style="background: {% if validacao_prazos.prazo_total.status == 'CONFORME' %}#10b981{% else %}#dc2626{% endif %}; color: white; padding: 6px 12px;">
+                                    {{ validacao_prazos.prazo_total.status }}
+                                </span>
+                            </p>
+                            <small class="text-muted">{{ validacao_prazos.prazo_total.mensagem }}</small>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            {% else %}
+            <div class="alert alert-warning mb-0">
+                <i class="bi bi-exclamation-triangle"></i>
+                <strong>Dados insuficientes</strong> para validação de prazos. Certifique-se de que as datas estão preenchidas.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if edit_mode %}
+    </form>
+    {% endif %}
+
     <!-- Botões de Ação -->
-    <div style="text-align: center; margin: 20px 0;">
-        <a href="{{ url_for('listar_boletins') }}" class="btn btn-primary" style="margin-right: 10px;">
-            <i class="bi bi-arrow-left"></i> Voltar aos Boletins
-        </a>
-        <form method="POST" action="{{ url_for('revalidar_boletim', boletim_id=boletim.id) }}" style="display: inline; margin-right: 10px;">
-            <button type="submit" class="btn btn-warning" 
-                    onclick="return confirm('Confirma a revalidação do boletim {{ boletim.numero_boletim }}?')">
-                <i class="bi bi-arrow-clockwise"></i> Revalidar Boletim
-            </button>
-        </form>
-        <a href="{{ url_for('relatorio_pdf', boletim_id=boletim.id) }}" class="btn btn-success" target="_blank">
-            <i class="bi bi-file-earmark-pdf"></i> Download PDF
-        </a>
+    {% if edit_mode %}
+    {% endif %}
+</div>
+
+{% if edit_mode %}
+<script>
+document.getElementById('salvar-btn').addEventListener('click', function() {
+    const form = document.getElementById('editForm');
+    const formData = new FormData(form);
+    const submitButton = this;
+    
+    // Desabilitar botão e mostrar carregamento
+    submitButton.disabled = true;
+    submitButton.innerHTML = '<i class="bi bi-hourglass"></i> Salvando...';
+    
+    fetch(form.action, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        if (response.ok) {
+            // Sucesso - redirecionar para a página de visualização
+            window.location.href = '{{ url_for("relatorio", boletim_id=boletim.id) }}';
+        } else {
+            // Erro - mostrar mensagem
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+    })
+    .catch(error => {
+        console.error('Erro ao salvar:', error);
+        alert('Erro ao salvar alterações: ' + error.message);
+        
+        // Reabilitar botão
+        submitButton.disabled = false;
+        submitButton.innerHTML = '<i class="bi bi-check"></i> Salvar Alterações';
+    });
+});
+</script>
+{% endif %}
+
     </div>
 </div>
+
 {% endblock %}

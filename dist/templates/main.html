@@ -1,11 +1,117 @@
 {% extends "base.html" %}
 
 {% block content %}
+<style>
+    /* Aplicando a fonte Inter e melhorias visuais */
+    .card, .table, .nav-tabs, .section-title, .btn, .badge, label, th, td, input, select, textarea {
+        font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif !important;
+    }
+    
+    .card-header.primary-header {
+        background: linear-gradient(135deg, #1e40af, #3b82f6);
+        color: white;
+        border-radius: 8px 8px 0 0;
+        padding: 15px 20px;
+        font-weight: 600;
+    }
+    
+    .modern-table th {
+        font-size: 0.9rem;
+        font-weight: 600;
+        background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+        border: 1px solid #cbd5e1;
+        padding: 12px 10px;
+    }
+    
+    .table-responsive-container {
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+    
+    .section-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #1e40af;
+        margin-bottom: 0;
+    }
+    
+    .nav-tabs .nav-link {
+        font-weight: 500;
+        color: #64748b;
+        border-radius: 8px 8px 0 0;
+        margin-right: 4px;
+    }
+    
+    .nav-tabs .nav-link.active {
+        background: linear-gradient(135deg, #1e40af, #3b82f6);
+        color: white;
+        border-color: #1e40af;
+    }
+    
+    .action-buttons .btn {
+        border-radius: 6px;
+        font-weight: 500;
+        padding: 8px 16px;
+    }
+    
+    .badge-success {
+        background: linear-gradient(135deg, #10b981, #059669);
+    }
+    
+    .badge-danger {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+    }
+    
+    /* Estilos para ações da tabela */
+    .table-actions {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        gap: 6px !important;
+        padding: 8px !important;
+        width: 220px !important;
+        min-width: 220px !important;
+        max-width: 220px !important;
+        flex-wrap: nowrap !important;
+    }
+    
+    /* Cabeçalho da coluna Ações */
+    .table th:last-child {
+        width: 220px !important;
+        min-width: 220px !important;
+        max-width: 220px !important;
+        text-align: center !important;
+    }
+    
+    .action-btn {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 38px !important;
+        height: 34px !important;
+        padding: 6px !important;
+        border-radius: 6px !important;
+        flex-shrink: 0 !important;
+        border: none !important;
+    }
+    
+    .action-btn i {
+        font-size: 16px !important;
+        margin: 0 !important;
+    }
+    
+    .table-actions form {
+        margin: 0 !important;
+        display: flex !important;
+    }
+</style>
+
 <div class="row">
     <div class="col-md-12">
         <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h4 class="mb-0">Boletins Cromatográficos</h4>
+            <div class="card-header primary-header">
+                <h4 class="mb-0">BOLETINS CROMATOGRÁFICOS CARREGADOS</h4>
             </div>
             <div class="card-body">
                 <!-- Abas estilo Excel -->
@@ -27,26 +133,24 @@
                     <div class="tab-pane fade show active" id="relatorios" role="tabpanel" aria-labelledby="relatorios-tab">
                         <div class="mt-4">
                             <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h5>Relatórios de Validação</h5>
-                                <div>
-                                    <form method="POST" action="{{ url_for('revalidar_todos_boletins') }}" style="display: inline; margin-right: 10px;">
+                                <h5 class="section-title">Relatórios de Validação</h5>
+                                <div class="action-buttons">
+                                    <form method="POST" action="{{ url_for('revalidar_todos_boletins') }}" class="d-inline me-2">
                                         <button type="submit" class="btn btn-warning" 
                                                 onclick="return confirm('Confirma a revalidação de todos os boletins pendentes?')">
                                             <i class="bi bi-arrow-clockwise"></i> Revalidar Todos
                                         </button>
                                     </form>
-                                    <a href="{{ url_for('cadastrar') }}" class="btn btn-primary">
-                                        <i class="bi bi-plus-circle"></i> Novo Boletim
-                                    </a>
                                 </div>
                             </div>
-                            <div class="table-responsive">
-                                <table class="table table-bordered table-hover">
-                                    <thead class="table-light">
+                            <div class="table-responsive-container">
+                                <table class="table table-bordered table-hover table-striped modern-table">
+                                    <thead>
                                         <tr>
                                             <th>Boletim</th>
                                             <th>Instalação</th>
                                             <th>Data Coleta</th>
+                                            <th>Data Emissão do Relatório</th>
                                             <th>Data Validação</th>
                                             <th>Status</th>
                                             <th>Ações</th>
@@ -58,21 +162,31 @@
                                         <tr>
                                             <td>{{ boletim.numero_boletim }}</td>
                                             <td>{{ boletim.identificacao_instalacao }}</td>
-                                            <td>{{ boletim.data_coleta }}</td>
-                                            <td>{{ boletim.data_validacao or '-' }}</td>
+                                            <td>{{ boletim.data_coleta | date_format }}</td>
+                                            <td>{{ boletim.data_emissao | date_format or '-' }}</td>
+                                            <td>{{ boletim.data_validacao | date_format or '-' }}</td>
                                             <td>
-                                                <span class="badge bg-{% if boletim.status == 'VALIDADO' %}success{% else %}danger{% endif %}">
+                                                <span class="badge {% if boletim.status == 'VALIDADO' %}badge-success{% else %}badge-danger{% endif %}">
                                                     {{ boletim.status or 'PENDENTE' }}
                                                 </span>
                                             </td>
-                                            <td>
-                                                <a href="{{ url_for('relatorio', boletim_id=boletim.id) }}" class="btn btn-sm btn-outline-primary">
-                                                    <i class="bi bi-eye"></i> Visualizar
+                                            <td class="table-actions">
+                                                <a href="{{ url_for('relatorio', boletim_id=boletim.id) }}" class="btn btn-sm btn-primary action-btn" title="Visualizar">
+                                                    <i class="bi bi-eye"></i>
                                                 </a>
-                                                <form method="POST" action="{{ url_for('revalidar_boletim', boletim_id=boletim.id) }}" style="display: inline;">
-                                                    <button type="submit" class="btn btn-sm btn-outline-success" 
+                                                <form method="POST" action="{{ url_for('revalidar_boletim', boletim_id=boletim.id) }}" class="d-inline">
+                                                    <button type="submit" class="btn btn-sm btn-success action-btn" title="Revalidar"
                                                             onclick="return confirm('Confirma a revalidação do boletim {{ boletim.numero_boletim }}?')">
-                                                        <i class="bi bi-arrow-clockwise"></i> Revalidar
+                                                        <i class="bi bi-arrow-clockwise"></i>
+                                                    </button>
+                                                </form>
+                                                <a href="{{ url_for('relatorio', boletim_id=boletim.id, edit_mode='edit') }}" class="btn btn-sm btn-warning action-btn" title="Editar">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                                <form method="POST" action="{{ url_for('excluir_boletim', boletim_id=boletim.id) }}" class="d-inline">
+                                                    <button type="submit" class="btn btn-sm btn-danger action-btn" title="Excluir"
+                                                            onclick="return confirm('ATENÇÃO: Excluir o boletim {{ boletim.numero_boletim }} removerá permanentemente todos os dados associados (componentes, histórico, etc.). Esta ação não pode ser desfeita. Confirma a exclusão?')">
+                                                        <i class="bi bi-trash"></i>
                                                     </button>
                                                 </form>
                                             </td>
@@ -87,10 +201,10 @@
                     <!-- Aba Histórico -->
                     <div class="tab-pane fade" id="historico" role="tabpanel" aria-labelledby="historico-tab">
                         <div class="mt-4">
-                            <h5>Histórico de Análises por Componente</h5>
+                            <h5 class="section-title">Histórico de Análises por Componente</h5>
                             <div class="table-responsive">
-                                <table class="table table-bordered table-hover">
-                                    <thead class="table-light">
+                                <table class="table table-bordered table-hover table-striped modern-table">
+                                    <thead>
                                         <tr>
                                             <th>Componente</th>
                                             <th>Boletim</th>
@@ -109,12 +223,12 @@
                                             <td>{{ item.data_coleta }}</td>
                                             <td>{{ "%.3f"|format(item.valor) }}</td>
                                             <td>
-                                                <span class="badge bg-{% if item.status_aga == 'VALIDADO' %}success{% else %}danger{% endif %}">
+                                                <span class="badge {% if item.status_aga == 'VALIDADO' %}badge-success{% else %}badge-danger{% endif %}">
                                                     {{ item.status_aga }}
                                                 </span>
                                             </td>
                                             <td>
-                                                <span class="badge bg-{% if item.status_cep == 'VALIDADO' %}success{% else %}danger{% endif %}">
+                                                <span class="badge {% if item.status_cep == 'VALIDADO' %}badge-success{% else %}badge-danger{% endif %}">
                                                     {{ item.status_cep }}
                                                 </span>
                                             </td>

@@ -1,0 +1,453 @@
+# -*- coding: utf-8 -*-
+"""
+Pipeline 004 PMAE/ANP — Consolidador de Alarmes & Eventos por CV/Série/Dia
+Autor: você
+Regras ANP incorporadas (imutáveis) e validações críticas embutidas.
+
+USO (exemplos):
+# 1) A partir de CSV de EVENTOS e ALARMES (um ou mais arquivos)
+python gerar_004.py \
+  --input "1801 - EVENTS 15-08-2025.csv" "1801 - ALARMS 15-08-2025.csv" \
+  --cnpj8 02857854 --outdir ./out
+
+# 2) A partir de TXT exportado (linhas por evento/alarme)
+python gerar_004.py --input "1811_EVENTS_28-08-2025.txt" --cnpj8 02857854
+
+# 3) PDFs (se tiver pdfplumber OCR instalado; senão, ignore)
+python gerar_004.py --input "1801 - EVENTS 15-08-2025.pdf"
+
+Saída: 1 arquivo/dia por NUM_SERIE_COMPUTADOR_VAZAO, consolidando ALARMES+EVENTOS do mesmo dia.
+Naming: 004_<CNPJ8>_<AAAAMMDDHHmmSS>.xml (hora local America/Sao_Paulo).
+Encoding: ISO-8859-1.
+"""
+
+from __future__ import annotations
+import argparse, csv, os, re, sys, datetime, unicodedata
+from dataclasses import dataclass, field
+from typing import List, Dict, Tuple, Optional
+from xml.etree import ElementTree as ET
+
+# =========================
+# 1) REGRAS ANP (IMUTÁVEIS)
+# =========================
+
+ENCODING_XML = "iso-8859-1"
+ANP_TEXT_MAX = 50
+ANP_DH_MAX = 19  # DD/MM/AAAA HH:mm:SS
+ANP_DECIMAL_SEP = ","  # vírgula (nunca ponto)
+ANP_ORDER_EVENTOS = [
+    "DSC_DADO_ALTERADO",
+    "DSC_CONTEUDO_ORIGINAL",
+    "DSC_CONTEUDO_ATUAL",
+    "DHA_OCORRENCIA_EVENTO",
+]
+ANP_ALARMES_FIELDS = ["DSC_DADO_ALARMADO", "DHA_ALARME", "DSC_MEDIDA_ALARMADA"]
+ANP_EVENTOS_FIELDS = ANP_ORDER_EVENTOS[:]  # obrigatório e nessa ordem
+
+# Campos obrigatórios "nunca vazios" (se sem valor, preencher "0")
+FILL_ZERO_IF_EMPTY = set(ANP_ALARMES_FIELDS + ANP_EVENTOS_FIELDS)
+
+# Cardinalidade: 1 arquivo por dia por Série (7 por dia)
+# Map estático CV -> (NUM_SERIE_COMPUTADOR_VAZAO, COD_INSTALACAO)
+CV_MAP = {
+    "302-FT-9143": ("18361192", "10764"),
+    "1801": ("18360865", "10765"),
+    "1802": ("18360862", "10765"),
+    "1805": ("18360867", "10765"),
+    "1806": ("18360858", "10765"),
+    "1807": ("18360863", "10765"),
+    "1811": ("18360860", "10765"),
+}
+
+# Regex de datas/horas tolerantes
+RE_DH = re.compile(r"\b(\d{2})[/-](\d{2})[/-](\d{4})\s+(\d{2}):(\d{2}):(\d{2})\b")
+RE_D = re.compile(r"\b(\d{2})[/-](\d{2})[/-](\d{4})\b")
+RE_H = re.compile(r"\b(\d{2}):(\d{2}):(\d{2})\b")
+
+# =========================
+# 2) MODELOS DE DADOS
+# =========================
+
+@dataclass
+class Alarme:
+    dsc_dado_alarmado: str
+    dha_alarme: str  # DD/MM/AAAA HH:mm:SS
+    dsc_medida_alarmada: str  # decimal com vírgula
+
+@dataclass
+class Evento:
+    dsc_dado_alterado: str
+    dsc_conteudo_original: str
+    dsc_conteudo_atual: str
+    dha_ocorrencia_evento: str  # DD/MM/AAAA HH:mm:SS
+
+
+# =========================
+# 3) UTILITÁRIOS
+# =========================
+
+def strip_accents(s: str) -> str:
+    return "".join(c for c in unicodedata.normalize("NFD", s) if unicodedata.category(c) != "Mn")
+
+def ensure_not_empty(value: Optional[str]) -> str:
+    if value is None or str(value).strip() == "":
+        return "0"
+    return str(value).strip()
+
+def truncate(s: str, limit: int) -> str:
+    s = s or ""
+    return s[:limit] if len(s) > limit else s
+
+def to_decimal_comma(s: str) -> str:
+    """Se for padrão numérico com ponto decimal, troca ponto->vírgula."""
+    if s is None:
+        return "0"
+    s = s.strip()
+    if re.fullmatch(r"-?\d+\.\d+(?:[eE]-?\d+)?", s):
+        return s.replace(".", ",")
+    return s  # Inteiros/Texto permanecem
+
+def parse_cv_and_date_from_name(fname: str) -> Tuple[Optional[str], Optional[str]]:
+    """
+    Extrai CV e data (DD/MM/AAAA) a partir de nomes do tipo:
+    '1801 - EVENTS 15-08-2025.xxx' ou '1801 - ALARMS 15-08-2025.xxx'
+    """
+    base = os.path.basename(fname)
+    base = os.path.splitext(base)[0]
+    m = re.search(r"\b(\d{4}|\d{1,4}|\d{2,}-FT-\d{4})\b", base)  # tenta pegar '1801' ou '302-FT-9143'
+    cv = m.group(1) if m else None
+    m2 = re.search(r"(\d{2})[-_/](\d{2})[-_/](\d{4})", base)
+    if m2:
+        d, mo, y = m2.groups()
+        data = f"{d}/{mo}/{y}"
+    else:
+        data = None
+    return cv, data
+
+def ensure_data_hora(d: Optional[str], h: Optional[str]) -> Optional[str]:
+    """Monta DD/MM/AAAA HH:mm:SS a partir de partes, quando possível."""
+    if d and h:
+        return f"{d} {h}"
+    if d and not h:
+        return f"{d} 00:00:00"
+    return None
+
+def parse_datetime_any(text: str) -> Optional[str]:
+    """Procura DATA e HORA em um texto livre e retorna DD/MM/AAAA HH:mm:SS."""
+    if not text:
+        return None
+    text = text.strip()
+    m_full = RE_DH.search(text)
+    if m_full:
+        d, mo, y, hh, mm, ss = m_full.groups()
+        return f"{d}/{mo}/{y} {hh}:{mm}:{ss}"
+    m_d = RE_D.search(text)
+    m_h = RE_H.search(text)
+    if m_d and m_h:
+        d, mo, y = m_d.groups()
+        hh, mm, ss = m_h.groups()
+        return f"{d}/{mo}/{y} {hh}:{mm}:{ss}"
+    if m_d:
+        d, mo, y = m_d.groups()
+        return f"{d}/{mo}/{y} 00:00:00"
+    return None
+
+def yyyymmdd_from_ddmmyyyy(dmy: str) -> str:
+    d, m, y = dmy[:2], dmy[3:5], dmy[6:10]
+    return f"{y}{m}{d}"
+
+# =========================
+# 4) PARSERS DE FONTES
+# =========================
+
+def read_lines_from_txt(path: str) -> List[str]:
+    with open(path, "r", encoding="utf-8", errors="ignore") as f:
+        return [ln.rstrip("\n") for ln in f]
+
+def read_rows_from_csv(path: str) -> List[Dict[str, str]]:
+    rows = []
+    with open(path, "r", encoding="utf-8", errors="ignore") as f:
+        sniffer = csv.Sniffer()
+        sample = f.read(4096)
+        f.seek(0)
+        dialect = csv.Sniffer().sniff(sample) if sniffer.has_header(sample) else csv.excel
+        reader = csv.DictReader(f, dialect=dialect)
+        for r in reader:
+            rows.append({k.strip(): (v or "").strip() for k, v in r.items()})
+    return rows
+
+def read_text_from_pdf(path: str) -> List[str]:
+    """
+    Tenta extrair texto de PDF via pdfplumber; caso indisponível, retorna lista vazia.
+    """
+    try:
+        import pdfplumber  # opcional
+    except Exception:
+        return []
+    lines = []
+    with pdfplumber.open(path) as pdf:
+        for page in pdf.pages:
+            text = page.extract_text() or ""
+            lines.extend(text.splitlines())
+    return lines
+
+# =========================
+# 5) NORMALIZAÇÃO DE EVENTOS/ALARMES
+# =========================
+
+def parse_event_line_freeform(line: str, default_date: Optional[str]) -> Optional[Evento]:
+    """
+    Heurística de parsing para uma linha de EVENTO em texto livre (como telas/prints):
+    Ex.: "28/08/2025 09:17:59 1811 STRO2 DP HART MODE KEYPAD"
+    """
+    if "MODE" not in line:
+        # tolera outras colunas; use heurística leve
+        pass
+    # Data/hora
+    dh = parse_datetime_any(line)
+    if not dh and default_date:
+        # tenta extrair só a hora e casar com a data default
+        m_h = RE_H.search(line)
+        if m_h:
+            hh, mm, ss = m_h.groups()
+            dh = f"{default_date} {hh}:{mm}:{ss}"
+    if not dh:
+        return None
+
+    # “Colunas” simplificadas — adapte conforme o seu histórico
+    # dsc_dado_alterado: tag do que mudou (campo/sensor)
+    # dsc_conteudo_original/atual: origem do modo/valor
+    tokens = re.sub(r"\s+", " ", line).split(" ")
+    # Estratégia simples: tudo entre a hora e a palavra 'MODE' vira "dado alterado"
+    try:
+        idx_mode = tokens.index("MODE")
+    except ValueError:
+        idx_mode = None
+
+    if idx_mode and idx_mode > 3:
+        dado_alterado = " ".join(tokens[3:idx_mode])
+        # original/atual -> os dois tokens seguintes, quando houver
+        original = tokens[idx_mode+1] if len(tokens) > idx_mode+1 else "0"
+        atual = tokens[idx_mode+2] if len(tokens) > idx_mode+2 else "0"
+    else:
+        # Fallback: baixa granularidade
+        dado_alterado = " ".join(tokens[3:]) if len(tokens) > 3 else "0"
+        original = "0"
+        atual = "0"
+
+    return Evento(
+        dsc_dado_alterado=truncate(ensure_not_empty(dado_alterado), ANP_TEXT_MAX),
+        dsc_conteudo_original=truncate(ensure_not_empty(original), ANP_TEXT_MAX),
+        dsc_conteudo_atual=truncate(ensure_not_empty(atual), ANP_TEXT_MAX),
+        dha_ocorrencia_evento=dh[:ANP_DH_MAX],
+    )
+
+def parse_alarm_line_freeform(line: str, default_date: Optional[str]) -> Optional[Alarme]:
+    """
+    Heurística de parsing para uma linha de ALARME.
+    Ex.: "15/08/2025 01:20:10 STR01_CVOL_FR-L - Active 8.33766"
+    """
+    dh = parse_datetime_any(line)
+    if not dh and default_date:
+        m_h = RE_H.search(line)
+        if m_h:
+            hh, mm, ss = m_h.groups()
+            dh = f"{default_date} {hh}:{mm}:{ss}"
+    if not dh:
+        return None
+    # Texto: antes do último número é a descrição
+    m_num = re.search(r"(-?\d+(?:\.\d+)?)\s*$", line)
+    medida = to_decimal_comma(m_num.group(1)) if m_num else "0"
+    desc = line
+    if m_num:
+        desc = line[:m_num.start()].strip()
+    return Alarme(
+        dsc_dado_alarmado=truncate(ensure_not_empty(desc), ANP_TEXT_MAX),
+        dha_alarme=dh[:ANP_DH_MAX],
+        dsc_medida_alarmada=truncate(ensure_not_empty(medida), ANP_TEXT_MAX),
+    )
+
+# =========================
+# 6) CONSTRUÇÃO DO XML a004
+# =========================
+
+def ensure_event_order_and_rules(ev: Evento) -> Evento:
+    # Sanitização final (nunca vazio, tamanhos e ordem já respeitada pelo dataclass)
+    ev.dsc_dado_alterado = truncate(ensure_not_empty(ev.dsc_dado_alterado), ANP_TEXT_MAX)
+    ev.dsc_conteudo_original = truncate(ensure_not_empty(ev.dsc_conteudo_original), ANP_TEXT_MAX)
+    ev.dsc_conteudo_atual = truncate(ensure_not_empty(ev.dsc_conteudo_atual), ANP_TEXT_MAX)
+    # DATA_HORA válida (19) — se faltar, vira 00:00:00 do dia conhecido
+    if not RE_DH.fullmatch(ev.dha_ocorrencia_evento or ""):
+        # tenta completar se tiver só data
+        m_d = RE_D.search(ev.dha_ocorrencia_evento or "")
+        ev.dha_ocorrencia_evento = (
+            f"{m_d.group(1)}/{m_d.group(2)}/{m_d.group(3)} 00:00:00" if m_d else "01/01/1900 00:00:00"
+        )
+    ev.dha_ocorrencia_evento = ev.dha_ocorrencia_evento[:ANP_DH_MAX]
+    return ev
+
+def ensure_alarm_rules(al: Alarme) -> Alarme:
+    al.dsc_dado_alarmado = truncate(ensure_not_empty(al.dsc_dado_alarmado), ANP_TEXT_MAX)
+    # DATA_HORA válida
+    if not RE_DH.fullmatch(al.dha_alarme or ""):
+        m_d = RE_D.search(al.dha_alarme or "")
+        al.dha_alarme = f"{m_d.group(1)}/{m_d.group(2)}/{m_d.group(3)} 00:00:00" if m_d else "01/01/1900 00:00:00"
+    al.dha_alarme = al.dha_alarme[:ANP_DH_MAX]
+    # Decimal vírgula em DSC_MEDIDA_ALARMADA
+    al.dsc_medida_alarmada = truncate(ensure_not_empty(to_decimal_comma(al.dsc_medida_alarmada)), ANP_TEXT_MAX)
+    return al
+
+def build_a004_xml(num_serie: str, cod_instalacao: str,
+                   alarmes: List[Alarme], eventos: List[Evento]) -> ET.ElementTree:
+    root = ET.Element("a004")
+    lista = ET.SubElement(root, "LISTA_DADOS_BASICOS")
+    db = ET.SubElement(lista, "DADOS_BASICOS")
+    db.set("NUM_SERIE_COMPUTADOR_VAZAO", num_serie)
+    db.set("COD_INSTALACAO", cod_instalacao)
+
+    # LISTA_ALARMES (vem antes)
+    la = ET.SubElement(db, "LISTA_ALARMES")
+    for al in alarmes:
+        al = ensure_alarm_rules(al)
+        node = ET.SubElement(la, "ALARMES")
+        ET.SubElement(node, "DSC_DADO_ALARMADO").text = al.dsc_dado_alarmado
+        ET.SubElement(node, "DHA_ALARME").text = al.dha_alarme
+        ET.SubElement(node, "DSC_MEDIDA_ALARMADA").text = al.dsc_medida_alarmada
+
+    # LISTA_EVENTOS
+    le = ET.SubElement(db, "LISTA_EVENTOS")
+    # Ordenar cronologicamente (se vierem mesclados)
+    def key_ev(e: Evento):
+        m = RE_DH.search(e.dha_ocorrencia_evento)
+        return datetime.datetime.strptime(m.group(0), "%d/%m/%Y %H:%M:%S") if m else datetime.datetime.min
+    eventos_sorted = sorted([ensure_event_order_and_rules(e) for e in eventos], key=key_ev)
+
+    for ev in eventos_sorted:
+        node = ET.SubElement(le, "EVENTOS")
+        # Ordem ANP (imutável)
+        ET.SubElement(node, "DSC_DADO_ALTERADO").text = ev.dsc_dado_alterado
+        ET.SubElement(node, "DSC_CONTEUDO_ORIGINAL").text = ev.dsc_conteudo_original
+        ET.SubElement(node, "DSC_CONTEUDO_ATUAL").text = ev.dsc_conteudo_atual
+        ET.SubElement(node, "DHA_OCORRENCIA_EVENTO").text = ev.dha_ocorrencia_evento
+
+    return ET.ElementTree(root)
+
+def anp_filename(cnpj8: str) -> str:
+    # Hora local; se quiser forçar America/Sao_Paulo, use pytz/zoneinfo
+    now = datetime.datetime.now()
+    return f"004_{cnpj8}_{now.strftime('%Y%m%d%H%M%S')}.xml"
+
+def write_xml(tree: ET.ElementTree, outdir: str, cnpj8: str) -> str:
+    os.makedirs(outdir, exist_ok=True)
+    outpath = os.path.join(outdir, anp_filename(cnpj8))
+    tree.write(outpath, encoding=ENCODING_XML, xml_declaration=True)
+    return outpath
+
+# =========================
+# 7) ORQUESTRAÇÃO (CLI)
+# =========================
+
+def main():
+    ap = argparse.ArgumentParser(description="Gerador 004 (ANP) — Alarmes & Eventos por CV/Série/Dia")
+    ap.add_argument("--input", nargs="+", required=True, help="Arquivos CSV/TXT/PDF (podem ser múltiplos)")
+    ap.add_argument("--cnpj8", required=True, help="Raiz CNPJ (8 dígitos) — ex.: 02857854")
+    ap.add_argument("--cv", help="CV explícito (se não for inferível do nome do arquivo)")
+    ap.add_argument("--data", help="Data de referência (DD/MM/AAAA) — se não for inferível do nome")
+    ap.add_argument("--outdir", default="./out", help="Diretório de saída")
+    args = ap.parse_args()
+
+    # Inferências de CV e data (fallback por nome)
+    cv_hint, date_hint = None, None
+    for p in args.input:
+        cvx, dfx = parse_cv_and_date_from_name(p)
+        if cvx and not cv_hint:
+            cv_hint = cvx
+        if dfx and not date_hint:
+            date_hint = dfx
+
+    cv = args.cv or cv_hint
+    data_ref = args.data or date_hint
+    if not cv or not data_ref:
+        print("Erro: informe --cv e --data (DD/MM/AAAA) ou use nomes de arquivo no padrão '<CV> - ALARMS/EVENTS dd-mm-aaaa.*'")
+        sys.exit(1)
+
+    if cv not in CV_MAP:
+        print(f"Erro: CV '{cv}' não mapeado. Atualize CV_MAP no código.")
+        sys.exit(1)
+
+    num_serie, cod_inst = CV_MAP[cv]
+
+    alarmes: List[Alarme] = []
+    eventos: List[Evento] = []
+
+    # Ingestão
+    for path in args.input:
+        ext = os.path.splitext(path)[1].lower()
+        if ext in (".csv",):
+            rows = read_rows_from_csv(path)
+            # Tente mapear colunas por nome (flexível) — adapte ao seu CSV.
+            # Se não bater, trate como linhas livres.
+            header = [strip_accents(c.lower()) for c in rows[0].keys()] if rows else []
+            is_event_csv = any("event" in h or "conteudo" in h for h in header)
+            is_alarm_csv = any("alarm" in h or "medida" in h for h in header)
+
+            if is_event_csv:
+                for r in rows:
+                    blob = " ".join([v for v in r.values() if v])
+                    ev = parse_event_line_freeform(blob, data_ref)
+                    if ev:
+                        eventos.append(ev)
+            elif is_alarm_csv:
+                for r in rows:
+                    blob = " ".join([v for v in r.values() if v])
+                    al = parse_alarm_line_freeform(blob, data_ref)
+                    if al:
+                        alarmes.append(al)
+            else:
+                # fallback: tratar cada linha como evento
+                for r in rows:
+                    blob = " ".join([v for v in r.values() if v])
+                    ev = parse_event_line_freeform(blob, data_ref)
+                    if ev:
+                        eventos.append(ev)
+
+        elif ext in (".txt",):
+            for line in read_lines_from_txt(path):
+                # Heurística: se contiver "MODE", tratar como EVENTO; caso contrário, tentar ALARME
+                if "MODE" in line or "mode" in line:
+                    ev = parse_event_line_freeform(line, data_ref)
+                    if ev:
+                        eventos.append(ev)
+                else:
+                    al = parse_alarm_line_freeform(line, data_ref)
+                    if al:
+                        alarmes.append(al)
+
+        elif ext in (".pdf",):
+            lines = read_text_from_pdf(path)
+            # Mesmo tratamento que TXT
+            for line in lines:
+                if "MODE" in line or "mode" in line:
+                    ev = parse_event_line_freeform(line, data_ref)
+                    if ev:
+                        eventos.append(ev)
+                else:
+                    al = parse_alarm_line_freeform(line, data_ref)
+                    if al:
+                        alarmes.append(al)
+
+        else:
+            print(f"Aviso: extensão '{ext}' não suportada; ignorando {path}")
+
+    # Regras operacionais:
+    # - 1 XML diário por Série (consolida alarmes+eventos do mesmo CV/dia)
+    # - LISTA_ALARMES pode vir vazia; LISTA_EVENTOS idem
+    # - Campos obrigatórios nunca vazios ("0" se não houver)
+    # - Decimal vírgula em DSC_MEDIDA_ALARMADA
+    # - EVENTOS na ordem oficial (1..4) e DATA_HORA válida (19)
+    xml = build_a004_xml(num_serie, cod_inst, alarmes, eventos)
+    outpath = write_xml(xml, args.outdir, args.cnpj8)
+    print(f"XML gerado: {outpath}")
+
+if __name__ == "__main__":
+    main()

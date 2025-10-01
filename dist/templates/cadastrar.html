@@ -3,88 +3,209 @@
 {% block title %}Cadastrar Boletim - Validação de Boletins Cromatográficos{% endblock %}
 
 {% block content %}
+<style>
+    /* Aplicando a fonte Inter e melhorias visuais */
+    .card, .table, .form-control, .form-label, .btn, label, th, td, input, select, textarea, h4, h6 {
+        font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif !important;
+    }
+    
+    .card-header.bg-primary {
+        background: linear-gradient(135deg, #1e40af, #3b82f6) !important;
+        border-radius: 8px 8px 0 0;
+        padding: 15px 20px;
+        font-weight: 600;
+    }
+    
+    .card {
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e2e8f0;
+    }
+    
+    .form-control {
+        border-radius: 6px;
+        border: 1px solid #cbd5e1;
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
+    }
+    
+    .form-control:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 6px;
+    }
+    
+    .btn {
+        border-radius: 6px;
+        font-weight: 500;
+        padding: 8px 16px;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #1e40af, #3b82f6);
+        border: none;
+    }
+    
+    .btn-success {
+        background: linear-gradient(135deg, #10b981, #059669);
+        border: none;
+    }
+    
+    .excel-container .card-header h4, .excel-container .card-header h6 {
+        color: white;
+        font-weight: 600;
+    }
+    
+    /* Uniformizar campos da tabela checklist */
+    .table td {
+        font-weight: normal !important;
+        font-size: 0.875rem !important;
+        line-height: 1.4 !important;
+        vertical-align: middle !important;
+    }
+    
+    .table .fw-bold {
+        font-weight: normal !important;
+    }
+    
+    .form-select-sm, .form-control-sm {
+        font-size: 0.875rem !important;
+        line-height: 1.4 !important;
+        height: auto !important;
+        padding: 0.25rem 0.5rem !important;
+    }
+    
+    /* Centralizar texto do header */
+    .card-header h4 {
+        text-align: center !important;
+    }
+</style>
+
+<div class="excel-container">
+
 <div class="row">
     <div class="col-md-12">
-        <h2 class="mb-4">
-            <i class="bi bi-file-earmark-plus"></i> Cadastrar Novo Boletim Cromatográfico
-        </h2>
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="bi bi-file-earmark-plus"></i> CADASTRAR NOVO BOLETIM CROMATOGRÁFICO</h4>
+            </div>
+            <div class="card-body p-4">
         
         <form method="post" id="cadastroForm">
-            <!-- Cabeçalho da planilha -->
-            <div class="row mb-4">
-                <div class="col-md-12">
-                    <div class="border p-3 bg-light">
-                        <h6 class="text-primary">INFORMAÇÕES DO BOLETIM</h6>
+            <!-- Informações do Boletim -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0"><i class="bi bi-info-circle"></i> INFORMAÇÕES DO BOLETIM</h6>
+                </div>
+                <div class="card-body">
+                    <!-- Primeira linha: Número do Documento, Número do Boletim, Data de Coleta, Data de Emissão -->
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label for="numero_documento" class="form-label small">Número do Documento</label>
+                            <input type="text" class="form-control form-control-sm" id="numero_documento" name="numero_documento">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="numero_boletim" class="form-label small">Número do Boletim</label>
+                            <input type="text" class="form-control form-control-sm" id="numero_boletim" name="numero_boletim" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="data_coleta" class="form-label small">Data de Coleta</label>
+                            <input type="date" class="form-control form-control-sm" id="data_coleta" name="data_coleta" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="data_emissao" class="form-label small">Data de Emissão</label>
+                            <input type="date" class="form-control form-control-sm" id="data_emissao" name="data_emissao" required>
+                        </div>
+                    </div>
+                    
+                    <!-- Segunda linha: Agente Regulado, Plataforma -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="agente_regulado" class="form-label small">Agente Regulado</label>
+                            <input type="text" class="form-control form-control-sm" id="agente_regulado" name="agente_regulado" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="plataforma" class="form-label small">Plataforma</label>
+                            <input type="text" class="form-control form-control-sm" id="plataforma" name="plataforma" required>
+                        </div>
+                    </div>
+                    
+                    <!-- Terceira linha: Instalação, Sistema de Medição, Ponto de Coleta, Classificação -->
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label for="identificacao_instalacao" class="form-label small">Instalação</label>
+                            <input type="text" class="form-control form-control-sm" id="identificacao_instalacao" name="identificacao_instalacao" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="sistema_medicao" class="form-label small">Sistema de Medição</label>
+                            <input type="text" class="form-control form-control-sm" id="sistema_medicao" name="sistema_medicao" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="ponto_coleta" class="form-label small">Ponto de Coleta</label>
+                            <input type="text" class="form-control form-control-sm" id="ponto_coleta" name="ponto_coleta" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="classificacao" class="form-label small">Classificação</label>
+                            <input type="text" class="form-control form-control-sm" id="classificacao" name="classificacao" required>
+                        </div>
+                    </div>
+                    
+                    <!-- Quarta linha: Data de Recebimento, Data de Análise, Data de Validação, Responsável Amostragem -->
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label for="data_recebimento" class="form-label small">Data de Recebimento</label>
+                            <input type="date" class="form-control form-control-sm" id="data_recebimento" name="data_recebimento">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="data_analise" class="form-label small">Data de Análise</label>
+                            <input type="date" class="form-control form-control-sm" id="data_analise" name="data_analise">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="data_validacao" class="form-label small">Data de Validação</label>
+                            <input type="date" class="form-control form-control-sm" id="data_validacao" name="data_validacao">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="responsavel_amostragem" class="form-label small">Responsável Amostragem</label>
+                            <input type="text" class="form-control form-control-sm" id="responsavel_amostragem" name="responsavel_amostragem" required>
+                        </div>
+                    </div>
+
+                    <!-- Validação de Prazos ANP em Tempo Real -->
+                    <div class="alert alert-info mt-3" id="validacao-prazos-anp" style="display: none;">
+                        <h6 class="alert-heading">
+                            <i class="bi bi-clock-history"></i> Validação de Prazos ANP - Regulamento Técnico 52
+                        </h6>
                         <div class="row">
-                            <div class="col-md-3 mb-3">
-                                <label for="numero_boletim" class="form-label small">Número do Boletim</label>
-                                <input type="text" class="form-control form-control-sm" id="numero_boletim" name="numero_boletim" required>
+                            <div class="col-md-4">
+                                <small><strong>Coleta → Emissão:</strong> <span id="prazo-coleta-emissao" class="text-muted">-</span></small><br>
+                                <small class="text-muted">Máximo: 25 dias (Portaria 52 ANP)</small>
                             </div>
-                            <div class="col-md-3 mb-3">
-                                <label for="data_coleta" class="form-label small">Data de Coleta</label>
-                                <input type="date" class="form-control form-control-sm" id="data_coleta" name="data_coleta" required>
+                            <div class="col-md-4">
+                                <small><strong>Emissão → Validação:</strong> <span id="prazo-emissao-validacao" class="text-muted">-</span></small><br>
+                                <small class="text-muted">Máximo: 1 dia (Portaria 52 ANP)</small>
                             </div>
-                            <div class="col-md-3 mb-3">
-                                <label for="data_recebimento" class="form-label small">Data de Recebimento</label>
-                                <input type="date" class="form-control form-control-sm" id="data_recebimento" name="data_recebimento">
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label for="data_analise" class="form-label small">Data de Análise</label>
-                                <input type="date" class="form-control form-control-sm" id="data_analise" name="data_analise">
+                            <div class="col-md-4">
+                                <small><strong>Prazo Total:</strong> <span id="prazo-total" class="text-muted">-</span></small><br>
+                                <small class="text-muted">Máximo: 28 dias (Portaria 52 ANP)</small>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-3 mb-3">
-                                <label for="data_emissao" class="form-label small">Data de Emissão</label>
-                                <input type="date" class="form-control form-control-sm" id="data_emissao" name="data_emissao" required>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label for="identificacao_instalacao" class="form-label small">Instalação</label>
-                                <input type="text" class="form-control form-control-sm" id="identificacao_instalacao" name="identificacao_instalacao" required>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label for="plataforma" class="form-label small">Plataforma</label>
-                                <input type="text" class="form-control form-control-sm" id="plataforma" name="plataforma" value="FPSO ATLANTE" required>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label for="sistema_medicao" class="form-label small">Sistema de Medição</label>
-                                <input type="text" class="form-control form-control-sm" id="sistema_medicao" name="sistema_medicao" value="GÁS COMBUSTÍVEL LP" required>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-3 mb-3">
-                                <label for="classificacao" class="form-label small">Classificação</label>
-                                <input type="text" class="form-control form-control-sm" id="classificacao" name="classificacao" value="FISCAL" required>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label for="ponto_coleta" class="form-label small">Ponto de Coleta</label>
-                                <input type="text" class="form-control form-control-sm" id="ponto_coleta" name="ponto_coleta" value="LP FUEL GAS" required>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label for="agente_regulado" class="form-label small">Agente Regulado</label>
-                                <input type="text" class="form-control form-control-sm" id="agente_regulado" name="agente_regulado" required>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label for="ponto_medicao" class="form-label small">Ponto de Medição</label>
-                                <input type="text" class="form-control form-control-sm" id="ponto_medicao" name="ponto_medicao" required>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12 mb-3">
-                                <label for="responsavel_amostragem" class="form-label small">Responsável Amostragem</label>
-                                <input type="text" class="form-control form-control-sm" id="responsavel_amostragem" name="responsavel_amostragem" required>
-                            </div>
-                        </div>
+                    </div>
                     </div>
                 </div>
             </div>
 
             <!-- Condições do Processo -->
-            <div class="row mb-4">
-                <div class="col-md-12">
-                    <div class="border p-3 bg-light">
-                        <h6 class="text-primary">CONDIÇÕES DO PROCESSO</h6>
-                        <div class="row">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0"><i class="bi bi-thermometer-half"></i> CONDIÇÕES DO PROCESSO</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="pressao" class="form-label small">Pressão (atm)</label>
                                 <input type="number" step="0.01" class="form-control form-control-sm" id="pressao" name="pressao" required>
@@ -98,161 +219,159 @@
                 </div>
             </div>
 
-            <!-- Propriedades do Fluido -->
-            <div class="row mb-4">
-                <div class="col-md-12">
-                    <div class="border p-3" style="background: linear-gradient(135deg, #e3f2fd, #f3e5f5); border-color: #1e40af;">
-                        <h6 class="text-primary">
-                            <i class="bi bi-calculator"></i> PROPRIEDADES DO FLUIDO - CÁLCULO AUTOMÁTICO
-                        </h6>
-                        <div class="alert alert-info mb-0" role="alert" style="border: none; background: rgba(30, 64, 175, 0.1);">
-                            <small>
-                                <strong>ℹ️ As propriedades do fluido serão calculadas automaticamente:</strong><br>
-                                • <strong>Massa Molecular:</strong> Calculada pela composição molar dos componentes<br>
-                                • <strong>Fator de Compressibilidade:</strong> Baseado na metodologia A.G.A #8<br>
-                                • <strong>Massa Específica:</strong> Calculada pelas condições padrão (20°C, 101.325 kPa)<br>
-                                • <strong>Validação CEP:</strong> Aplicada automaticamente com base no histórico
-                            </small>
-                        </div>
+            <!-- Componentes Gasosos -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0"><i class="bi bi-list-check"></i> COMPONENTES GASOSOS (%)</h6>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="componentes-excel">
+                            <thead>
+                                <tr>
+                                    <th>Componente</th>
+                                    <th>Unidade</th>
+                                    <th>Percentual Molar</th>
+                                    <th class="aga8-header">Min A.G.A #8</th>
+                                    <th class="aga8-header">Max A.G.A #8</th>
+                                    <th>Status A.G.A #8</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="component-name">Metano, CH₄</td>
+                                    <td class="text-center">% mol</td>
+                                    <td><input type="number" step="0.001" id="Metano" name="Metano" required></td>
+                                    <td class="aga8-limit numeric">0</td>
+                                    <td class="aga8-limit numeric">100</td>
+                                    <td class="text-center"><span id="status_Metano" class="status-validado">AGUARDANDO</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="component-name">Etano, C₂H₆</td>
+                                    <td class="text-center">% mol</td>
+                                    <td><input type="number" step="0.001" id="Etano" name="Etano" required></td>
+                                    <td class="aga8-limit numeric">0</td>
+                                    <td class="aga8-limit numeric">100</td>
+                                    <td class="text-center"><span id="status_Etano" class="status-validado">AGUARDANDO</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="component-name">Propano, C₃H₈</td>
+                                    <td class="text-center">% mol</td>
+                                    <td><input type="number" step="0.001" id="Propano" name="Propano" required></td>
+                                    <td class="aga8-limit numeric">0</td>
+                                    <td class="aga8-limit numeric">12</td>
+                                    <td class="text-center"><span id="status_Propano" class="status-validado">AGUARDANDO</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="component-name">i-Butano, i-C₄H₁₀</td>
+                                    <td class="text-center">% mol</td>
+                                    <td><input type="number" step="0.001" id="i-Butano" name="i-Butano" required></td>
+                                    <td class="aga8-limit numeric">0</td>
+                                    <td class="aga8-limit numeric">6</td>
+                                    <td class="text-center"><span id="status_i-Butano" class="status-validado">AGUARDANDO</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="component-name">n-Butano, n-C₄H₁₀</td>
+                                    <td class="text-center">% mol</td>
+                                    <td><input type="number" step="0.001" id="n-Butano" name="n-Butano" required></td>
+                                    <td class="aga8-limit numeric">0</td>
+                                    <td class="aga8-limit numeric">6</td>
+                                    <td class="text-center"><span id="status_n-Butano" class="status-validado">AGUARDANDO</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="component-name">i-Pentano, i-C₅H₁₂</td>
+                                    <td class="text-center">% mol</td>
+                                    <td><input type="number" step="0.001" id="i-Pentano" name="i-Pentano" required></td>
+                                    <td class="aga8-limit numeric">0</td>
+                                    <td class="aga8-limit numeric">4</td>
+                                    <td class="text-center"><span id="status_i-Pentano" class="status-validado">AGUARDANDO</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="component-name">n-Pentano, n-C₅H₁₂</td>
+                                    <td class="text-center">% mol</td>
+                                    <td><input type="number" step="0.001" id="n-Pentano" name="n-Pentano" required></td>
+                                    <td class="aga8-limit numeric">0</td>
+                                    <td class="aga8-limit numeric">4</td>
+                                    <td class="text-center"><span id="status_n-Pentano" class="status-validado">AGUARDANDO</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="component-name">C₆+</td>
+                                    <td class="text-center">% mol</td>
+                                    <td><input type="number" step="0.001" id="Hexano" name="Hexano" required></td>
+                                    <td class="aga8-limit numeric">0</td>
+                                    <td class="aga8-limit numeric">100</td>
+                                    <td class="text-center"><span id="status_Hexano" class="status-validado">AGUARDANDO</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="component-name">Heptano</td>
+                                    <td class="text-center">% mol</td>
+                                    <td><input type="number" step="0.001" id="Heptano" name="Heptano" required></td>
+                                    <td class="aga8-limit numeric">0</td>
+                                    <td class="aga8-limit numeric">100</td>
+                                    <td class="text-center"><span id="status_Heptano" class="status-validado">AGUARDANDO</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="component-name">Octano</td>
+                                    <td class="text-center">% mol</td>
+                                    <td><input type="number" step="0.001" id="Octano" name="Octano" required></td>
+                                    <td class="aga8-limit numeric">0</td>
+                                    <td class="aga8-limit numeric">100</td>
+                                    <td class="text-center"><span id="status_Octano" class="status-validado">AGUARDANDO</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="component-name">Nonano</td>
+                                    <td class="text-center">% mol</td>
+                                    <td><input type="number" step="0.001" id="Nonano" name="Nonano" required></td>
+                                    <td class="aga8-limit numeric">0</td>
+                                    <td class="aga8-limit numeric">100</td>
+                                    <td class="text-center"><span id="status_Nonano" class="status-validado">AGUARDANDO</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="component-name">Decano</td>
+                                    <td class="text-center">% mol</td>
+                                    <td><input type="number" step="0.001" id="Decano" name="Decano" required></td>
+                                    <td class="aga8-limit numeric">0</td>
+                                    <td class="aga8-limit numeric">100</td>
+                                    <td class="text-center"><span id="status_Decano" class="status-validado">AGUARDANDO</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="component-name">Oxigênio, O₂</td>
+                                    <td class="text-center">% mol</td>
+                                    <td><input type="number" step="0.001" id="Oxigênio" name="Oxigênio" required></td>
+                                    <td class="aga8-limit numeric">0</td>
+                                    <td class="aga8-limit numeric">21</td>
+                                    <td class="text-center"><span id="status_Oxigênio" class="status-validado">AGUARDANDO</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="component-name">Nitrogênio, N₂</td>
+                                    <td class="text-center">% mol</td>
+                                    <td><input type="number" step="0.001" id="Nitrogênio" name="Nitrogênio" required></td>
+                                    <td class="aga8-limit numeric">0</td>
+                                    <td class="aga8-limit numeric">100</td>
+                                    <td class="text-center"><span id="status_Nitrogênio" class="status-validado">AGUARDANDO</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="component-name">Dióxido de Carbono, CO₂</td>
+                                    <td class="text-center">% mol</td>
+                                    <td><input type="number" step="0.001" id="CO2" name="CO2" required></td>
+                                    <td class="aga8-limit numeric">0</td>
+                                    <td class="aga8-limit numeric">100</td>
+                                    <td class="text-center"><span id="status_CO2" class="status-validado">AGUARDANDO</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-            </div>
-
-            <!-- Componentes Gasosos -->
-            <div class="row mb-4">
-                <div class="col-md-12">
-                    <div class="border p-3 bg-light">
-                        <h6 class="text-primary">COMPONENTES GASOSOS (%)</h6>
-                        <div class="table-responsive">
-                            <table class="table table-sm table-bordered">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Componente</th>
-                                        <th>Percentual Molar</th>
-                                        <th>Min A.G.A #8</th>
-                                        <th>Max A.G.A #8</th>
-                                        <th>Status A.G.A #8</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><label for="Metano">Metano</label></td>
-                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="Metano" name="Metano" required></td>
-                                        <td>0</td>
-                                        <td>100</td>
-                                        <td class="text-center"><span id="status_Metano" class="badge bg-secondary">-</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td><label for="Etano">Etano</label></td>
-                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="Etano" name="Etano" required></td>
-                                        <td>0</td>
-                                        <td>100</td>
-                                        <td class="text-center"><span id="status_Etano" class="badge bg-secondary">-</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td><label for="Propano">Propano</label></td>
-                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="Propano" name="Propano" required></td>
-                                        <td>0</td>
-                                        <td>12</td>
-                                        <td class="text-center"><span id="status_Propano" class="badge bg-secondary">-</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td><label for="i-Butano">i-Butano</label></td>
-                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="i-Butano" name="i-Butano" required></td>
-                                        <td>0</td>
-                                        <td>6</td>
-                                        <td class="text-center"><span id="status_i-Butano" class="badge bg-secondary">-</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td><label for="n-Butano">n-Butano</label></td>
-                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="n-Butano" name="n-Butano" required></td>
-                                        <td>0</td>
-                                        <td>6</td>
-                                        <td class="text-center"><span id="status_n-Butano" class="badge bg-secondary">-</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td><label for="i-Pentano">i-Pentano</label></td>
-                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="i-Pentano" name="i-Pentano" required></td>
-                                        <td>0</td>
-                                        <td>4</td>
-                                        <td class="text-center"><span id="status_i-Pentano" class="badge bg-secondary">-</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td><label for="n-Pentano">n-Pentano</label></td>
-                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="n-Pentano" name="n-Pentano" required></td>
-                                        <td>0</td>
-                                        <td>4</td>
-                                        <td class="text-center"><span id="status_n-Pentano" class="badge bg-secondary">-</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td><label for="Hexano">Hexano</label></td>
-                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="Hexano" name="Hexano" required></td>
-                                        <td>0</td>
-                                        <td>100</td>
-                                        <td class="text-center"><span id="status_Hexano" class="badge bg-secondary">-</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td><label for="Heptano">Heptano</label></td>
-                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="Heptano" name="Heptano" required></td>
-                                        <td>0</td>
-                                        <td>100</td>
-                                        <td class="text-center"><span id="status_Heptano" class="badge bg-secondary">-</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td><label for="Octano">Octano</label></td>
-                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="Octano" name="Octano" required></td>
-                                        <td>0</td>
-                                        <td>100</td>
-                                        <td class="text-center"><span id="status_Octano" class="badge bg-secondary">-</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td><label for="Nonano">Nonano</label></td>
-                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="Nonano" name="Nonano" required></td>
-                                        <td>0</td>
-                                        <td>100</td>
-                                        <td class="text-center"><span id="status_Nonano" class="badge bg-secondary">-</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td><label for="Decano">Decano</label></td>
-                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="Decano" name="Decano" required></td>
-                                        <td>0</td>
-                                        <td>100</td>
-                                        <td class="text-center"><span id="status_Decano" class="badge bg-secondary">-</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td><label for="Oxigênio">Oxigênio</label></td>
-                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="Oxigênio" name="Oxigênio" required></td>
-                                        <td>0</td>
-                                        <td>21</td>
-                                        <td class="text-center"><span id="status_Oxigênio" class="badge bg-secondary">-</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td><label for="Nitrogênio">Nitrogênio</label></td>
-                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="Nitrogênio" name="Nitrogênio" required></td>
-                                        <td>0</td>
-                                        <td>100</td>
-                                        <td class="text-center"><span id="status_Nitrogênio" class="badge bg-secondary">-</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td><label for="CO2">CO2</label></td>
-                                        <td><input type="number" step="0.001" class="form-control form-control-sm text-end" id="CO2" name="CO2" required></td>
-                                        <td>0</td>
-                                        <td>100</td>
-                                        <td class="text-center"><span id="status_CO2" class="badge bg-secondary">-</span></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
                 </div>
             </div>
 
             <!-- Responsáveis -->
-            <div class="row mb-4">
-                <div class="col-md-12">
-                    <div class="border p-3 bg-light">
-                        <h6 class="text-primary">RESPONSÁVEIS</h6>
-                        <div class="row">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0"><i class="bi bi-people"></i> RESPONSÁVEIS</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
                             <div class="col-md-4 mb-3">
                                 <label for="responsavel_tecnico" class="form-label small">Responsável Técnico</label>
                                 <input type="text" class="form-control form-control-sm" id="responsavel_tecnico" name="responsavel_tecnico" required>
@@ -270,13 +389,575 @@
                 </div>
             </div>
 
+            <!-- Seção: Objetivo - Editável -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0"><i class="bi bi-bullseye"></i> OBJETIVO</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="objetivo" class="form-label small">Descrição do Objetivo</label>
+                        <textarea class="form-control form-control-sm" id="objetivo" name="objetivo" rows="1" style="height: 15px;"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CHECK LIST ISO 17025 -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0"><i class="bi bi-list-check"></i> CHECK LIST ISO 17025</h6>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="checklist-table table table-striped table-hover table-sm mb-0">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th scope="col" style="background: linear-gradient(135deg, #1e40af, #2563eb); color: white; width: 60px;" class="text-center">ITEM</th>
+                                    <th scope="col" style="background: linear-gradient(135deg, #1e40af, #2563eb); color: white;" class="text-center">DESCRIÇÃO</th>
+                                    <th scope="col" style="background: linear-gradient(135deg, #1e40af, #2563eb); color: white; width: 140px;" class="text-center">SITUAÇÃO</th>
+                                    <th scope="col" style="background: linear-gradient(135deg, #1e40af, #2563eb); color: white; width: 160px;" class="text-center">NÃO APLICÁVEL</th>
+                                    <th scope="col" style="background: linear-gradient(135deg, #1e40af, #2563eb); color: white; width: 200px;" class="text-center">OBSERVAÇÃO</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-center fw-bold">1</td>
+                                    <td>Identificação do boletim de resultados analíticos</td>
+                                    <td class="text-center">
+                                        <select class="form-select form-select-sm" name="checklist_1_situacao">
+                                            <option value="">Selecionar</option>
+                                            <option value="OK">✓ OK</option>
+                                            <option value="NOK">✗ NOK</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <select class="form-select form-select-sm" name="checklist_1_na">
+                                            <option value="">Selecionar</option>
+                                            <option value="SIM">Sim</option>
+                                            <option value="NAO">Não</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <input type="text" class="form-control form-control-sm text-center" name="checklist_1_obs" >
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center fw-bold">2</td>
+                                    <td>Identificação da amostra</td>
+                                    <td class="text-center">
+                                        <select class="form-select form-select-sm" name="checklist_2_situacao">
+                                            <option value="">Selecionar</option>
+                                            <option value="OK">✓ OK</option>
+                                            <option value="NOK">✗ NOK</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <select class="form-select form-select-sm" name="checklist_2_na">
+                                            <option value="">Selecionar</option>
+                                            <option value="SIM">Sim</option>
+                                            <option value="NAO">Não</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm" name="checklist_2_obs" >
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center fw-bold">3</td>
+                                    <td>Descrição da data de amostragem</td>
+                                    <td class="text-center">
+                                        <select class="form-select form-select-sm" name="checklist_3_situacao">
+                                            <option value="">Selecionar</option>
+                                            <option value="OK">✓ OK</option>
+                                            <option value="NOK">✗ NOK</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <select class="form-select form-select-sm" name="checklist_3_na">
+                                            <option value="">Selecionar</option>
+                                            <option value="SIM">Sim</option>
+                                            <option value="NAO">Não</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm" name="checklist_3_obs" >
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center fw-bold">4</td>
+                                    <td>Descrição da data de recebimento da amostra pelo laboratório</td>
+                                    <td class="text-center">
+                                        <select class="form-select form-select-sm" name="checklist_4_situacao">
+                                            <option value="">Selecionar</option>
+                                            <option value="OK">✓ OK</option>
+                                            <option value="NOK">✗ NOK</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <select class="form-select form-select-sm" name="checklist_4_na">
+                                            <option value="">Selecionar</option>
+                                            <option value="SIM">Sim</option>
+                                            <option value="NAO">Não</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm" name="checklist_4_obs" >
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center fw-bold">5</td>
+                                    <td>Descrição da data de realização das análises</td>
+                                    <td class="text-center">
+                                        <select class="form-select form-select-sm" name="checklist_5_situacao">
+                                            <option value="">Selecionar</option>
+                                            <option value="OK">✓ OK</option>
+                                            <option value="NOK">✗ NOK</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <select class="form-select form-select-sm" name="checklist_5_na">
+                                            <option value="">Selecionar</option>
+                                            <option value="SIM">Sim</option>
+                                            <option value="NAO">Não</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm" name="checklist_5_obs">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center fw-bold">6</td>
+                                    <td>Descrição da data de emissão do BRA</td>
+                                    <td class="text-center">
+                                        <select class="form-select form-select-sm" name="checklist_6_situacao">
+                                            <option value="">Selecionar</option>
+                                            <option value="OK">✓ OK</option>
+                                            <option value="NOK">✗ NOK</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <select class="form-select form-select-sm" name="checklist_6_na">
+                                            <option value="">Selecionar</option>
+                                            <option value="SIM">Sim</option>
+                                            <option value="NAO">Não</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm" name="checklist_6_obs" >
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center fw-bold">7</td>
+                                    <td>Identificação do campo produtor ou da instalação</td>
+                                    <td class="text-center">
+                                        <select class="form-select form-select-sm" name="checklist_7_situacao">
+                                            <option value="">Selecionar</option>
+                                            <option value="OK">✓ OK</option>
+                                            <option value="NOK">✗ NOK</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <select class="form-select form-select-sm" name="checklist_7_na">
+                                            <option value="">Selecionar</option>
+                                            <option value="SIM">Sim</option>
+                                            <option value="NAO">Não</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm" name="checklist_7_obs" >
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center fw-bold">8</td>
+                                    <td>Identificação do agente regulado</td>
+                                    <td class="text-center">
+                                        <select class="form-select form-select-sm" name="checklist_8_situacao">
+                                            <option value="">Selecionar</option>
+                                            <option value="OK">✓ OK</option>
+                                            <option value="NOK">✗ NOK</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <select class="form-select form-select-sm" name="checklist_8_na">
+                                            <option value="">Selecionar</option>
+                                            <option value="SIM">Sim</option>
+                                            <option value="NAO">Não</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm" name="checklist_8_obs">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center fw-bold">9</td>
+                                    <td>Identificação do ponto de medição e/ou do poço quando aplicável</td>
+                                    <td class="text-center">
+                                        <select class="form-select form-select-sm" name="checklist_9_situacao">
+                                            <option value="">Selecionar</option>
+                                            <option value="OK">✓ OK</option>
+                                            <option value="NOK">✗ NOK</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <select class="form-select form-select-sm" name="checklist_9_na">
+                                            <option value="">Selecionar</option>
+                                            <option value="SIM">Sim</option>
+                                            <option value="NAO">Não</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm" name="checklist_9_obs">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center fw-bold">10</td>
+                                    <td>Resultados das análises e normas ou procedimentos utilizados</td>
+                                    <td class="text-center">
+                                        <select class="form-select form-select-sm" name="checklist_10_situacao">
+                                            <option value="">Selecionar</option>
+                                            <option value="OK">✓ OK</option>
+                                            <option value="NOK">✗ NOK</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <select class="form-select form-select-sm" name="checklist_10_na">
+                                            <option value="">Selecionar</option>
+                                            <option value="SIM">Sim</option>
+                                            <option value="NAO">Não</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm" name="checklist_10_obs" >
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center fw-bold">11</td>
+                                    <td>Descrição das características do processo do ponto de amostragem do fluido (pressão e temperatura)</td>
+                                    <td class="text-center">
+                                        <select class="form-select form-select-sm" name="checklist_11_situacao">
+                                            <option value="">Selecionar</option>
+                                            <option value="OK">✓ OK</option>
+                                            <option value="NOK">✗ NOK</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <select class="form-select form-select-sm" name="checklist_11_na">
+                                            <option value="">Selecionar</option>
+                                            <option value="SIM">Sim</option>
+                                            <option value="NAO">Não</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm" name="checklist_11_obs" >
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center fw-bold">12</td>
+                                    <td>Identificação do responsável pela amostragem</td>
+                                    <td class="text-center">
+                                        <select class="form-select form-select-sm" name="checklist_12_situacao">
+                                            <option value="">Selecionar</option>
+                                            <option value="OK">✓ OK</option>
+                                            <option value="NOK">✗ NOK</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <select class="form-select form-select-sm" name="checklist_12_na">
+                                            <option value="">Selecionar</option>
+                                            <option value="SIM">Sim</option>
+                                            <option value="NAO">Não</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm" name="checklist_12_obs" >
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center fw-bold">13</td>
+                                    <td>Indicação dos incertezas de medição, com descrição do nível de confiança e fator de abrangência</td>
+                                    <td class="text-center">
+                                        <select class="form-select form-select-sm" name="checklist_13_situacao">
+                                            <option value="">Selecionar</option>
+                                            <option value="OK">✓ OK</option>
+                                            <option value="NOK">✗ NOK</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <select class="form-select form-select-sm" name="checklist_13_na">
+                                            <option value="">Selecionar</option>
+                                            <option value="SIM">Sim</option>
+                                            <option value="NAO">Não</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm" name="checklist_13_obs" >
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center fw-bold">14</td>
+                                    <td>Identificação dos responsáveis técnicos pela realização da análise</td>
+                                    <td class="text-center">
+                                        <select class="form-select form-select-sm" name="checklist_14_situacao">
+                                            <option value="">Selecionar</option>
+                                            <option value="OK">✓ OK</option>
+                                            <option value="NOK">✗ NOK</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <select class="form-select form-select-sm" name="checklist_14_na">
+                                            <option value="">Selecionar</option>
+                                            <option value="SIM">Sim</option>
+                                            <option value="NAO">Não</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm" name="checklist_14_obs" >
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center fw-bold">15</td>
+                                    <td>Identificação dos responsáveis pela elaboração e aprovação do boletim</td>
+                                    <td class="text-center">
+                                        <select class="form-select form-select-sm" name="checklist_15_situacao">
+                                            <option value="">Selecionar</option>
+                                            <option value="OK">✓ OK</option>
+                                            <option value="NOK">✗ NOK</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <select class="form-select form-select-sm" name="checklist_15_na">
+                                            <option value="">Selecionar</option>
+                                            <option value="SIM">Sim</option>
+                                            <option value="NAO">Não</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm" name="checklist_15_obs" >
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seção 2: Análise A.G.A #8 -->
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0">
+                        <i class="bi bi-graph-up"></i> ANÁLISE CONFORME METODOLOGIA A.G.A #8
+                    </h6>
+                </div>
+            </div>
+            <div class="mb-4" style="border: 1px solid #dee2e6; background: white; border-radius: 0 0 8px 8px;">
+                <div class="table-responsive p-3">
+                    <table class="componentes-excel table-sm">
+                        <thead>
+                            <tr>
+                                <th class="text-center">Item</th>
+                                <th class="text-center">Componente</th>
+                                <th class="text-center">Unidade</th>
+                                <th class="text-center">% Molar</th>
+                                <th class="text-center">Status</th>
+                                <th class="text-center">A.G.A 8</th>
+                                <th class="text-center">CEP</th>
+                            </tr>
+                            <tr class="bg-secondary text-white">
+                                <th class="text-center" colspan="3">A.G.A 8</th>
+                                <th class="text-center" colspan="2">CEP</th>
+                                <th class="text-center">Limite Inferior</th>
+                                <th class="text-center">Limite Superior</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Valores serão preenchidos dinamicamente via JavaScript após envio -->
+                            <tr><td colspan="7" class="text-center text-muted">Dados serão processados após cadastro</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h6 class="mb-0">
+                            <i class="bi bi-calculator"></i> PROPRIEDADES DO FLUIDO
+                        </h6>
+                    </div>
+                    <div class="card-body p-3">
+                        <div class="table-responsive">
+                            <table class="componentes-excel table-sm">
+                        <thead>
+                            <tr>
+                                <th class="text-center">Propriedade</th>
+                                <th class="text-center">Valor</th>
+                                <th class="text-center">Status</th>
+                                <th class="text-center">A.G.A 8</th>
+                                <th class="text-center">CEP</th>
+                            </tr>
+                            <tr class="bg-secondary text-white">
+                                <th class="text-center" colspan="2">A.G.A 8</th>
+                                <th class="text-center" colspan="2">CEP</th>
+                                <th class="text-center">Limite Superior</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Massa Molecular</td>
+                                <td class="text-center">---</td>
+                                <td class="text-center"><span class="badge bg-secondary">Pendente</span></td>
+                                <td class="text-center">---</td>
+                                <td class="text-center">---</td>
+                            </tr>
+                            <tr>
+                                <td>Fator de Compressibilidade</td>
+                                <td class="text-center">---</td>
+                                <td class="text-center"><span class="badge bg-secondary">Pendente</span></td>
+                                <td class="text-center">---</td>
+                                <td class="text-center">---</td>
+                            </tr>
+                            <tr>
+                                <td>Massa Específica</td>
+                                <td class="text-center">---</td>
+                                <td class="text-center"><span class="badge bg-secondary">Pendente</span></td>
+                                <td class="text-center">---</td>
+                                <td class="text-center">---</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seção 3: Controle Estatístico de Processo (CEP) -->
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0">
+                        <i class="bi bi-bar-chart"></i> CONTROLE ESTATÍSTICO DE PROCESSO (CEP)
+                    </h6>
+                </div>
+            </div>
+            <div class="mb-4" style="border: 1px solid #dee2e6; background: white; border-radius: 0 0 8px 8px;">
+                <div class="p-3">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-primary">Análise de Tendências</h6>
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle"></i>
+                                Avaliação será realizada após processamento dos dados históricos
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-primary">Limites de Controle</h6>
+                            <div class="alert alert-warning">
+                                <i class="bi bi-exclamation-triangle"></i>
+                                Verificação de limites estatísticos pendente
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seção 4: Resultados da Validação -->
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0">
+                        <i class="bi bi-check-circle"></i> RESULTADO DA VALIDAÇÃO
+                    </h6>
+                </div>
+            </div>
+            <div class="mb-4" style="border: 1px solid #dee2e6; background: white; border-radius: 0 0 8px 8px;">
+                <div class="p-3">
+                    <!-- Status Principal -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="text-center p-3 status-card-cep">
+                                <div class="mb-2 fw-bold">CEP</div>
+                                <span class="badge bg-secondary px-3 py-2" style="font-size: 14px;">PENDENTE</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center p-3 status-card-aga">
+                                <div class="mb-2 fw-bold">A.G.A #8</div>
+                                <span class="badge bg-secondary px-3 py-2" style="font-size: 14px;">PENDENTE</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center p-3 status-card-checklist">
+                                <div class="mb-2 fw-bold">CHECKLIST</div>
+                                <span class="badge bg-info px-3 py-2" style="font-size: 14px;">AGUARDANDO</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Resumos Estatísticos -->
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <h5 class="text-primary mb-3">Resumo AGA8</h5>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Validados:</span>
+                                        <span class="fw-bold">0/15</span>
+                                    </div>
+                                    <span class="badge bg-secondary">AGUARDANDO</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <h5 class="text-primary mb-3">Resumo CEP</h5>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Validados:</span>
+                                        <span class="fw-bold">0/15</span>
+                                    </div>
+                                    <span class="badge bg-secondary">AGUARDANDO</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <h5 class="text-primary mb-3">Status Geral</h5>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Total:</span>
+                                        <span class="fw-bold">0,00%</span>
+                                    </div>
+                                    <span class="badge bg-secondary">AGUARDANDO</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Observações -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0"><i class="bi bi-chat-left-text"></i> OBSERVAÇÕES</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <textarea class="form-control form-control-sm" id="observacoes" name="observacoes" rows="2"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Propriedades do Fluido - Movido para o final -->
             <div class="row mb-4">
                 <div class="col-md-12">
-                    <div class="border p-3 bg-light">
-                        <h6 class="text-primary">OBSERVAÇÕES</h6>
-                        <div class="mb-3">
-                            <textarea class="form-control form-control-sm" id="observacoes" name="observacoes" rows="2"></textarea>
+                    <div class="border p-3" style="background: linear-gradient(135deg, #e3eef7d8, #ffffffd0); border-color: #6380dfff;">
+                        <h6 class="text-primary">
+                            <i class="bi bi-calculator"></i> PROPRIEDADES DO FLUIDO - CÁLCULO AUTOMÁTICO
+                        </h6>
+                        <div class="alert alert-info mb-0" role="alert" style="border: none; background: rgba(30, 64, 175, 0.1);">
+                            <small>
+                                <strong>ℹ️ As propriedades do fluido serão calculadas automaticamente:</strong><br>
+                                • <strong>Massa Molecular:</strong> Calculada pela composição molar dos componentes<br>
+                                • <strong>Fator de Compressibilidade:</strong> Baseado na metodologia A.G.A #8<br>
+                                • <strong>Massa Específica:</strong> Calculada pelas condições padrão (20°C, 101.325 kPa)<br>
+                                • <strong>Validação CEP:</strong> Aplicada automaticamente com base no histórico
+                            </small>
                         </div>
                     </div>
                 </div>
@@ -293,6 +974,98 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Validação de Prazos ANP em Tempo Real
+    function calcularDias(dataInicial, dataFinal) {
+        if (!dataInicial || !dataFinal) return null;
+        const dt1 = new Date(dataInicial);
+        const dt2 = new Date(dataFinal);
+        return Math.floor((dt2 - dt1) / (1000 * 60 * 60 * 24));
+    }
+
+    function validarPrazosANP() {
+        const dataColeta = document.getElementById('data_coleta').value;
+        const dataEmissao = document.getElementById('data_emissao').value;
+        const dataValidacao = document.getElementById('data_validacao').value;
+        
+        const alertBox = document.getElementById('validacao-prazos-anp');
+        const prazoColetaEmissaoSpan = document.getElementById('prazo-coleta-emissao');
+        const prazoEmissaoValidacaoSpan = document.getElementById('prazo-emissao-validacao');
+        const prazoTotalSpan = document.getElementById('prazo-total');
+
+        if (!dataColeta && !dataEmissao) {
+            alertBox.style.display = 'none';
+            return;
+        }
+
+        alertBox.style.display = 'block';
+
+        // Validar Coleta → Emissão (25 dias)
+        if (dataColeta && dataEmissao) {
+            const dias = calcularDias(dataColeta, dataEmissao);
+            if (dias !== null) {
+                if (dias <= 25) {
+                    prazoColetaEmissaoSpan.innerHTML = `<span class="text-success">${dias}/25 dias ✓</span>`;
+                } else {
+                    prazoColetaEmissaoSpan.innerHTML = `<span class="text-danger">${dias}/25 dias ⚠️ EXCEDIDO</span>`;
+                }
+            }
+        } else {
+            prazoColetaEmissaoSpan.innerHTML = '<span class="text-muted">Aguardando datas</span>';
+        }
+
+        // Validar Emissão → Validação (1 dia)
+        if (dataEmissao && dataValidacao) {
+            const dias = calcularDias(dataEmissao, dataValidacao);
+            if (dias !== null) {
+                if (dias <= 1) {
+                    prazoEmissaoValidacaoSpan.innerHTML = `<span class="text-success">${dias}/1 dia ✓</span>`;
+                } else {
+                    prazoEmissaoValidacaoSpan.innerHTML = `<span class="text-danger">${dias}/1 dia ⚠️ EXCEDIDO</span>`;
+                }
+            }
+        } else if (dataEmissao) {
+            // Se só temos emissão, calcular com data atual
+            const hoje = new Date().toISOString().split('T')[0];
+            const dias = calcularDias(dataEmissao, hoje);
+            if (dias !== null) {
+                if (dias <= 1) {
+                    prazoEmissaoValidacaoSpan.innerHTML = `<span class="text-warning">${dias}/1 dia (até hoje) ⚠️</span>`;
+                } else {
+                    prazoEmissaoValidacaoSpan.innerHTML = `<span class="text-danger">${dias}/1 dia (até hoje) ⚠️ EXCEDIDO</span>`;
+                }
+            }
+        } else {
+            prazoEmissaoValidacaoSpan.innerHTML = '<span class="text-muted">Aguardando datas</span>';
+        }
+
+        // Validar Prazo Total (28 dias)
+        if (dataColeta) {
+            const dataFinalValidacao = dataValidacao || new Date().toISOString().split('T')[0];
+            const dias = calcularDias(dataColeta, dataFinalValidacao);
+            if (dias !== null) {
+                if (dias <= 28) {
+                    prazoTotalSpan.innerHTML = `<span class="text-success">${dias}/28 dias ✓</span>`;
+                } else {
+                    prazoTotalSpan.innerHTML = `<span class="text-danger">${dias}/28 dias ⚠️ EXCEDIDO</span>`;
+                }
+            }
+        } else {
+            prazoTotalSpan.innerHTML = '<span class="text-muted">Aguardando data de coleta</span>';
+        }
+    }
+
+    // Event listeners para as datas
+    ['data_coleta', 'data_emissao', 'data_validacao'].forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.addEventListener('change', validarPrazosANP);
+            element.addEventListener('blur', validarPrazosANP);
+        }
+    });
+
+    // Validação inicial
+    validarPrazosANP();
+
     // Validação em tempo real dos componentes gasosos
     const componentes = ['Metano', 'Etano', 'Propano', 'i-Butano', 'n-Butano', 'i-Pentano', 'n-Pentano', 'Hexano', 'Heptano', 'Octano', 'Nonano', 'Decano', 'Oxigênio', 'Nitrogênio', 'CO2'];
     
@@ -335,5 +1108,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+
+            </div>
+        </div>
+    </div>
+</div>
 
 {% endblock %}
