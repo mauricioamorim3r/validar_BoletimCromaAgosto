@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template
 import sqlite3
 from datetime import datetime
 import os
@@ -51,60 +51,87 @@ init_db()
 
 @app.route('/')
 def index():
-    html = f"""
-    <!DOCTYPE html>
-    <html lang="pt-BR">
-    <head>
-        <meta charset="UTF-8">
-        <title>Sistema de Validação de Boletins</title>
-        <style>
-            body {{ font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }}
-            .container {{ max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; }}
-            .header {{ text-align: center; color: #2c3e50; }}
-            .status {{ background: #e8f5e8; padding: 15px; border-radius: 5px; margin: 20px 0; }}
-            .btn {{ background: #3498db; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 5px; }}
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div class="header">
-                <h1>🧪 Sistema de Validação de Boletins</h1>
-                <p>Deploy no Render - Versão 2.0</p>
-            </div>
-            <div class="status">
-                <h3>✅ Sistema Online</h3>
-                <p>Plataforma: Render</p>
-                <p>Data: {datetime.now().strftime('%d/%m/%Y %H:%M')}</p>
-            </div>
-            <div>
-                <a href="/api/health" class="btn">Health Check</a>
-                <a href="/api/status" class="btn">Status</a>
-                <a href="/dashboard" class="btn">Dashboard</a>
-            </div>
-        </div>
-    </body>
-    </html>
-    """
-    return html
+    """Página principal usando template HTML"""
+    return render_template('index.html')
 
 
 @app.route('/dashboard')
 def dashboard():
+    """Dashboard principal usando template HTML"""
     try:
         conn = get_db_connection()
         if conn:
-            total = conn.execute('SELECT COUNT(*) FROM boletins').fetchone()[0]
+            total_boletins = conn.execute('SELECT COUNT(*) FROM boletins').fetchone()[0]
+            pendentes = conn.execute('SELECT COUNT(*) FROM boletins WHERE status = "pendente"').fetchone()[0]
+            aprovados = conn.execute('SELECT COUNT(*) FROM boletins WHERE status = "aprovado"').fetchone()[0]
+            rejeitados = conn.execute('SELECT COUNT(*) FROM boletins WHERE status = "rejeitado"').fetchone()[0]
+            
+            # Boletins recentes
+            recent = conn.execute('''
+                SELECT numero_boletim, data_emissao, laboratorio, status 
+                FROM boletins 
+                ORDER BY data_criacao DESC 
+                LIMIT 10
+            ''').fetchall()
+            
             conn.close()
         else:
-            total = 0
+            total_boletins = pendentes = aprovados = rejeitados = 0
+            recent = []
         
-        return jsonify({
-            'total_boletins': total,
-            'timestamp': datetime.now().isoformat(),
-            'status': 'ok'
-        })
+        stats = {
+            'total': total_boletins,
+            'pendentes': pendentes,
+            'aprovados': aprovados,
+            'rejeitados': rejeitados,
+            'recent': recent
+        }
+        
+        return render_template('dashboard.html', stats=stats)
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        logger.error(f"Erro no dashboard: {e}")
+        return render_template('dashboard.html', stats={'total': 0, 'pendentes': 0, 'aprovados': 0, 'rejeitados': 0, 'recent': []})
+
+
+@app.route('/importar')
+def importar():
+    """Página de importação de Excel"""
+    return render_template('importar_excel.html')
+
+
+@app.route('/cadastrar')
+def cadastrar():
+    """Página de cadastro de boletim"""
+    return render_template('cadastrar.html')
+
+
+@app.route('/relatorio')
+def relatorio():
+    """Página de relatórios"""
+    return render_template('relatorio.html')
+
+
+@app.route('/editar/<int:id>')
+def editar_boletim(id):
+    """Página de edição de boletim"""
+    # Obter dados do boletim pelo ID se necessário
+    return render_template('editar_boletim.html', id=id)
+
+
+@app.route('/listar')
+def listar_boletins():
+    """Listar todos os boletins"""
+    try:
+        conn = get_db_connection()
+        if conn:
+            boletins = conn.execute('SELECT * FROM boletins ORDER BY data_emissao DESC').fetchall()
+            conn.close()
+            return render_template('dashboard.html', boletins=boletins)
+        else:
+            return render_template('dashboard.html', boletins=[])
+    except Exception as e:
+        print(f"Erro ao listar boletins: {e}")
+        return render_template('dashboard.html', boletins=[])
 
 
 @app.route('/api/health')
