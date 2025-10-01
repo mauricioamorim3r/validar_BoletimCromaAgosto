@@ -1,11 +1,10 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "api/index.py",
-      "use": "@vercel/python"
+  "functions": {
+    "api/index.py": {
+      "runtime": "@vercel/python"
     }
-  ],
+  },
   "routes": [
     {
       "src": "/static/(.*)",
@@ -17,12 +16,6 @@
     }
   ],
   "env": {
-    "FLASK_ENV": "production",
-    "PYTHONPATH": "/var/task"
-  },
-  "functions": {
-    "api/index.py": {
-      "maxDuration": 30
-    }
+    "FLASK_ENV": "production"
   }
 }
