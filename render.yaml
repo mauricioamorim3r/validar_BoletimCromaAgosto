@@ -2,16 +2,18 @@ services:
   - type: web
     name: validar-boletimcromagrafia
     runtime: python
-    buildCommand: pip install -r requirements.txt
+    buildCommand: pip install --no-cache-dir --upgrade pip && pip install --no-cache-dir -r requirements.txt
     startCommand: gunicorn --config gunicorn.conf.py app:app
     plan: free
     region: oregon
     envVars:
       - key: SECRET_KEY
-        value: "your_secret_key_here"
+        generateValue: true
       - key: FLASK_ENV
         value: "production"
       - key: DEBUG
         value: "false"
+      - key: PYTHON_VERSION
+        value: "3.11.7"
     healthCheckPath: /
     autoDeploy: true

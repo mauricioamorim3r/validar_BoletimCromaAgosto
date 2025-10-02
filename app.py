@@ -44,7 +44,7 @@ if sys.platform.startswith('win'):
     os.system('chcp 65001 > nul')
 
 app = Flask(__name__)
-app.secret_key = 'chave_secreta_para_flask'
+app.secret_key = os.environ.get('SECRET_KEY', 'chave_secreta_para_flask')
 
 
 # Filtros personalizados para formatação
@@ -138,7 +138,9 @@ def format_date_br(date_string):
 
 def get_db():
     """Obtém conexão com o banco de dados"""
-    db = sqlite3.connect('boletins.db')
+    # Use persistent storage path in production (Render)
+    db_path = os.environ.get('DATABASE_PATH', 'boletins.db')
+    db = sqlite3.connect(db_path)
     db.row_factory = sqlite3.Row
     return db
 
@@ -951,10 +953,10 @@ def boletins_test():
     try:
         # Debug do caminho do banco
         current_dir = os.getcwd()
-        db_path = os.path.abspath('boletins.db')
+        db_path = os.path.abspath(os.environ.get('DATABASE_PATH', 'boletins.db'))
         db_exists = os.path.exists(db_path)
         db_size = os.path.getsize(db_path) if db_exists else 0
-        
+
         # Teste direto com sqlite3
         direct_conn = sqlite3.connect(db_path)
         direct_boletins = direct_conn.execute('SELECT COUNT(*) FROM boletins').fetchone()[0]
