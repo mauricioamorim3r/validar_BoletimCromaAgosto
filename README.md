@@ -1,4 +1,4 @@
-# 🧪 Sistema de Validação de Boletins Cromatográficos - BRAVA Energia
+# 🧪 Sistema de Validação de Boletins Cromatográficos - SGM
 
 Sistema completo para validação de análises cromatográficas usando metodologia A.G.A #8 e Controle Estatístico de Processo (CEP) para o Campo de Atalaia.
 
@@ -30,7 +30,7 @@ Sistema completo para validação de análises cromatográficas usando metodolog
 - **Armazenamento Inteligente**: Preserva unidades originais + conversões
 
 ### 📋 **Relatórios Profissionais**
-- **Exportação PDF**: Relatórios completos com identidade visual BRAVA
+- **Exportação PDF**: Relatórios completos com identidade visual SGM
 - **Layout Excel-Style**: Interface familiar ao processo atual
 - **Checklist Completo**: 15 itens de validação conforme regulamentação
 - **Histórico Completo**: Rastreabilidade total das análises

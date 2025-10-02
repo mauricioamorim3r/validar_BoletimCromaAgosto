@@ -7,7 +7,7 @@ PORT = 8888
 DEBUG = False
 
 # Configurações da Empresa
-EMPRESA_NOME = 'BRAVA ENERGIA'
+EMPRESA_NOME = 'SGM'
 CAMPO = 'Campo de Atalaia'
 SETOR = 'Controle de Qualidade'
 
@@ -61,7 +61,7 @@ PRESSAO_PADRAO = 101325  # Pa (1 atm)
 CONSTANTE_R = 8314.47  # J/(kmol·K)
 
 # Configurações do PDF
-PDF_AUTHOR = 'BRAVA Energia - Sistema Automatizado'
+PDF_AUTHOR = 'SGM - Sistema Automatizado'
 PDF_TITLE_PREFIX = 'Relatório de Validação Cromatográfica'
 PDF_MARGIN = 50  # pontos
 

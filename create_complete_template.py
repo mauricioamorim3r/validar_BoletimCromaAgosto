@@ -29,7 +29,7 @@ def criar_template_excel_completo():
         'sistema_medicao': ['GÁS COMBUSTÍVEL LP', 'GÁS COMBUSTÍVEL LP'],
         'classificacao': ['FISCAL', 'FISCAL'],
         'ponto_coleta': ['LP FUEL GAS', 'LP FUEL GAS'],
-        'agente_regulado': ['BRAVA ENERGIA LTDA', 'BRAVA ENERGIA LTDA'],
+        'agente_regulado': ['SGM LTDA', 'SGM LTDA'],
 
         # Responsáveis e condições
         'responsavel_amostragem': ['João Silva', 'Maria Santos'],

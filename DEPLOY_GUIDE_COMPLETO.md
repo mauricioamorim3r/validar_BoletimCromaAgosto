@@ -163,5 +163,5 @@ curl https://validar-boletimcromagrafia.onrender.com/
 Execute o deploy seguindo os passos acima e o sistema estará funcionando em produção em poucos minutos!
 
 ---
-**🚀 Sistema de Validação de Boletins Cromatográficos - BRAVA Energia**
+**🚀 Sistema de Validação de Boletins Cromatográficos - SGM**
 **Deploy Guide por Maurício Amorim - 02/10/2025**

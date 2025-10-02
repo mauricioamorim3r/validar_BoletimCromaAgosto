@@ -500,9 +500,9 @@ def gerar_pdf_relatorio(boletim_id):
     # Conteúdo do PDF
     story = []
 
-    # Cabeçalho BRAVA
+    # Cabeçalho SGM
     titulo = Paragraph(
-        "BRAVA ENERGIA",
+        "SGM",
         ParagraphStyle(
             'Logo', fontSize=20,
             textColor=colors.HexColor('#fbbf24'),
