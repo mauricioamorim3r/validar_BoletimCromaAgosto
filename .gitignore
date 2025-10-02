@@ -87,4 +87,4 @@ RELATORIO_*.md
 *.tmp
 *.temp
 temp/
-tmp/
+tmp/nul
