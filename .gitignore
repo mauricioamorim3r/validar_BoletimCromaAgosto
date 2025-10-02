@@ -88,3 +88,7 @@ RELATORIO_*.md
 *.temp
 temp/
 tmp/nul
+__pycache__/
+*.pyc
+*.db
+.claude/
