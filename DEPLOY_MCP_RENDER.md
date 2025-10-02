@@ -3,7 +3,7 @@
 ## ✅ PROJETO PRONTO PARA MCP RENDER
 
 ### 📊 Status Atual:
-- ✅ **Projeto**: validar-boletimcromaagosto  
+- ✅ **Projeto**: validar-boletimcromagrafia
 - ✅ **Tipo**: python-render-ready
 - ✅ **Runtime**: Python 3.11.7
 - ✅ **Arquivos**: 5/5 necessários presentes
@@ -16,7 +16,7 @@
 
 ### 🚀 Deploy Automático:
 ```
-"Deploy validar-boletimcromaagosto to Render"
+"Deploy validar-boletimcromagrafia to Render"
 "Create Render service from validar_BoletimCromaAgosto repository"
 "Setup Flask boletins project on Render"
 ```
@@ -24,23 +24,23 @@
 ### 📊 Monitoramento:
 ```
 "List my Render services"
-"Show deployment status for validar-boletimcromaagosto"
-"Check build logs for validar-boletimcromaagosto"
-"Show service metrics for validar-boletimcromaagosto"
+"Show deployment status for validar-boletimcromagrafia"
+"Check build logs for validar-boletimcromagrafia"
+"Show service metrics for validar-boletimcromagrafia"
 ```
 
 ### 🔧 Configuração:
 ```
-"Update environment variables for validar-boletimcromaagosto"
+"Update environment variables for validar-boletimcromagrafia"
 "Set SECRET_KEY to boletins_cromatograficos_render_2024"
-"Enable auto-deploy for validar-boletimcromaagosto"
+"Enable auto-deploy for validar-boletimcromagrafia"
 "Scale service to 1 instance"
 ```
 
 ### 🗄️ Banco de Dados (se necessário):
 ```
 "List my Neon projects"
-"Create PostgreSQL database for validar-boletimcromaagosto"
+"Create database for validar-boletimcromagrafia"
 "Show connection string for boletins database"
 ```
 
@@ -77,15 +77,15 @@ DEBUG = false
 ## 🎯 URLs ESPERADAS APÓS DEPLOY:
 
 ### 🌍 Aplicação:
-- **Principal**: https://validar-boletimcromaagosto.onrender.com
-- **Dashboard**: https://validar-boletimcromaagosto.onrender.com/dashboard
-- **Boletins**: https://validar-boletimcromaagosto.onrender.com/boletins
-- **Cadastro**: https://validar-boletimcromaagosto.onrender.com/cadastrar
-- **Importar**: https://validar-boletimcromaagosto.onrender.com/importar
+- **Principal**: https://validar-boletimcromagrafia.onrender.com
+- **Dashboard**: https://validar-boletimcromagrafia.onrender.com/dashboard
+- **Boletins**: https://validar-boletimcromagrafia.onrender.com/boletins
+- **Cadastro**: https://validar-boletimcromagrafia.onrender.com/cadastrar
+- **Importar**: https://validar-boletimcromagrafia.onrender.com/importar
 
 ### 📊 APIs:
-- **Status**: https://validar-boletimcromaagosto.onrender.com/api/status
-- **Health**: https://validar-boletimcromaagosto.onrender.com/api/health
+- **Status**: https://validar-boletimcromagrafia.onrender.com/api/status
+- **Health**: https://validar-boletimcromagrafia.onrender.com/api/health
 
 ---
 
@@ -93,10 +93,10 @@ DEBUG = false
 
 ### Se houver problemas:
 ```
-"Debug deployment issues for validar-boletimcromaagosto"
-"Show recent error logs for validar-boletimcromaagosto" 
-"Check service health for validar-boletimcromaagosto"
-"Restart service validar-boletimcromaagosto"
+"Debug deployment issues for validar-boletimcromagrafia"
+"Show recent error logs for validar-boletimcromagrafia" 
+"Check service health for validar-boletimcromagrafia"
+"Restart service validar-boletimcromagrafia"
 ```
 
 ### Comandos de diagnóstico:

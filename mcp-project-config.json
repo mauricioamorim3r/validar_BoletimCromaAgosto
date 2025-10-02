@@ -1,5 +1,5 @@
 {
-  "projectName": "validar-boletimcromaagosto",
+  "projectName": "validar-boletimcromagrafia",
   "projectType": "python-render-ready",
   "timestamp": "2025-10-02T17:20:54.007Z",
   "buildCommand": "pip install -r requirements.txt",

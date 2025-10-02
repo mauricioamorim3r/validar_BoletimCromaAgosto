@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: validar-boletimcromaagosto
+    name: validar-boletimcromagrafia
     runtime: python
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn --config gunicorn.conf.py app:app
