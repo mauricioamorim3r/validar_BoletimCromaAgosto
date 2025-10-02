@@ -68,16 +68,16 @@ const PressureConverter = {
  */
 const UnitsConfig = {
     temperature: {
-        celsius: { name: 'Celsius', symbol: '°C', default: true },
-        kelvin: { name: 'Kelvin', symbol: 'K', default: false }
+        celsius: { name: '°C', symbol: '°C', default: true },
+        kelvin: { name: 'K', symbol: 'K', default: false }
     },
     
     pressure: {
-        atm: { name: 'Atmosfera', symbol: 'atm', default: true },
-        kpa: { name: 'Quilopascal', symbol: 'kPa', default: false },
-        pa: { name: 'Pascal', symbol: 'Pa', default: false },
-        bar: { name: 'Bar', symbol: 'bar', default: false },
-        psi: { name: 'PSI', symbol: 'psi', default: false }
+        atm: { name: 'atm', symbol: 'atm', default: true },
+        kpa: { name: 'kPa', symbol: 'kPa', default: false },
+        pa: { name: 'Pa', symbol: 'Pa', default: false },
+        bar: { name: 'bar', symbol: 'bar', default: false },
+        psi: { name: 'psi', symbol: 'psi', default: false }
     }
 };
 
@@ -116,7 +116,7 @@ function setupUnitSelector(container, unitType, converter) {
     Object.entries(units).forEach(([key, config]) => {
         const option = document.createElement('option');
         option.value = key;
-        option.textContent = `${config.name} (${config.symbol})`;
+        option.textContent = config.symbol;
         option.selected = config.default;
         selector.appendChild(option);
     });
