@@ -3,8 +3,8 @@
 
 # Configurações do Servidor
 HOST = '127.0.0.1'
-PORT = 3000
-DEBUG = True
+PORT = 8888
+DEBUG = False
 
 # Configurações da Empresa
 EMPRESA_NOME = 'BRAVA ENERGIA'

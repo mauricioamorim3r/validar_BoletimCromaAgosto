@@ -1,0 +1,90 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Flask
+instance/
+.webassets-cache
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Local files
+debug_*.py
+test_*.py
+*_debug.py
+*_test.py
+debug_output.txt
+*.log
+backup_*/
+
+# Playwright
+.playwright-mcp/
+
+# Claude
+.claude/
+
+# Local development
+run_*.py
+start_*.py
+server_*.py
+app_*.py
+fix_*.py
+check_*.py
+verify_*.py
+verificar_*.py
+testar_*.py
+validar_*.py
+relatorio_*.md
+RELATORIO_*.md
+
+# Temporary files
+*.tmp
+*.temp
+temp/
+tmp/

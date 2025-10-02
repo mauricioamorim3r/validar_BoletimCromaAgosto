@@ -6,9 +6,11 @@ services:
     name: boletins-cromatograficos
     runtime: python
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn --bind 0.0.0.0:$PORT app:app
+    startCommand: gunicorn --config gunicorn.conf.py app:app
     envVars:
       - key: SECRET_KEY
         value: boletins_cromatograficos_render_2024
       - key: FLASK_ENV
         value: production
+      - key: DEBUG
+        value: "false"
