@@ -1,0 +1,35 @@
+{
+  "mcpServers": {
+    "render": {
+      "command": "npx",
+      "args": ["-y", "@render/mcp-server"],
+      "env": {
+        "RENDER_API_KEY": "rnd_YOUR_RENDER_KEY_HERE"
+      }
+    },
+    "neon": {
+      "command": "npx",
+      "args": ["-y", "@neon/mcp-server"],
+      "env": {
+        "NEON_API_KEY": "neon_YOUR_NEON_KEY_HERE"
+      }
+    },
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@github/mcp-server"],
+      "env": {
+        "GITHUB_TOKEN": "ghp_YOUR_GITHUB_TOKEN_HERE"
+      }
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem"],
+      "args2": ["/path/to/your/projects"]
+    },
+    "git": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-git"],
+      "args2": ["/path/to/git/repo"]
+    }
+  }
+}

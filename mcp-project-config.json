@@ -1,0 +1,33 @@
+{
+  "projectName": "validar-boletimcromaagosto",
+  "projectType": "python-render-ready",
+  "timestamp": "2025-10-02T17:20:54.007Z",
+  "buildCommand": "pip install -r requirements.txt",
+  "startCommand": "gunicorn --config gunicorn.conf.py app:app",
+  "runtime": "python",
+  "version": "3.11.7",
+  "files": [
+    "requirements.txt",
+    "app.py",
+    "runtime.txt",
+    "render.yaml",
+    "gunicorn.conf.py"
+  ],
+  "envVars": {
+    "SECRET_KEY": "your_secret_key_here",
+    "FLASK_ENV": "production",
+    "DEBUG": "false"
+  },
+  "description": "Projeto Python com Flask pronto para Render",
+  "mcpEnabled": true,
+  "fileCheck": {
+    "present": [
+      "✅ requirements.txt (110 bytes)",
+      "✅ app.py (70762 bytes)",
+      "✅ runtime.txt (13 bytes)",
+      "✅ render.yaml (472 bytes)",
+      "✅ gunicorn.conf.py (701 bytes)"
+    ],
+    "missing": []
+  }
+}

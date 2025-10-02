@@ -35,7 +35,7 @@ python check_db.py
 
 ### Database Management
 - SQLite database at `boletins.db` (auto-created)
-- Initialize: `init_db()` function in `app.py`  
+- Initialize: `init_db()` function in `app.py`
 - Debug: `python debug_boletim.py` or `python check_fields.py`
 
 ## Architecture Overview
@@ -54,7 +54,7 @@ python check_db.py
 
 ### Database Schema
 - `boletins`: Main bulletin data with metadata and process conditions
-- `componentes`: Gas components (15 types) with percentual values and validation status  
+- `componentes`: Gas components (15 types) with percentual values and validation status
 - `propriedades`: Fluid properties (compressibility factor, specific mass, molecular mass)
 - `historico_componentes`: Historical component values for CEP calculations
 
@@ -66,7 +66,7 @@ python check_db.py
 ### Template Structure
 Key templates in `/templates/`:
 - `base.html`: Base template with glassmorphism navigation
-- `dashboard.html`: Analytics dashboard with statistics and charts  
+- `dashboard.html`: Analytics dashboard with statistics and charts
 - `main.html`: Main bulletin listing with tabbed interface
 - `cadastrar.html`: Bulletin registration form with real-time validation
 - `editar_boletim.html`: Edit bulletin interface
@@ -83,9 +83,9 @@ The system validates 15 gas components against AGA #8 limits:
 - Oxygen: 0-21%
 - Nitrogen, CO2: 0-100%
 
-### Business Logic Flow  
+### Business Logic Flow
 1. **Registration**: User registers bulletin via form or Excel import
-2. **AGA #8 Validation**: System validates each component against industry limits  
+2. **AGA #8 Validation**: System validates each component against industry limits
 3. **CEP Validation**: Statistical process control using historical data (≥8 previous samples)
 4. **ANP Compliance**: Timeline validation per Portaria 52 (25-day collection-to-emission)
 5. **Status Determination**: Overall bulletin status (VALIDATED/INVALIDATED/PENDING)
@@ -102,7 +102,7 @@ The system validates 15 gas components against AGA #8 limits:
 
 ### Frontend Architecture
 - Glassmorphism design system following user's design standards
-- Real-time validation with JavaScript (±2% sum tolerance)  
+- Real-time validation with JavaScript (±2% sum tolerance)
 - Excel-inspired table styling with conditional formatting
 - Bootstrap 5 + custom CSS with gradients and backdrop-filter effects
 
@@ -111,7 +111,7 @@ The system validates 15 gas components against AGA #8 limits:
 - Batch processing with error handling and validation reports
 - Function: `processar_excel_boletins()` in `excel_import.py`
 
-### PDF Report Generation  
+### PDF Report Generation
 - ReportLab integration for professional reports
 - Company branding and regulatory compliance formatting
 - Embedded validation charts and statistical analysis
@@ -122,12 +122,12 @@ The system validates 15 gas components against AGA #8 limits:
 - Flask==2.3.3
 - reportlab==4.0.4 (PDF generation)
 - pandas==2.0.3 (Excel processing)
-- openpyxl==3.1.2 (Excel file handling) 
+- openpyxl==3.1.2 (Excel file handling)
 - Werkzeug==2.3.7
 
 ### Debug & Validation Scripts
 - `test_funcionalidades.py`: Server connectivity and route testing
-- `verificar_cep.py`: CEP algorithm validation  
+- `verificar_cep.py`: CEP algorithm validation
 - `check_db.py`, `debug_boletim.py`: Database integrity checks
 - `analise_temporal.py`: Historical data analysis
 - `analisar_discrepancia.py`: Data quality analysis

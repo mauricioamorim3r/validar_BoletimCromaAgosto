@@ -1,16 +1,17 @@
-# Render Blueprint Configuration
-# Use this file for infrastructure as code deployment
-
 services:
   - type: web
-    name: boletins-cromatograficos
+    name: validar-boletimcromaagosto
     runtime: python
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn --config gunicorn.conf.py app:app
+    plan: free
+    region: oregon
     envVars:
       - key: SECRET_KEY
-        value: boletins_cromatograficos_render_2024
+        value: "your_secret_key_here"
       - key: FLASK_ENV
-        value: production
+        value: "production"
       - key: DEBUG
         value: "false"
+    healthCheckPath: /
+    autoDeploy: true

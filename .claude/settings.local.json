@@ -15,7 +15,9 @@
       "Bash(find:*)",
       "Bash(chcp:*)",
       "Bash(do if [ -f \"templates/$template\" ])",
-      "Bash(sqlite3:*)"
+      "Bash(sqlite3:*)",
+      "Bash(findstr:*)",
+      "Bash(echo:*)"
     ],
     "deny": [],
     "ask": []
