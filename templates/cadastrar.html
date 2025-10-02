@@ -539,7 +539,7 @@
                             <input type="date" class="form-control" id="data_coleta" name="data_coleta" required>
                         </div>
                         <div class="form-group">
-                            <label class="form-label" for="data_emissao">Data de Emissão</label>
+                            <label class="form-label" for="data_emissao">Data de Emissão do Boletim</label>
                             <input type="date" class="form-control" id="data_emissao" name="data_emissao" required>
                         </div>
                     </div>
@@ -576,20 +576,37 @@
                     
                     <div class="form-grid form-grid-4">
                         <div class="form-group">
-                            <label class="form-label" for="data_recebimento">Data de Recebimento</label>
+                            <label class="form-label" for="data_recebimento">Data de Recebimento das Amostras</label>
                             <input type="date" class="form-control" id="data_recebimento" name="data_recebimento">
                         </div>
                         <div class="form-group">
-                            <label class="form-label" for="data_analise">Data de Análise</label>
+                            <label class="form-label" for="data_analise">Data da Análise das Amostras</label>
                             <input type="date" class="form-control" id="data_analise" name="data_analise">
                         </div>
                         <div class="form-group">
-                            <label class="form-label" for="data_validacao">Data de Validação</label>
+                            <label class="form-label" for="data_validacao">Data de Validação do Resultado</label>
                             <input type="date" class="form-control" id="data_validacao" name="data_validacao">
                         </div>
                         <div class="form-group">
                             <label class="form-label" for="responsavel_amostragem">Responsável Amostragem</label>
                             <input type="text" class="form-control" id="responsavel_amostragem" name="responsavel_amostragem" required>
+                        </div>
+                    </div>
+
+                    <!-- Metodologia de Validação -->
+                    <div class="form-grid form-grid-1">
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="metodologia_aprovada" name="metodologia_aprovada" value="1">
+                                <label class="form-check-label" for="metodologia_aprovada">
+                                    <strong>Existe metodologia de validação aprovada</strong>
+                                    <small class="text-muted d-block">
+                                        <i class="bi bi-info-circle"></i> 
+                                        Marca esta opção se existe metodologia aprovada (prazo de 3 dias úteis). 
+                                        Caso contrário, será aplicado prazo de 1 dia útil - Portaria 52 ANP
+                                    </small>
+                                </label>
+                            </div>
                         </div>
                     </div>
 
@@ -623,13 +640,30 @@
                 </div>
                 <div class="section-body">
                     <div class="form-grid form-grid-2">
-                        <div class="form-group">
-                            <label class="form-label" for="pressao">Pressão (atm)</label>
-                            <input type="number" step="0.01" class="form-control" id="pressao" name="pressao" required>
+                        <div class="form-group" data-unit-group="pressure">
+                            <label class="form-label" for="pressao">Pressão</label>
+                            <div class="input-group">
+                                <input type="number" step="0.01" class="form-control" id="pressao" name="pressao" required>
+                                <select class="form-select unit-selector" style="max-width: 120px;">
+                                    <option value="atm">Atmosfera (atm)</option>
+                                    <option value="kpa">Quilopascal (kPa)</option>
+                                    <option value="pa">Pascal (Pa)</option>
+                                    <option value="bar">Bar (bar)</option>
+                                    <option value="psi">PSI (psi)</option>
+                                </select>
+                                <input type="hidden" name="pressao_unit" value="atm">
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label class="form-label" for="temperatura">Temperatura (°C)</label>
-                            <input type="number" step="0.01" class="form-control" id="temperatura" name="temperatura" required>
+                        <div class="form-group" data-unit-group="temperature">
+                            <label class="form-label" for="temperatura">Temperatura</label>
+                            <div class="input-group">
+                                <input type="number" step="0.01" class="form-control" id="temperatura" name="temperatura" required>
+                                <select class="form-select unit-selector" style="max-width: 120px;">
+                                    <option value="celsius">Celsius (°C)</option>
+                                    <option value="kelvin">Kelvin (K)</option>
+                                </select>
+                                <input type="hidden" name="temperatura_unit" value="celsius">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1556,6 +1590,67 @@ document.addEventListener('DOMContentLoaded', function() {
         subtree: true,
         characterData: true
     });
+});
+
+// Incluir conversores de unidade
+</script>
+
+<!-- Script de Conversão de Unidades -->
+<script src="{{ url_for('static', filename='js/unit-converter.js') }}"></script>
+
+<!-- Inicialização adicional para unidades -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Inicializar conversores de unidade
+    initializeUnitSelectors();
+    
+    // Validação em tempo real para valores de temperatura e pressão
+    const temperatureInput = document.getElementById('temperatura');
+    const pressureInput = document.getElementById('pressao');
+    
+    if (temperatureInput) {
+        temperatureInput.addEventListener('input', function() {
+            const container = this.closest('[data-unit-group="temperature"]');
+            const selector = container.querySelector('.unit-selector');
+            const validation = validateUnitValue(this.value, 'temperature', selector.value);
+            
+            this.classList.toggle('is-invalid', !validation.valid);
+            
+            let feedback = container.querySelector('.invalid-feedback');
+            if (!validation.valid) {
+                if (!feedback) {
+                    feedback = document.createElement('div');
+                    feedback.className = 'invalid-feedback';
+                    container.appendChild(feedback);
+                }
+                feedback.textContent = validation.message;
+            } else if (feedback) {
+                feedback.remove();
+            }
+        });
+    }
+    
+    if (pressureInput) {
+        pressureInput.addEventListener('input', function() {
+            const container = this.closest('[data-unit-group="pressure"]');
+            const selector = container.querySelector('.unit-selector');
+            const validation = validateUnitValue(this.value, 'pressure', selector.value);
+            
+            this.classList.toggle('is-invalid', !validation.valid);
+            
+            let feedback = container.querySelector('.invalid-feedback');
+            if (!validation.valid) {
+                if (!feedback) {
+                    feedback = document.createElement('div');
+                    feedback.className = 'invalid-feedback';
+                    container.appendChild(feedback);
+                }
+                feedback.textContent = validation.message;
+            } else if (feedback) {
+                feedback.remove();
+            }
+        });
+    }
 });
 </script>
 </div>

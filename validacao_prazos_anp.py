@@ -73,13 +73,18 @@ def validar_prazo_coleta_emissao(data_coleta: str, data_emissao: str) -> Dict:
     }
 
 
-def validar_prazo_emissao_validacao(data_emissao: str, data_validacao: str = None) -> Dict:
+def validar_prazo_emissao_validacao(data_emissao: str, data_validacao: str = None, metodologia_aprovada: bool = False) -> Dict:
     """
-    Valida o prazo entre emissão e validação (máximo 1 dia quando não houver validação)
+    Valida o prazo entre emissão e validação conforme Portaria 52 ANP
+    
+    Regras:
+    - Máximo 1 dia útil (quando não existir metodologia de validação aprovada)
+    - Máximo 3 dias úteis (quando existir metodologia de validação aprovada)
 
     Args:
         data_emissao: Data de emissão no formato 'YYYY-MM-DD'
         data_validacao: Data de validação no formato 'YYYY-MM-DD' (opcional)
+        metodologia_aprovada: Se existe metodologia de validação aprovada (boolean)
 
     Returns:
         Dict contendo status, dias_decorridos, prazo_limite e mensagem
@@ -88,7 +93,7 @@ def validar_prazo_emissao_validacao(data_emissao: str, data_validacao: str = Non
         return {
             'status': 'PENDENTE',
             'dias_decorridos': None,
-            'prazo_limite': 1,
+            'prazo_limite': 3 if metodologia_aprovada else 1,
             'dias_restantes': None,
             'mensagem': 'Data de emissão não informada',
             'regulamento': 'Portaria 52 ANP'
@@ -99,15 +104,28 @@ def validar_prazo_emissao_validacao(data_emissao: str, data_validacao: str = Non
         data_validacao = datetime.now().strftime('%Y-%m-%d')
 
     dias_decorridos = calcular_dias_uteis(data_emissao, data_validacao)
-    prazo_limite = 1
+    
+    # Definir prazo limite baseado na metodologia
+    if metodologia_aprovada:  
+        prazo_limite = 3
+        tipo_prazo = "3 dias úteis (com metodologia aprovada)"
+    else:
+        prazo_limite = 1
+        tipo_prazo = "1 dia útil (sem metodologia aprovada)"
 
     if dias_decorridos <= prazo_limite:
         status = 'CONFORME'
-        mensagem = f'Dentro do prazo ({dias_decorridos}/{prazo_limite} dia)'
+        if dias_decorridos == 1:
+            mensagem = f'Dentro do prazo ({dias_decorridos} dia de {tipo_prazo})'
+        else:
+            mensagem = f'Dentro do prazo ({dias_decorridos} dias de {tipo_prazo})'
     else:
         status = 'NÃO CONFORME'
         dias_excesso = dias_decorridos - prazo_limite
-        mensagem = f'Excedeu o prazo em {dias_excesso} dias ({dias_decorridos}/{prazo_limite})'
+        if dias_excesso == 1:
+            mensagem = f'Excedeu o prazo em {dias_excesso} dia ({dias_decorridos} dias de {tipo_prazo})'
+        else:
+            mensagem = f'Excedeu o prazo em {dias_excesso} dias ({dias_decorridos} dias de {tipo_prazo})'
 
     return {
         'status': status,
@@ -115,6 +133,8 @@ def validar_prazo_emissao_validacao(data_emissao: str, data_validacao: str = Non
         'prazo_limite': prazo_limite,
         'dias_restantes': max(0, prazo_limite - dias_decorridos),
         'mensagem': mensagem,
+        'metodologia_aprovada': metodologia_aprovada,
+        'tipo_prazo': tipo_prazo,
         'regulamento': 'Portaria 52 ANP'
     }
 
@@ -166,7 +186,8 @@ def validar_prazo_total(data_coleta: str, data_validacao: str = None) -> Dict:
 
 
 def validar_todos_prazos_anp(data_coleta: str, data_analise: str = None,
-                             data_emissao: str = None, data_validacao: str = None) -> Dict:
+                             data_emissao: str = None, data_validacao: str = None, 
+                             metodologia_aprovada: bool = False) -> Dict:
     """
     Executa todas as validações de prazo ANP para um boletim
 
@@ -175,6 +196,7 @@ def validar_todos_prazos_anp(data_coleta: str, data_analise: str = None,
         data_analise: Data de análise no formato 'YYYY-MM-DD' (opcional)
         data_emissao: Data de emissão no formato 'YYYY-MM-DD' (opcional)
         data_validacao: Data de validação no formato 'YYYY-MM-DD' (opcional)
+        metodologia_aprovada: Se existe metodologia de validação aprovada (boolean)
 
     Returns:
         Dict contendo todas as validações de prazo
@@ -185,7 +207,8 @@ def validar_todos_prazos_anp(data_coleta: str, data_analise: str = None,
         'prazo_total': {},
         'status_geral': 'CONFORME',
         'alertas': [],
-        'resumo': {}
+        'resumo': {},
+        'metodologia_aprovada': metodologia_aprovada
     }
 
     # Validação Coleta → Emissão (25 dias)
@@ -195,9 +218,9 @@ def validar_todos_prazos_anp(data_coleta: str, data_analise: str = None,
             resultado['status_geral'] = 'NÃO CONFORME'
             resultado['alertas'].append('Prazo coleta → emissão excedido')
 
-    # Validação Emissão → Validação (1 dia)
+    # Validação Emissão → Validação (1 ou 3 dias úteis conforme metodologia)
     if data_emissao:
-        resultado['prazo_emissao_validacao'] = validar_prazo_emissao_validacao(data_emissao, data_validacao)
+        resultado['prazo_emissao_validacao'] = validar_prazo_emissao_validacao(data_emissao, data_validacao, metodologia_aprovada)
         if resultado['prazo_emissao_validacao']['status'] == 'NÃO CONFORME':
             resultado['status_geral'] = 'NÃO CONFORME'
             resultado['alertas'].append('Prazo emissão → validação excedido')

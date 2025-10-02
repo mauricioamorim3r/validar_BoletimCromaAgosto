@@ -1006,11 +1006,15 @@ def cadastrar():
             'data_recebimento': request.form['data_recebimento'],
             'data_analise': request.form['data_analise'],
             'data_emissao': request.form['data_emissao'],
+            'data_validacao': request.form.get('data_validacao'),
             'identificacao_instalacao': request.form['identificacao_instalacao'],
             'agente_regulado': request.form['agente_regulado'],
             'responsavel_amostragem': request.form['responsavel_amostragem'],
             'pressao': float(request.form['pressao']),
             'temperatura': float(request.form['temperatura']),
+            'pressao_unit': request.form.get('pressao_unit', 'atm'),
+            'temperatura_unit': request.form.get('temperatura_unit', 'celsius'),
+            'metodologia_aprovada': 1 if request.form.get('metodologia_aprovada') else 0,
             'observacoes': request.form['observacoes'],
             'responsavel_tecnico': request.form['responsavel_tecnico'],
             'responsavel_elaboracao': request.form['responsavel_elaboracao'],
@@ -1031,22 +1035,25 @@ def cadastrar():
         db.execute('''
             INSERT INTO boletins (
                 numero_boletim, numero_documento, data_coleta, data_recebimento, data_analise, data_emissao,
-                identificacao_instalacao, plataforma, sistema_medicao, classificacao,
+                data_validacao, identificacao_instalacao, plataforma, sistema_medicao, classificacao,
                 ponto_coleta, agente_regulado, responsavel_amostragem,
-                pressao, temperatura, observacoes, responsavel_tecnico, responsavel_elaboracao,
-                responsavel_aprovacao, data_validacao, status, status_cep, status_aga8, status_checklist
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                pressao, temperatura, pressao_unit, temperatura_unit, metodologia_aprovada,
+                observacoes, responsavel_tecnico, responsavel_elaboracao,
+                responsavel_aprovacao, status, status_cep, status_aga8, status_checklist
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''', (
             dados_boletim['numero_boletim'], dados_boletim['numero_documento'],
             dados_boletim['data_coleta'], dados_boletim['data_recebimento'],
             dados_boletim['data_analise'], dados_boletim['data_emissao'],
-            dados_boletim['identificacao_instalacao'], dados_boletim['plataforma'],
-            dados_boletim['sistema_medicao'], dados_boletim['classificacao'],
-            dados_boletim['ponto_coleta'],
+            dados_boletim['data_validacao'], dados_boletim['identificacao_instalacao'], 
+            dados_boletim['plataforma'], dados_boletim['sistema_medicao'], 
+            dados_boletim['classificacao'], dados_boletim['ponto_coleta'],
             dados_boletim['agente_regulado'], dados_boletim['responsavel_amostragem'],
-            dados_boletim['pressao'], dados_boletim['temperatura'], dados_boletim['observacoes'],
+            dados_boletim['pressao'], dados_boletim['temperatura'], 
+            dados_boletim['pressao_unit'], dados_boletim['temperatura_unit'], 
+            dados_boletim['metodologia_aprovada'], dados_boletim['observacoes'],
             dados_boletim['responsavel_tecnico'], dados_boletim['responsavel_elaboracao'],
-            dados_boletim['responsavel_aprovacao'], None, None, None, None, None
+            dados_boletim['responsavel_aprovacao'], None, None, None, None
         ))
         boletim_id = db.execute('SELECT last_insert_rowid()').fetchone()[0]
         db.commit()
@@ -1173,6 +1180,11 @@ def editar_boletim(boletim_id):
     if request.method == 'POST':
         # Capturar dados do formulário
         try:
+            # Capturar unidades de medida e metodologia aprovada
+            pressao_unit = request.form.get('pressao_unit', 'atm')
+            temperatura_unit = request.form.get('temperatura_unit', 'celsius')
+            metodologia_aprovada = 'metodologia_aprovada' in request.form
+
             # Atualizar dados do boletim
             db.execute('''
                 UPDATE boletins SET
@@ -1183,7 +1195,8 @@ def editar_boletim(boletim_id):
                     ponto_coleta = ?, agente_regulado = ?,
                     responsavel_amostragem = ?, pressao = ?, temperatura = ?,
                     responsavel_tecnico = ?, responsavel_elaboracao = ?,
-                    responsavel_aprovacao = ?, observacoes = ?
+                    responsavel_aprovacao = ?, observacoes = ?,
+                    pressao_unit = ?, temperatura_unit = ?, metodologia_aprovada = ?
                 WHERE id = ?
             ''', (
                 request.form['numero_boletim'],
@@ -1206,6 +1219,9 @@ def editar_boletim(boletim_id):
                 request.form['responsavel_elaboracao'] or None,
                 request.form['responsavel_aprovacao'] or None,
                 request.form['observacoes'] or None,
+                pressao_unit,
+                temperatura_unit,
+                metodologia_aprovada,
                 boletim_id
             ))
             db.commit()
@@ -1505,7 +1521,8 @@ def relatorio(boletim_id, edit_mode=None):
         boletim['data_coleta'],
         boletim['data_analise'],
         boletim['data_emissao'],
-        boletim['data_validacao']
+        boletim['data_validacao'],
+        boletim.get('metodologia_aprovada', False)
     )
 
     # Fechar conexão
