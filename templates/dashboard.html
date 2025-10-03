@@ -9,56 +9,61 @@
         <div class="subtitle">Central de Informações das Análises dos Boletins de Cromatografia</div>
     </div>
 
-    <!-- Filtros Avançados -->
-    <div class="filters-container" style="background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 8px; padding: 20px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-        <div class="section-header">FILTROS AVANÇADOS</div>
-        <form method="GET" id="filterForm" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; align-items: end;">
-            <div>
-                <label for="periodo" style="display: block; margin-bottom: 5px; font-weight: 500; color: #333;">Período:</label>
-                <select name="periodo" id="periodo" class="form-control" style="border-radius: 4px;">
-                    <option value="">Todos os períodos</option>
-                    <option value="7">Últimos 7 dias</option>
-                    <option value="30">Últimos 30 dias</option>
-                    <option value="90">Últimos 90 dias</option>
-                    <option value="365">Último ano</option>
+    <!-- Filtros Avançados - Mobile Optimized -->
+    <div class="filters-container mobile-filters" style="background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 12px; padding: 1rem; margin: 1rem 0; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+        <div class="section-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+            <span>🔍 FILTROS AVANÇADOS</span>
+            <button type="button" class="btn btn-sm btn-outline-primary d-md-none" id="toggleFilters" style="min-height: 36px;">
+                <i class="bi bi-funnel"></i> <span id="filterToggleText">Mostrar</span>
+            </button>
+        </div>
+        <form method="GET" id="filterForm" class="filter-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; align-items: end;">
+            <div class="filter-field">
+                <label for="periodo" style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151; font-size: 0.9rem;">📅 Período:</label>
+                <select name="periodo" id="periodo" class="form-control form-select" style="border-radius: 8px; border: 2px solid #e5e7eb; min-height: 44px;">
+                    <option value="">🗓️ Todos os períodos</option>
+                    <option value="7">📍 Últimos 7 dias</option>
+                    <option value="30">📊 Últimos 30 dias</option>
+                    <option value="90">📈 Últimos 90 dias</option>
+                    <option value="365">📆 Último ano</option>
                 </select>
             </div>
-            <div>
-                <label for="status_filter" style="display: block; margin-bottom: 5px; font-weight: 500; color: #333;">Status:</label>
-                <select name="status_filter" id="status_filter" class="form-control" style="border-radius: 4px;">
-                    <option value="">Todos os status</option>
-                    <option value="VALIDADO">Validados</option>
+            <div class="filter-field">
+                <label for="status_filter" style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151; font-size: 0.9rem;">✅ Status:</label>
+                <select name="status_filter" id="status_filter" class="form-control form-select" style="border-radius: 8px; border: 2px solid #e5e7eb; min-height: 44px;">
+                    <option value="">🔄 Todos os status</option>
+                    <option value="VALIDADO">✅ Validados</option>
                     <option value="INVALIDADO">Invalidados</option>
                     <option value="PENDENTE">Pendentes</option>
                 </select>
             </div>
-            <div>
-                <label for="componente_filter" style="display: block; margin-bottom: 5px; font-weight: 500; color: #333;">Componente:</label>
-                <select name="componente_filter" id="componente_filter" class="form-control" style="border-radius: 4px;">
-                    <option value="">Todos os componentes</option>
-                    <option value="Metano">Metano</option>
-                    <option value="Etano">Etano</option>
-                    <option value="Propano">Propano</option>
-                    <option value="i-Butano">i-Butano</option>
-                    <option value="n-Butano">n-Butano</option>
-                    <option value="i-Pentano">i-Pentano</option>
-                    <option value="n-Pentano">n-Pentano</option>
-                    <option value="Hexano">Hexano</option>
-                    <option value="Heptano">Heptano</option>
-                    <option value="Octano">Octano</option>
-                    <option value="Nonano">Nonano</option>
-                    <option value="Decano">Decano</option>
-                    <option value="Oxigênio">Oxigênio</option>
-                    <option value="Nitrogênio">Nitrogênio</option>
-                    <option value="CO2">CO2</option>
+            <div class="filter-field">
+                <label for="componente_filter" style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151; font-size: 0.9rem;">🧪 Componente:</label>
+                <select name="componente_filter" id="componente_filter" class="form-control form-select" style="border-radius: 8px; border: 2px solid #e5e7eb; min-height: 44px;">
+                    <option value="">⚗️ Todos os componentes</option>
+                    <option value="Metano">CH₄ Metano</option>
+                    <option value="Etano">C₂H₆ Etano</option>
+                    <option value="Propano">C₃H₈ Propano</option>
+                    <option value="i-Butano">i-C₄H₁₀ i-Butano</option>
+                    <option value="n-Butano">n-C₄H₁₀ n-Butano</option>
+                    <option value="i-Pentano">i-C₅H₁₂ i-Pentano</option>
+                    <option value="n-Pentano">n-C₅H₁₂ n-Pentano</option>
+                    <option value="Hexano">C₆H₁₄ Hexano</option>
+                    <option value="Heptano">C₇H₁₆ Heptano</option>
+                    <option value="Octano">C₈H₁₈ Octano</option>
+                    <option value="Nonano">C₉H₂₀ Nonano</option>
+                    <option value="Decano">C₁₀H₂₂ Decano</option>
+                    <option value="Oxigênio">O₂ Oxigênio</option>
+                    <option value="Nitrogênio">N₂ Nitrogênio</option>
+                    <option value="CO2">CO₂ Dióxido de Carbono</option>
                 </select>
             </div>
-            <div style="display: flex; flex-direction: row;">
-                <button type="submit" class="btn btn-primary" style="height: 38px; display: flex; align-items: center; justify-content: center;">
-                    🔍 Filtrar
+            <div class="filter-actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                <button type="submit" class="btn btn-primary" style="min-height: 44px; flex: 1; min-width: 120px; display: flex; align-items: center; justify-content: center; gap: 0.5rem; border-radius: 8px; font-weight: 600;">
+                    <i class="bi bi-search"></i> Filtrar
                 </button>
-                <button type="button" class="btn btn-secondary" style="height: 38px; margin-left: 10px; display: flex; align-items: center; justify-content: center;" onclick="clearFilters()">
-                    🔄 Limpar
+                <button type="button" class="btn btn-outline-secondary" style="min-height: 44px; flex: 1; min-width: 120px; display: flex; align-items: center; justify-content: center; gap: 0.5rem; border-radius: 8px; font-weight: 600;" onclick="clearFilters()">
+                    <i class="bi bi-arrow-clockwise"></i> Limpar
                 </button>
             </div>
         </form>
@@ -449,5 +454,135 @@ document.addEventListener('DOMContentLoaded', function() {
     font-weight: 500 !important;
     letter-spacing: 0.01em;
 }
+
+/* MOBILE DASHBOARD IMPROVEMENTS */
+@media (max-width: 768px) {
+    .mobile-filters .filter-form {
+        display: none;
+    }
+    
+    .mobile-filters .filter-form.show {
+        display: grid;
+        animation: slideDown 0.3s ease;
+    }
+    
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .filter-field {
+        margin-bottom: 1rem;
+    }
+    
+    .filter-actions {
+        grid-column: 1 / -1;
+        margin-top: 0.5rem;
+    }
+    
+    /* Melhorar cards de boletins */
+    .boletim-card {
+        border-radius: 12px !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+        margin-bottom: 1rem !important;
+        overflow: hidden;
+    }
+    
+    .boletim-card .card-header {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important;
+        color: white !important;
+        padding: 1rem !important;
+        font-weight: 600 !important;
+    }
+    
+    .boletim-card .card-body {
+        padding: 1rem !important;
+    }
+    
+    /* Botões de ação mobile */
+    .boletim-actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-top: 1rem;
+    }
+    
+    .boletim-actions .btn {
+        flex: 1;
+        min-width: 120px;
+        justify-content: center;
+    }
+}
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Toggle de filtros mobile
+    const toggleBtn = document.getElementById('toggleFilters');
+    const filterForm = document.querySelector('.filter-form');
+    const toggleText = document.getElementById('filterToggleText');
+    
+    if (toggleBtn && filterForm) {
+        toggleBtn.addEventListener('click', function() {
+            const isVisible = filterForm.classList.contains('show');
+            
+            if (isVisible) {
+                filterForm.classList.remove('show');
+                toggleText.textContent = 'Mostrar';
+                toggleBtn.classList.remove('btn-primary');
+                toggleBtn.classList.add('btn-outline-primary');
+            } else {
+                filterForm.classList.add('show');
+                toggleText.textContent = 'Ocultar';
+                toggleBtn.classList.remove('btn-outline-primary');
+                toggleBtn.classList.add('btn-primary');
+            }
+        });
+    }
+    
+    // Auto-submit em mudanças de filtro para melhor UX mobile
+    const filterSelects = document.querySelectorAll('#periodo, #status_filter, #componente_filter');
+    filterSelects.forEach(select => {
+        select.addEventListener('change', function() {
+            // Pequeno delay para feedback visual
+            setTimeout(() => {
+                if (window.showMobileToast) {
+                    window.showMobileToast('🔄 Aplicando filtros...', 'info');
+                }
+                document.getElementById('filterForm').submit();
+            }, 200);
+        });
+    });
+    
+    // Melhorar experiência de loading
+    const submitBtn = document.querySelector('button[type="submit"]');
+    if (submitBtn) {
+        submitBtn.addEventListener('click', function() {
+            this.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Filtrando...';
+            this.disabled = true;
+        });
+    }
+});
+
+// Função para limpar filtros
+function clearFilters() {
+    document.getElementById('periodo').value = '';
+    document.getElementById('status_filter').value = '';
+    document.getElementById('componente_filter').value = '';
+    
+    if (window.showMobileToast) {
+        window.showMobileToast('🔄 Filtros limpos!', 'success');
+    }
+    
+    setTimeout(() => {
+        document.getElementById('filterForm').submit();
+    }, 500);
+}
+</script>
 {% endblock %}

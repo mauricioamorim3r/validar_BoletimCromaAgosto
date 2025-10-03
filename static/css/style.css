@@ -42,13 +42,26 @@ body {
     --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
-/* Container principal */
+/* Container principal - Mobile First */
 .container {
-    padding: 1rem;
+    padding: 0.75rem; /* Menor padding para mobile */
     max-width: 100%;
     width: 100%;
     margin: 0 auto;
     box-sizing: border-box;
+}
+
+/* Padding progressivo para telas maiores */
+@media (min-width: 576px) {
+    .container {
+        padding: 1rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .container {
+        padding: 1.5rem;
+    }
 }
 
 @media (min-width: 576px) {
@@ -1393,46 +1406,140 @@ p, span, div {
     line-height: 1.4;
 }
 
-/* Responsividade */
+/* RESPONSIVIDADE MOBILE OTIMIZADA */
 @media (max-width: 768px) {
+    /* Tabelas com melhor UX mobile */
     .table-responsive {
-        font-size: 0.75rem;
+        font-size: 0.8rem; /* Ligeiramente maior para melhor legibilidade */
         overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        position: relative;
     }
     
+    /* Indicador de scroll para tabelas */
+    .table-responsive::after {
+        content: '👈 Deslize';
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: rgba(59, 130, 246, 0.8);
+        color: white;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 0.7rem;
+        z-index: 10;
+        animation: slideHint 4s ease-in-out infinite;
+    }
+    
+    @keyframes slideHint {
+        0%, 80%, 100% { opacity: 0; }
+        20%, 60% { opacity: 1; }
+    }
+    
+    /* Form controls touch-friendly */
     .form-control-sm {
-        height: 24px;
-        padding: 0.15rem 0.3rem;
+        height: 36px !important; /* Mínimo 36px para touch */
+        padding: 0.5rem 0.75rem !important;
+        font-size: 0.9rem !important;
     }
     
+    .form-control {
+        min-height: 44px !important;
+        padding: 0.75rem 1rem !important;
+        font-size: 1rem !important;
+        border-radius: 8px !important;
+        touch-action: manipulation;
+    }
+    
+    /* Grid responsivo */
     .boletim-info-grid {
         grid-template-columns: 1fr;
+        gap: 1rem;
     }
     
     .resultado-final {
         grid-template-columns: 1fr;
+        gap: 0.75rem;
     }
     
+    /* Logo responsivo */
     .brava-logo {
         position: static;
         transform: none;
         display: block;
-        margin-bottom: 10px;
+        margin-bottom: 15px;
+        text-align: center;
     }
     
-    /* Cards responsivos */
+    /* Cards com melhor espaçamento mobile */
     .card {
         margin-bottom: 1rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
     
     .card-body {
-        padding: 0.75rem;
+        padding: 1rem; /* Mais espaço para touch */
     }
     
-    /* Ajustes para colunas em dispositivos móveis */
+    .card-header {
+        padding: 0.75rem 1rem;
+        font-weight: 600;
+    }
+    
+    /* Colunas responsivas com melhor espaçamento */
     .col-md-3,
-    .col-md-6 {
-        margin-bottom: 0.75rem;
+    .col-md-6,
+    .col-md-4,
+    .col-lg-3,
+    .col-lg-6 {
+        margin-bottom: 1rem;
+        padding: 0 0.5rem;
+    }
+    
+    /* Botões mobile-friendly */
+    .btn {
+        min-height: 44px !important;
+        padding: 0.75rem 1rem !important;
+        font-size: 1rem !important;
+        border-radius: 8px !important;
+        font-weight: 500;
+        touch-action: manipulation;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-sm {
+        min-height: 40px !important;
+        padding: 0.6rem 0.8rem !important;
+        font-size: 0.9rem !important;
+    }
+    
+    /* Action buttons com melhor touch target */
+    .action-btn {
+        min-height: 44px !important;
+        min-width: 44px !important;
+        padding: 0.75rem !important;
+        margin: 2px;
+        border-radius: 8px !important;
+    }
+    
+    /* Navegação mobile melhorada */
+    .navbar-nav .nav-link {
+        padding: 0.75rem 1rem !important;
+        font-size: 1.1rem;
+        border-radius: 6px;
+        margin: 2px 0;
+        transition: all 0.2s ease;
+    }
+    
+    .navbar-nav .nav-link:hover {
+        background-color: rgba(255,255,255,0.1);
+        transform: translateX(2px);
     }
     
     /* Botões responsivos */

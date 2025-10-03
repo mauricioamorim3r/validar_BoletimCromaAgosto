@@ -64,6 +64,132 @@
             transform: perspective(100px) rotateX(0deg) scale(1.05);
             filter: drop-shadow(0px 0px 8px rgba(255,255,255,0.6));
         }
+        
+        /* MELHORIAS MOBILE - Touch-Friendly Design */
+        @media (max-width: 768px) {
+            /* Menu Hambúrguer Otimizado */
+            .navbar-toggler {
+                padding: 8px 12px;
+                font-size: 1.1rem;
+                border: 2px solid rgba(255,255,255,0.3);
+                border-radius: 8px;
+                transition: all 0.3s ease;
+            }
+            
+            .navbar-toggler:focus {
+                box-shadow: 0 0 0 3px rgba(255,255,255,0.25);
+                border-color: rgba(255,255,255,0.5);
+            }
+            
+            .navbar-toggler-icon {
+                background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2833, 37, 41, 0.75%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='m4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+            }
+            
+            /* Links de navegação mobile */
+            .navbar-nav .nav-link {
+                padding: 12px 20px !important;
+                font-size: 1.1rem;
+                min-height: 44px;
+                display: flex;
+                align-items: center;
+                border-radius: 8px;
+                margin: 4px 0;
+                transition: all 0.3s ease;
+            }
+            
+            .navbar-nav .nav-link:hover {
+                background-color: rgba(255,255,255,0.1);
+                transform: translateX(5px);
+            }
+            
+            .navbar-nav .nav-link.active {
+                background-color: rgba(255,255,255,0.2);
+                border-left: 4px solid #fbbf24;
+            }
+            
+            /* Ícones maiores para mobile */
+            .nav-icon {
+                font-size: 1.4em !important;
+                margin-right: 12px;
+            }
+        }
+        
+        /* Botões Touch-Friendly Global */
+        @media (max-width: 768px) {
+            .btn {
+                min-height: 44px !important;
+                padding: 12px 16px !important;
+                font-size: 1rem !important;
+                border-radius: 8px !important;
+                font-weight: 500;
+                touch-action: manipulation;
+            }
+            
+            .btn-sm {
+                min-height: 40px !important;
+                padding: 10px 14px !important;
+                font-size: 0.9rem !important;
+            }
+            
+            .action-btn {
+                min-height: 44px !important;
+                min-width: 44px !important;
+                padding: 12px !important;
+                margin: 2px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            /* Formulários touch-friendly */
+            .form-control, .form-select {
+                min-height: 44px !important;
+                padding: 12px 16px !important;
+                font-size: 1rem !important;
+                border-radius: 8px !important;
+            }
+            
+            /* Inputs de tabela */
+            .table input, .table select, .table textarea {
+                min-height: 40px !important;
+                padding: 8px 12px !important;
+                touch-action: manipulation;
+            }
+        }
+        
+        /* Tabelas Mobile com Scroll Indicators */
+        @media (max-width: 768px) {
+            .table-responsive {
+                position: relative;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: thin;
+            }
+            
+            .table-responsive::before {
+                content: '👈 Deslize para ver mais';
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                background: rgba(59, 130, 246, 0.9);
+                color: white;
+                padding: 4px 8px;
+                border-radius: 4px;
+                font-size: 0.75rem;
+                z-index: 10;
+                animation: fadeInOut 3s ease-in-out;
+            }
+            
+            @keyframes fadeInOut {
+                0%, 70%, 100% { opacity: 0; }
+                10%, 60% { opacity: 1; }
+            }
+            
+            .modern-table {
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            }
+        }
     </style>
 </head>
 <body>
@@ -73,7 +199,7 @@
                 <span class="fw-bold" style="background: linear-gradient(90deg, #fbbf24, #f59e0b); -webkit-background-clip: text; background-clip: text; color: transparent; padding: 0 5px;">SGM</span>
                 <span style="color: white; font-weight: 500;">Validação de Boletins</span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-label="Abrir menu de navegação">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Abrir menu de navegação">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarMain">
@@ -118,7 +244,13 @@
         {% endwith %}
         {% block content %}{% endblock %}
     </div>
+        <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Mobile Touch Improvements -->
+    <script src="{{ url_for('static', filename='js/mobile_touch_improvements.js') }}"></script>
+</body>
+</html>
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
 </html>
