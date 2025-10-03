@@ -9,6 +9,7 @@ import os
 import io
 import sys
 import logging
+import traceback
 from werkzeug.utils import secure_filename
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
@@ -301,13 +302,17 @@ def valida_cep(componente, novo_valor, historico):
 
 def get_historico_componente(componente):
     """Busca histórico de valores para um componente específico"""
-    db = get_db()
-    historico = db.execute('''
-        SELECT valor FROM historico_componentes
-        WHERE componente = ?
-        ORDER BY data_coleta ASC
-    ''', (componente,)).fetchall()
-    return [row[0] for row in historico]
+    try:
+        db = get_db()
+        historico = db.execute('''
+            SELECT valor FROM historico_componentes
+            WHERE componente = ?
+            ORDER BY data_coleta ASC
+        ''', (componente,)).fetchall()
+        return [row[0] for row in historico if row[0] is not None]
+    except Exception as e:
+        logger.error(f"Erro ao buscar histórico para componente {componente}: {e}")
+        return []
 
 
 def calcular_propriedades_fluido(componentes_data):
@@ -1282,6 +1287,7 @@ def excluir_boletim(boletim_id):
 def relatorio(boletim_id, edit_mode=None):
     """Exibe o relatório detalhado de um boletim específico, com modo de edição opcional"""
     logger.debug(f"Relatório acessado - Method: {request.method}, Edit Mode: {edit_mode}, ID: {boletim_id}")
+    
     db = get_db()
 
     # Verificar se é uma requisição POST para salvar edições
@@ -1492,18 +1498,32 @@ def relatorio(boletim_id, edit_mode=None):
 
     # Calculate CEP limits for each component
     def calculate_cep_limits(componente_nome):
-        historico = get_historico_componente(componente_nome)
-        ultimas_amostras = historico[-8:]
-        if len(ultimas_amostras) < 2:
+        try:
+            historico = get_historico_componente(componente_nome)
+            ultimas_amostras = historico[-8:]
+            if len(ultimas_amostras) < 2:
+                return None, None
+            
+            # Validar se há dados numéricos válidos
+            ultimas_amostras = [x for x in ultimas_amostras if x is not None and isinstance(x, (int, float))]
+            if len(ultimas_amostras) < 2:
+                return None, None
+                
+            media = sum(ultimas_amostras) / len(ultimas_amostras)
+            amplitudes = [abs(ultimas_amostras[i] - ultimas_amostras[i - 1])
+                          for i in range(1, len(ultimas_amostras))]
+            
+            if not amplitudes:
+                return None, None
+                
+            media_amplitudes = sum(amplitudes) / len(amplitudes)
+            d2 = 1.128
+            lcs = media + 3 * media_amplitudes / d2
+            lci = media - 3 * media_amplitudes / d2
+            return lci, lcs
+        except Exception as e:
+            logger.error(f"Erro ao calcular limites CEP para {componente_nome}: {e}")
             return None, None
-        media = sum(ultimas_amostras) / len(ultimas_amostras)
-        amplitudes = [abs(ultimas_amostras[i] - ultimas_amostras[i - 1])
-                      for i in range(1, len(ultimas_amostras))]
-        media_amplitudes = sum(amplitudes) / len(amplitudes)
-        d2 = 1.128
-        lcs = media + 3 * media_amplitudes / d2
-        lci = media - 3 * media_amplitudes / d2
-        return lci, lcs
 
     componentes_with_limits = []
     for comp in componentes:
