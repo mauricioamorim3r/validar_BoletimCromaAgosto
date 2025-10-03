@@ -47,6 +47,14 @@ if sys.platform.startswith('win'):
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'chave_secreta_para_flask')
 
+# Importar rota de diagnóstico
+try:
+    from relatorio_diagnostico import create_simple_report_route
+    create_simple_report_route(app, lambda: get_db())
+    logger.info("Rota de diagnóstico carregada com sucesso")
+except Exception as e:
+    logger.warning(f"Não foi possível carregar rota de diagnóstico: {e}")
+
 
 # Filtros personalizados para formatação
 def date_format(date_string):
@@ -1537,13 +1545,22 @@ def relatorio(boletim_id, edit_mode=None):
     is_edit_mode = edit_mode == 'edit'
 
     # Validar prazos ANP
-    validacao_prazos = validar_todos_prazos_anp(
-        boletim['data_coleta'],
-        boletim['data_analise'],
-        boletim['data_emissao'],
-        boletim['data_validacao'],
-        boletim.get('metodologia_aprovada', False)
-    )
+    try:
+        validacao_prazos = validar_todos_prazos_anp(
+            boletim['data_coleta'],
+            boletim['data_analise'],
+            boletim['data_emissao'],
+            boletim['data_validacao'],
+            boletim.get('metodologia_aprovada', False)
+        )
+    except Exception as e:
+        logger.error(f"Erro na validação de prazos ANP para boletim {boletim_id}: {e}")
+        # Criar validação padrão em caso de erro
+        validacao_prazos = {
+            'coleta_emissao': {'status': 'ERRO', 'dias_decorridos': 0},
+            'emissao_validacao': {'status': 'ERRO', 'dias_decorridos': 0},
+            'prazo_total': {'status': 'ERRO', 'dias_decorridos': 0}
+        }
 
     # Fechar conexão
     db.close()
