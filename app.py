@@ -55,6 +55,14 @@ try:
 except Exception as e:
     logger.warning(f"Não foi possível carregar rota de diagnóstico: {e}")
 
+# Importar rota de hotfix
+try:
+    from relatorio_hotfix import create_hotfix_route
+    create_hotfix_route(app, lambda: get_db())
+    logger.info("Rota de hotfix carregada com sucesso")
+except Exception as e:
+    logger.warning(f"Não foi possível carregar rota de hotfix: {e}")
+
 
 # Filtros personalizados para formatação
 def date_format(date_string):
